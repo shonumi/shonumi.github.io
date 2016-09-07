@@ -1,10 +1,15 @@
 body 
 {
 	font-family: "times new roman", serif, verdana;
-	font-size: 16px;
+	font-size: 18px;
 	margin: 0px;
 	background-color: #FFF;
 } 
+
+li
+{
+	margin-top: 5px;
+}
 
 .header 
 {
@@ -15,6 +20,27 @@ body
 	margin-top: 0px;
 	background-color: #4C4C4C;
 } 
+
+.center_img
+{
+	text-align: center;
+	margin-top: 10px;
+	margin-bottom: 0px;
+}
+
+.space_img
+{
+	margin-right: 5px;
+	margin-left: 5px;
+}
+
+.img_caption
+{
+	margin-top: 0px;
+	margin-bottom: 30px;
+	font-size: 16px;
+	text-align: center;
+}
 
 .header_left
 {
@@ -32,7 +58,7 @@ body
 
 .header_text
 {
-	font-size: 20px;
+	font-size: 22px;
 	color: #0FACEF;
 	padding-top: 10px;
 	letter-spacing: 5px;
@@ -41,7 +67,7 @@ body
 
 .header_link
 {
-	font-size: 16px;
+	font-size: 18px;
 	font-weight: bold;
 	color: #FFF;
 	text-decoration: none;
@@ -52,7 +78,7 @@ body
 
 .header_link:hover
 {
-	font-size: 16px;
+	font-size: 18px;
 	font-weight: bold;
 	color: #0FACEF;
 	text-decoration: none;
@@ -63,7 +89,7 @@ body
 
 .header_link_current
 {
-	font-size: 16px;
+	font-size: 18px;
 	font-weight: bold;
 	color: #0FACEF;
 	text-decoration: none;
@@ -75,9 +101,9 @@ body
 .box_inner
 {
 	width: 97.5%;
-	height: 475px;
 	margin: auto;
 	margin-top: 11px;
+	margin-bottom: 11px;
 	background-color: #FFF;
 	border: 1px #808080 solid;
 }
@@ -85,7 +111,6 @@ body
 .box_outer
 {
 	width: 90%;
-	height: 500px;
 	border: 1px #808080 solid;
 	background-color: #D7D7D7;
 	margin: auto;
@@ -94,7 +119,38 @@ body
 
 .inner_text
 {
-	margin: 10px;
+	text-indent: 50px;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.list_text
+{
+	text-indent: 50px;
+	margin-top: 15px;
+	margin-bottom: 15px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.list_text_a
+{
+	text-indent: 0px;
+	margin-top: 0px;
+	margin-bottom: 5px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.list_text_b
+{
+	text-indent: 0px;
+	margin-top: 0px;
+	margin-bottom: 30px;
+	margin-left: 10px;
+	margin-right: 10px;
 }
 
 .inner_text_large
@@ -104,6 +160,10 @@ body
 	margin-right: 10px;
 	margin-left: 10px;
 	font-size: 18px;
+	padding: 4px;
+	display: block;
+	background-color: #D0D0D0;
+	color: #0996E7;
 }
 
 .inner_text_sub
@@ -140,3 +200,22 @@ body
 	position: relative;
 	top: -10px;
 }
+
+.highlight_gray
+{
+	border-style: dotted;
+	border-color: #000000;
+	border-width: 2px;
+	background-color: #D0D0D0;
+	padding: 3px;
+}
+
+.highlight_med_gray
+{
+	border-style: solid;
+	border-color: #000000;
+	border-width: 2px;
+	background-color: #D0D0D0;
+	padding: 3px;
+}
+
