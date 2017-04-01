@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Emu Labs</title>
+		<link rel="stylesheet" type="text/css" href="./../main.css" />
+	</head>
+
+	<body>
+
+		<!-- Main Header -->
+		<div class="header">
+
+			<!-- Left Header -->
+			<div class="header_left">
+				<div class="header_text"><strong>Shonumi</strong></div>
+			</div>
+		
+			<!-- Right Header -->
+			<div class="header_right">
+				<a class="header_link" href="../downloads.html">Downloads</a>
+				<a class="header_link" href="../articles.html">Articles</a>
+				<a class="header_link_current" href="../blog.html">Blog</a>
+				<a class="header_link" href="../index.html">Main</a>
+			</div>
+
+		</div>
+
+		<!-- Main Page Outer Box -->
+		<div class="box_outer">
+			
+			<!-- Main Page Inner Box -->
+			<div class="box_inner">
+
+				<div class="center_headline">Emulating the Game Boy Color Infrared Port - Progress</div>
+				<div class="headline_underline">. . . . . . . . . . .</div>
+
+				<p class="inner_text_large"><strong>Paint the town infrared</strong>
+
+				<p class="inner_text">The Game Boy handhelds had a lot of innovative features for their models, things other gaming systems probably would have never tried. Things like the GB Printer, the GB Camera, the e-Reader, and the GBA-GCN cable all speak of Nintendo&#39;s willingness to push the boundaries of its systems. One of the things they experimented with with including an infrared or &#39;IR&#39; port on the Game Boy Color. This was intended to communicate data over a short distance via light pulses. The two games would exchange information at the speed of (infrared) light. Unfortunately, only a few handful of games actually make use of this feature. A limited number of developers took the time to utilize the IR port, and even then it was not entirely impressive. Most of the time, the IR port amounted to trading information (High Scores, collectables) or generating special items. By all accounts, the IR port is pretty neglected for something Nintendo made as part of the standard Game Boy hardware as opposed to an add-on.</p>
+
+				<p class="inner_text">Having said all of that, one of the reasons I love emulating the Game Boy is that it has all of these cool and interesting things that made up its hardware ecosystem. If you really want to emulate the Game Boy, you have to tackle support for a host of somewhat &#39;exotic&#39; features. Fun and challenging? Sign me up. What is really tempting about the IR port is that it&#39;s obscure and pretty much ignored by modern GB emulation as far as I know. I think GEST and TGB Dual currently offer the most extensive support, but other bigger emulators like Gamebatte or VBA-M leave it alone. My goal has always been to make a GB emulator that is as complete as I can make it, something I myself would want to use on a daily basis, so IR emulation definitely grabbed my attention. I want to see this feature preserved, and I want to use it when I emulate my own GBC games.</p>
+
+				<p class="inner_text">Since the GBC is using infrared light, I figured the IR port would have some pretty tight timing requirements. Thankfully, since GBE+ recently got netplay working for the GB Link Cable, it has a &#39;hard sync&#39; method that lets each instance of the emulator run in lock-step (one emulator runs for 32 cycles, pauses and waits while the other one across the network runs for 32 cycles, rinse and repeat). I&#39;ve toyed around with the idea of taking on IR emulation for a while, and once I saw LIJI32 aka Lior Halphon (author of SameBoy and GBVideoPlayer), I decided to take the plunge. Plugged in a few tunes and bashed away as some silly code, then compiled it all. I was not expecting it to be functional in any sort of way, but on the first go, it worked with Pokemon Gold/Silver/Crystal&#39;s Mystery Gift feature. I was pretty blown away, because secretly I&#39;ve always wanted an emulator that made Mystery Gifting possible. Even better, the Trainer House in Viridian City worked too, so now I could fight myself!</p>
+
+				<p class="inner_text">While getting this much done was great, unfortunately, GBE+ fails to do anything more with other games. For example, Card Pop in Pokemon TCG does not work. Trading High Scores in Pokemon Pinball and Super Mario Bros. Deluxe does not work. Trading stamps in Donkey Kong Country does not work. Apparently, there&#39;s still a lot of work to be done in this regard. Hopefully this will be cracked. It&#39;s not a terribly essential part of GBC emulation, but it would be terrible if this got left by the wayside. Emulate everything, that&#39;s my mantra. I&#39;m not going to get hung up on figuring out what&#39;s going on with the IR port (I still have other priorities such as GB Printer and SGB support) but it was fun to see this work to some extent for me. One of these days it&#39;ll be perfected, I&#39;m sure.</p>
+
+			</div>
+		</div>
+
+	</body>
+</html>
+
+		
+
+		
