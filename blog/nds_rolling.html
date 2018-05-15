@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>NDS Stuff</title>
+		<link rel="stylesheet" type="text/css" href="./../main.css" />
+	</head>
+
+	<body>
+
+		<!-- Main Header -->
+		<div class="header">
+
+			<!-- Left Header -->
+			<div class="header_left">
+				<div class="header_text"><strong>Shonumi</strong></div>
+			</div>
+		
+			<!-- Right Header -->
+			<div class="header_right">
+				<a class="header_link" href="../downloads.html">Downloads</a>
+				<a class="header_link" href="../articles.html">Articles</a>
+				<a class="header_link_current" href="../blog.html">Blog</a>
+				<a class="header_link" href="../index.html">Main</a>
+			</div>
+
+		</div>
+
+		<!-- Main Page Outer Box -->
+		<div class="box_outer">
+			
+			<!-- Main Page Inner Box -->
+			<div class="box_inner">
+
+				<div class="center_headline">NDS Stuff</div>
+				<div class="headline_underline">. . . . . . . . . . .</div>
+
+				<p class="inner_text_large"><strong>May 15, 2018</strong>
+
+				<p class="inner_text">I keep wanting to do another <a href="https://shonumi.github.io/articles/art3.html">big article</a> about NDS emulation, but I don&#39;t feel the time is right just yet. Maybe once I&#39;ve actually gotten commercial games up and running in GBE+, I&#39;ll finish writing the article I&#39;ve drafted about the NDS 2D engine. Plus, I&#39;m still busy with the <strong>Edge of Emulation</strong> articles. So I figured it&#39;d be nice to do something in-between. Nothing special, and much more laidback, and definitely something with a bit less fanfare. Something like a mini development blog based on whatever I happen to work on.</p>
+
+				<p class="inner_text">So, I&#39;d ideally like to get NDS emulation stable in GBE+ by the end of this year. If I make one positive change to the codebase everyday, something that measurably improves the emulator, I&#39;ll get there, no problem. Much better than trying to push several giant changes all at once. Less pressure and more managable. That&#39;s really how I&#39;ve approached GBE+ since 2014, and my GitHub activity reflects that. One commit everyday. If you&#39;re always moving forward, eventually you gotta get there. Digressing, I need to get my head back in the game and get GBE+ running games. Time to focus (which is hopefully what these mini-blogs will help with.)</p>
+
+				<p class="inner_text">Today, focusing on 3D stuff. GBE+ has basic support for 3D rendering via software. It mostly just draws the lines of triangles and quads (no strips yet), and that&#39;s it, just colored outlines. It&#39;s not much, but it&#39;s something to start with. One annoying problem was that some libnds demos would instantly start &#34;shrinking&#34; all polygons by sending them away from the camera along the z-axis. Couldn&#39;t figure out what was going wrong just by looking at it, so I tried disabling a bunch of GX commands sent to the NDS 3D engine. None of them was the culprit, so on a hunch I guessed one of the matrices used to calculate positions was incorrect. Sure enough, the dedicated position matrix (and thereby the clip matrix) was wonky. They kept increasing certain values whenever it was multiplied. Now, you&#39;d expect values to change when something is multiplied (by something other than 1), but an identity matrix was supposed to be loaded right before the matrix multiplication. The values should have been consistent, not infinitely expanding.</p>
+
+				<p class="inner_text">The lesson I learned is never assume your code does what you think it does unless you check it up and down. My matrix had specific code convert it into an identity matrix, or so I thought. I mistakenly believed it was clearing the entire matrix before adding the diagonal line of 1s. It added the 1s just fine, but it didn&#39;t erase the other elements. So every time matrix multiplication was called, my &#34;identity&#34; matrix still had values from the last multiplication! Literally took one line of code to fix (calling the <strong>clear()</strong> function I made for that very purpose) but mystery solved.</p>
+
+				<p class="center_img">
+					<img class="space_img" src="ndsr_1.png" alt="Triangles are better than squares. Mass Blaster proves it.">
+				</p>
+
+				<p class="img_caption">Before, this would zoom off into the background like a rocket doing spirals. Not much, but progress is progress</p>
+
+			</div>
+		</div>
+
+	</body>
+</html>
+
+		
+
+		
