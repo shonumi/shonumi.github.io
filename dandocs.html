@@ -44,6 +44,7 @@
 				width: 100%;
 				background-color: #C0C0C0;
 				margin-bottom: 15px;
+				padding-left: 5px;
 				font-size: 24px;
 			}
 
@@ -117,6 +118,7 @@
 			<p class="list_head"><strong>GBA</strong></p>
 			<p class="list_item"><a href="#gss">GBA Screen Stretch</a></p>
 			<p class="list_item"><a href="#sda">Soul Doll Adapter</a></p>
+			<p class="list_item"><a href="#bcg">Battle Chip Gate</a></p>
 			
 		</div>
 
@@ -124,6 +126,7 @@
 			<p class="toc_gray_title">Mobile Adapter GB</p>
 
 			<p class="list_head"><strong>Game and Server Documentation</strong></p>
+			<p class="list_item"><a href="#hkh">Hello Kitty no Happy House</a></p>
 			<p class="list_item"><a href="#mbt">Mobile Trainer</a></p>
 			<p class="list_item"><a href="#ndg">Net de Get: Minigame @ 100</a></p>
 		</div>
@@ -134,13 +137,13 @@
 
 	<p>For the longest time, a technical document called Pan Docs formed the basis of nearly all known documentation about the Nintendo Game Boy. To this day, Pan Docs (or an updated version such as the GBDev wiki) continues to be the go-to source of general Game Boy information. However, while Pan Docs covers the basics well enough, it does not touch upon more obscure Game Boy hardware. Dan Docs, on the other hand, aims to fill this gap. Dan Docs is basically everything else you wanted to know about the Game Boy, but no one dared to ask.</p>
 
-	<p>All of the data here either comes from my research for the GBE+ project or from others studying Game Boy. Much of this information is copied+pasted from the text files I&#39;ve made over the years. For ease of use and access, however, it&#39;s been converted to a single HTML document. As more items are reverse-engineered and studied, they will be added to Dan Docs as well as GBE+.</p>
+	<p>All of the data here either comes from my research for the GBE+ project or from others studying Game Boy hardware and software. Much of this information is copied+pasted from the text files I&#39;ve made over the years. For ease of use and access, however, it&#39;s been converted to a single HTML document. As more items are reverse-engineered and studied, they will be added to Dan Docs as well as GBE+.</p>
 
 	<p>Consider all information within this document to be Public Domain. Copy and share as you please.</p>
 
 	<p class="list_head"><strong>Credits</strong></p>
 	<p class="list_item">ClawGrip - Scans of all known Barcode Boy cards</p>
-	<p class="list_item">endrift - MBC6 documentation</p>
+	<p class="list_item">endrift - MBC6 documentation. Collaboration on Battle Chip Gate documentation (especially Progress Chip Gate) + testing + verification of results.</p>
 	<p class="list_item">Háčky - Mobile Adapter GB documentation</p>
 	<p class="list_item">Robert Abel (Tauwasser) - Net de Get translation help</p> 
 
@@ -794,6 +797,7 @@ OFF pulse length			38 + (20 * (LENGTH-2))</code>
 		<li class="list_tab"><div class="x">Papyrus</div><div class="y">Ubi Key</div></li>
 		<li class="list_tab"><div class="x">Perfect Dark</div><div class="y">Trade multiplayer maps and other unlockables</div></li>
 		<li class="list_tab"><div class="x">Playmobil Interactive: Laura</div><div class="y">Ubi Key</div></li>
+		<li class="list_tab"><div class="x">Pocket Family GB 2</div><div class="y">Transfer characters and data</div></li>
 		<li class="list_tab"><div class="x">Pokemon Pinball</div><div class="y">Trade/combine Top Scores</div></li>
 		<li class="list_tab"><div class="x">Pokemon Gold</div><div class="y">Mystery Gift + Send trainer data to Viridian City Trainer House</div></li>
 		<li class="list_tab"><div class="x">Pokemon Silver</div><div class="y">Mystery Gift + Send trainer data to Viridian City Trainer House</div></li>
@@ -801,6 +805,7 @@ OFF pulse length			38 + (20 * (LENGTH-2))</code>
 		<li class="list_tab"><div class="x">Pokemon Trading Card Game</div><div class="y">&#34;Card Pop&#34; to generate random cards. Trade individual cards. Trade deck configurations</div></li>
 		<li class="list_tab"><div class="x">Pokemon Card GB2: Here Comes Team GR!</div><div class="y"> &#34;Card Pop&#34; to generate random cards. Trade individual cards. Trade deck configurations</div></li>
 		<li class="list_tab"><div class="x">Rayman</div><div class="y">Ubi Key</div></li>
+		<li class="list_tab"><div class="x">Robopon Sun Version</div><div class="y">Boost stats via infrared signals. Open certain chests</div></li>
 		<li class="list_tab"><div class="x">The Road to El Dorado</div><div class="y">Ubi Key</div></li>
 		<li class="list_tab"><div class="x">Sakura Taisen GB</div><div class="y">Send step-based &#34;Points&#34; to GBC from Pocket Sakura, or between two GBCs</div></li>
 		<li class="list_tab"><div class="x">Shin Megami Tensei Devil Children White</div><div class="y">Used for &#34;Infrared Fusion&#34; to strengthen some demons, obtain rare ones</div></li>
@@ -808,7 +813,9 @@ OFF pulse length			38 + (20 * (LENGTH-2))</code>
 		<li class="list_tab"><div class="x">Toonsylvania</div><div class="y">Ubi Key</div></li>
 		<li class="list_tab"><div class="x">Warlocked</div><div class="y">Trade wizards</div></li>
 		<li class="list_tab"><div class="x">Zok Zok Heroes</div><div class="y">Transmit &#34;Cosmic Characters&#34; from Full Changer accessory to transform hero</div></li>
-	</ul>		
+	</ul>
+
+	<p>It should be noted that a few games that use HuC-3 MBC are not in fact &#34;GB KISS&#34; games. Instead, they use the GBC&#39;s built-in IR hardware. Robopon Sun Version (US version only) and Pocket Family GB 2 are such examples. While the other Robopon games use the HuC-3&#39;s IR capabilities, these were lost when the game went overseas. A similar phenomenon can be seen with the Japanese release of Pokemon TCG (which used the HuC-1) versus releases for any other region (which use the GBC&#39;s native IR). Pocket Family GB 2 abandons the IR diodes on the HuC-3 PCB. At this point in time, Hudson may have finally decided to abandon GB KISS and the HuC-1 and HuC-3&#39;s IR features as they were redundant, especially for games designed to run exclusively on the GBC.	
 
 	<a name="ir_typ"></a>
 	<p class="gray_title">[GBC Infrared] : Communication Types</p>
@@ -1144,7 +1151,7 @@ DMG/GBC screen (240x144 pixels, or 30x18 tiles)</code>
 		<li class="list_item">Each Soul Doll uses a 24LC08 serial EEPROM controller, stores 1KB of data</li>
 	</ul>
 
-	<p>*Ones made after Yomigaeru Shiren no Shima was released may not be "recognized" in that game. If the data sent to the adapter is correct but the Soul Doll is not in the game's internal database, it is categorized as &#34;unknown&#34;.</p>
+	<p>*Ones made after Yomigaeru Shiren no Shima was released may not be "recognized" in that game. If the data sent to the adapter is correct but the Soul Doll is not in the game&#39;s internal database, it is categorized as &#34;unknown&#34;.</p>
 
 	<a name="sda_sig"></a>
 	<p class="gray_title">[Soul Doll Adapter] : Communication Protocol - Start Signal</a></p>
@@ -1199,9 +1206,9 @@ Device ID - 0b1010                                                              
 	<p><code>0xAD <span class="bld">0xAF 0xAF</span> 0xAD = Bit 3 is HIGH = 1
 0xA5 <span class="bld">0xA7 0xA7</span> 0xA5 = Bit 3 is LOW = 0</code></p>
 
-	<p>The first slave address sent is basically ignored, as if the write command. This, however, prompts the 24LC08 to expect a word address next. The word address is the same format; 4 transfers per bit, with the 2nd and 3rd Bit 3 values determining whether it's a &#34;0&#34; or a &#34;1&#34;. The word address forms the lower 8 bits of the final address to read from.</p>
+	<p>The first slave address sent is basically ignored, as if the write command. This, however, prompts the 24LC08 to expect a word address next. The word address is the same format; 4 transfers per bit, with the 2nd and 3rd Bit 3 values determining whether it&#39;s a &#34;0&#34; or a &#34;1&#34;. The word address forms the lower 8 bits of the final address to read from.</p>
 
-	<p>After the word address is sent, a final slave address is sent along with Bit 0 being set to 1 to indicate a read command. This final slave address forms the real two MSBs of the final address. Once this slave address and the read command are sent, EEPROM can be read from by sending a start signal followed by 32 transfers. The EEPROM controller doesn't seem to care what is sent during reading, so long as it's not another start signal. Once a full byte has been read, the internal pointer for the EEPROM address is incremented, and another read can be done simply by sending another start signal followed by 32 more transfers. The data format for reading looks something like this:</p>
+	<p>After the word address is sent, a final slave address is sent along with Bit 0 being set to 1 to indicate a read command. This final slave address forms the real two MSBs of the final address. Once this slave address and the read command are sent, EEPROM can be read from by sending a start signal followed by 32 transfers. The EEPROM controller doesn&#39;t seem to care what is sent during reading, so long as it&#39;s not another start signal. Once a full byte has been read, the internal pointer for the EEPROM address is incremented, and another read can be done simply by sending another start signal followed by 32 more transfers. The data format for reading looks something like this:</p>
 
 	<p><code>-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Bit 7               | Bit 6               | Bit 5               | Bit 4               | Bit 3               | Bit 2               | Bit 1               | Bit 0
@@ -1242,6 +1249,147 @@ Bit 7               | Bit 6               | Bit 5               | Bit 4         
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------</code></p>
 
 	<p>Again, 2nd and 3rd transfers use Bit 3 to determine a &#34;0&#34; or a &#34;1&#34;. The above example would be 0b10101010 or 0xAA. Unlike reads, which can continue on updating the internal EEPROM address, writes are done in 16-byte pages. Up to 16-bytes can be written sequentially; anymore and the writes loop around. E.g. if writing to 0x100 a page write has a range of 0x100 to 0x10F. Attempting to write a 17th byte will overwrite 0x100 instead of 0x110. In order to write 0x110 to 0x11F, another write slave address, write command, and word address need to be sent to the 24LC08.</p>
+
+	<!-- Battle Chip Gate -->
+	<a name="bcg"></a>
+	<p class="gray_title">Battle Chip gate</p>
+	<p class="list_item"><a href="#bcg_gen">General Hardware Information</a></p>
+	<p class="list_item"><a href="#bcg_gam">Compatible Games</a></p>
+	<p class="list_item"><a href="#bcg_pro">Protocol</a></p>
+	<p class="list_item"><a href="#bcg_mlt">Multiplayer Setup</a></p>
+
+	<p>Starting with Mega Man Battle Network 4, Capcom along Takara introduced GBA accessories known as Battle Chip Gates. These devices allowed players to insert physical Battle Chips into a slot, which in turn executed attacks or activated special moves during combat. Effectively, these Battle Chip Gates simulated the act of being a real &#34;Net Navi operator&#34; as depicted in the games and anime. Three hardware revisions exist for each mainline Battle Network game released after 2003 (4, 5, 6). Among those revisions are several variants that differ only in color and design. Each revision additionally uses its own collection of Battle Chips.</p>
+
+	<a name="bcg_gen"></a>
+	<p class="gray_title">[Battle Chip Gate] : General Hardware Information</p>
+
+	<ul>
+		<li class="list_item">Battle Chip Gates come in 3 hardware revisions: the original Battle Chip Gate, Progress Gate, and Beast Link Gate (Battle Network 4, 5, and 6 respectively).</li>
+		<li class="list_item">Each Battle Chip Gate accepts physical Battle Chip into a slot on the top of the unit (or on the side, in the case of the Beast Link Gate).</li>
+		<li class="list_item">Each Battle Chip Gate exposes a Link Cable port on its side, allowing for multiplayer while using the device.</li>
+		<li class="list_item">Each Battle Chip Gate uses semi-retractable clamps (similar the the GBA-GCN cable) to keep the unit stable and in place.</li>
+		<li class="list_item">Battle Chips are merely DIP switches. Their configuration effectively represents a numerical ID to the Battle Chip Gates, which the games then use.</li>
+	</ul>
+
+	<a name="bcg_gam"></a>
+	<p class="gray_title">[Battle Chip Gate] : Compatible Games</p>
+
+	<p><strong>Battle Chip Gate</strong></p>
+	<p><code>Mega Man Battle Network 4:				Enables Operation Battles + using real chips in that same mode
+Mega Man Zero 3						Unlocks Guardian minigames based on chip ID
+Rockman EXE 4.5: Real Operation				Enables using real chips in ever battle</code></p>
+
+	<p><strong>Progress Chip Gate</strong></p>
+	<p><code>Mega Man Battle Network 5				Enables Navi Change and Operation Battles + using real chips in that same mode</code></p>
+
+	<p><strong>Beast Link Gate</strong></p>
+	<p><code>Rockman EXE 6						Enables infinite BeastOut, Link Navi System, and using real chips in any battle</code></p>
+
+	<p>4.5 Real Operation was never released outside of Japan. Supposedly these accessories were deemed unpopular in the west, therefore English versions of Battle Network 6 had features relating to the Beast Link Gate disabled or removed. The bulk of content, such as BeastOut and loading Battle Chips during fights still works. The English version, however, merely alters the detection code so that it fails to recognize the Beast Link Gate even when properly plugged in.</p>
+
+	<p>For Mega Man Zero 3, chips with odd IDs unlock the Phantom minigame, while chips with even IDs unlock the Harpuia minigame. The RedSun chip (#304) unlocks the Fefnir minigame, while the BlueMoon chip (#309) unlocks the Leviathan minigame.</p>
+
+	<a name="bcg_pro"></a>
+	<p class="gray_title">[Battle Chip Gate] : Protocol</p>
+
+	<p>Each Battle Chip Gate uses mostly the same protocol with only very slight changes. They are largely the same hardware in different shells and different physical arrangements. From a software point of view, however, they behave nearly identically.</p>
+
+	<p>The Battle Chip Gates communicate via the GBA&#39;s Multi16 mode with a baud rate of 115200bps. The GBA acts as the parent, and the device is Child 1. The Chip Gates begin in a sort of &#34;stand-by&#34; mode where they continually respond with their &#34;Gate ID&#34;. This ID is the only thing the Chip Gates send until the GBA transmits a start signal. The Gate IDs are as follows:</p>
+
+	<p><code>Battle Chip Gate		0xFFC6
+Progress Chip Gate		0xFFC7
+Beast Link Gate			0xFFC4</code></p>
+
+	<p>The English release of Battle Network 6 checks for a Gate ID of 0xFF00 instead of 0xFFC4, thus causing the rest of the detection code to fail and preventing players from using the Beast Link Gate via normal means.</p>
+
+	<p>The start signal looks something like this sequence of transmissions:</p>
+
+	<ol>
+		<li class="list_item">0x0000</li>
+		<li class="list_item">0xA---</li>
+		<li class="list_item">0xA---</li>
+		<li class="list_item">0xA---</li>
+		<li class="list_item">0x8FFF</li>
+		<li class="list_item">0xA---</li>
+		<li class="list_item">0x0000</li>
+	</ol>
+
+	<p>Typically, the 0xA--- values will be 0xA380 (used for Mega Man Zero 3), 0xA3D0 (used for 4.5 Real Operations), or 0xA6C0 (used for Battle Network 6). The purpose and function or lower 12-bits are unknown, but they may arbitrary, or simply any value OR&#39;ed with 0x280. At any rate, the games use them as a means to keep track of the protocol by examining the last value sent (which would be stored in the halfword at 0x4000120).</p>
+
+	<p>On the transmission of the 6th value for the above start signal, the protocol is already switching over to the next phase, a repeating series of 9 transfers that contains the Battle Chip ID. The 9-stage transfer session looks something like this:</p>
+
+	<ol>
+		<li class="list_item">Chip Gate ID (e.g. 0xFFC6)</li>
+		<li class="list_item">0xFFFF</li>
+		<li class="list_item">0xFFFF</li>
+		<li class="list_item">0x--00</li>
+		<li class="list_item">0xFF--</li>
+		<li class="list_item">Battle Chip ID</li>
+		<li class="list_item">0x0000</li>
+		<li class="list_item">0x0000</li>
+		<li class="list_item">0x0000</li>
+	</ol>
+
+	<p>The 4th and 5th transfer contains seeds that increment and decrement respectively on each transfer. The two seeds together add up to 255, however, it appears all compatible game software simply ignore this data. 6th transfer is the Battle Chip ID as determined by the DIP switch. A value of zero indicates no chip is inserted, while a non-zero value indicates a chip is currently slotted. This 9-stage transfer loops endlessly until the GBA sends another start signal. Once any 0xA--- value of the start signal is received, the Battle Chip Gate responds with its Gate ID (just like in stand-by mode) until the start signal terminates. Afterwards, the 9-stage transfers begin once again.</p>
+
+	<p>Mega Man Battle Network 6 sends an indeterminate number of transfers via Normal32 mode before the first start signal, and oddly enough before the any first battle after loading a save. The Battle Chip Gates simply return zero for these transfers.</p>
+
+	<p>It appears that some of the bytes set high (such as transfers 2, 3, and 5) occasionally do hold other values ranging from 0x00, 0x80, or 0xC0, however the conditions under which this occurs remains unknown. Needless to say, on the software side those changes are irrelevant.</p>
+
+	<a name="bcg_mlt"></a>
+	<p class="gray_title">[Battle Chip Gate] : Multiplayer Setup</p>
+
+	<p>It&#39;s possible to link together 2 GBAs, each with their own Battle Chip Gate, for multiplayer battles in all of the compatible Battle Network games. The model for this multiplayer appears to work as follows:</p>
+	
+
+	<p><code>Player 1			Parent
+Player 1 Battle Chip Gate	Child 1
+Player 2			Child 2
+Player 2 Battle Chip Gate	Child 3</code></p>
+
+	<p>With this setup, Player 1 and Player 2 can technically ignore any output the opponent&#39;s Battle Chip Gate and focus on their own, despite essentially being able to see exactly what&#39;s happening on the other side. It also indicates that the Battle Chip Gates are capable of operating as Child 1 or Child 3.</p>
+
+
+	<!-- Hello Kitty no Happy House -->
+	<a name="hkh"></a>
+	<p class="gray_title">Hello Kitty no Happy House</p>
+	<p class="list_item"><a href="#hkh_gen">General Information</a></p>
+	<p class="list_item"><a href="#hkh_ser">Server Structure</a></p>
+	<p class="list_item"><a href="#hkh_eml">Email</a></p>
+
+	<a name="hkh_gen"></a>
+	<p class="gray_title">[Hello Kitty no Happy House] : General Information</p>
+
+	<p>Hello Kitty no Happy House is a Game Boy Color title featuring furniture collection, minigames, and online communication. The game revolves around interacting with Hello Kitty, gaining new furniture, and decorating the &#34;Happy House&#34;. As it concerns the Mobile Adapter GB, Hello Kitty no Happy House boasts basic email capabilities. Through the email service, users could share different furniture as presents.</p>
+
+	<a name="hkh_ser"></a>
+	<p class="gray_title">[Hello Kitty no Happy House] : Server Structure</p>
+
+	<p>Hello Kitty no Happy House is not known to access any resource via HTTP. Instead, it simply communicates with a SMTP server and POP3 server for sending and receiving email respectively.</p>
+
+	<a name="hkh_eml"></a>
+	<p class="gray_title">[Hello Kitty no Happy House] : Email</p>
+
+	<p>Email can be sent and received in Hello Kitty no Happy House, much like Mobile Trainer. The game offers similar tools to write the email, helping users fill out subjects, addresses, and content, and viewing the mailbox for received items. The game also sends &#34;presents&#34; to another user via email. The standard email format looks something like this (note that xxxx, yyyy, and zzzz parts are not exact lengths, consider them as variables):</p>
+
+<code>From: =?ISO-2022-JP?xxxxxxxxxxxxxxxxxxxxxxxx <yyyy@zzzz.dion.ne.jp>
+To: =?ISO-2022-JP?xxxxxxxxxxxxxxxxxxxxxxxx <yyyyyyyyy>
+Subject: =?ISO-2022-JP?xxxxxxxxxxxxxxxxxxxxxxxx
+MIME-Version: 1.0
+Content-Type: text/plain; charset=&#34;ISO-2022-JP&#34;
+Content-Transfer-Encoding: 7bit
+X-Mailer: Hello Kitty Happy House
+X-Game-title: HKITTY_HH
+X-Game-code: CGB-BK7J-00
+[content of email]</code>
+
+	<p>The game uses two additional custom SMTP email headers to send furniture to another player. These headers are parsed for a 3-letter ASCII code which determines the item received. After the "X-Game-code" header, the following would be inserted before the content of the email:</p>
+
+<code>X-GBmail-type: exclusive
+X-HKH-HOUSE: [3-letter code]</code>
+
+	<p>The codes appear to be simple, e.g. &#34;AAE&#34; for a framed picture and &#34;AIG&#34; for a green rug.</p>
+
 
 	<!-- Mobile Trainer -->
 	<a name="mbt"></a>

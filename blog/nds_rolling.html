@@ -34,6 +34,30 @@
 				<div class="center_headline">NDS Stuff</div>
 				<div class="headline_underline">. . . . . . . . . . .</div>
 
+				<p class="inner_text_large"><strong>March 18, 2019</strong></p>
+
+				<p class="inner_text">As I have said before, this rolling blog is NOT dead. In fact, it&#39;s about to get super NOT dead from now on. Previously, my biggest achievement was getting some demo software to run in GBE+. It was the first professionally developed software to run in my emulator. I felt really good about that progress, but I still hit a wall. I never got around to perfecting that Z-buffer I talked about (it works, kinda sorta, but needs more love) and I was still stuck basically. I did work on some more <a href="https://github.com/shonumi/gbe-plus-nds-tests">NDS hardware tests</a>, but I still wasn&#39;t booting retail games. Black screen. Black screen. BLACK SCREEN! That&#39;s all GBE+ ever showed.</p>
+
+				<p class="inner_text">Having seen the same stupid, blank screen for years, it gets really demotivating despite all the work I&#39;ve put into GBE+, like I&#39;m not good enough of a programmer to fix it or something. I&#39;d rather work on something that gives me results, as in graphical output. Results feel good. They&#39;re progress, a reward for all the code spent carefully writing, a pat on the back for all the studying and research it takes to make an emulator function. It&#39;s quite simply positive feedback. Without that, I just didn&#39;t feel like dedicating time to NDS emulation when it kept shutting me down. However, I also am loathe to give up such a personally important goal. So every now and then I take a crack at booting commercial NDS titles.</p>
+
+				<p class="inner_text">I had long assumed that there was something not quite right about the way I emulated the way the NDS interfaces with the game ROM. Unlike the Game Boys, the NDS doesn&#39;t readily map the ROM to addressable memory. During boot, it can pre-load some data (up to a few megabytes total) from the ROM for the ARM9 and ARM7 CPUs, but accessing additional ROM data involves sending commands via a SPI bus and copy+pasting a handful of bytes at a time to RAM. It&#39;s not too complicated, but I had no good way of testing if my implementation was correct or not. The best I could do is compare debugging output from another emulator with GBE+. That&#39;s easy enough since I keep a copy of Desmume I modified just for debug logs, but I also needed a test case that did not make extensive use of this ROM interface, to keep the amount of data I needed to analyze to a minimum.</p>
+
+				<p class="inner_text">I turned to Game and Watch Collection. It&#39;s like 1.3MB total for the relevant ROM data (the padding can be ignored altogether). Unlike the demos, which shove all of their data into RAM via that pre-loading method, Game and Watch Collection used the ROM streaming interface. This made it a perfect test case. I compared GBE+&#39;s results to Desmume&#39;s and I found that I was making a silly &#34;off-by-one&#34; error in the ROM transfer lengths. They were 4 bytes too short, terminating before the game logic expected, thus launching it into a perpetual loop where it halted and froze, ultimately giving me that evil, vile black screen of despair. I also messed up ARM7 hardware timers thanks to a typo. Also forgot to add a line of code some time ago for the chip ID used for NDS game carts. Fixing all 3 issues suddenly gave me this:</p>
+
+				<p class="center_img">
+					<img class="space_img" src="ndsr_2.png" alt="SUCCESS!" />
+				</p>
+
+				<p class="inner_text">Yes, that&#39;s right! An error screen! A glorious, wonderful, unparalleled error screen! Who cares if means some save data stuff isn&#39;t emulated correctly? It&#39;s not an entirely black screen, it&#39;s not blank. It&#39;s <strong>graphical output</strong>. Getting that far meant I was on the right path, more right than I&#39;d ever been so far in my journey. I wondered what other games would run or boot in GBE+. To my surprise, Digimon World Dusk and Guilty Gear: Dust Strikers started showing me screens as well. Digimon even went in-game with a few more adjustments. And with some more work on game saves, I got Game and Watch Collection to boot and go in-game. Guilty Gear still need better save support, but I have the foundations all set.</p>
+
+				<p class="center_img">
+					<img class="space_img" src="ndsr_3.png" alt="This is" />
+					<img class="space_img" src="ndsr_4.png" alt="what I have been" />
+					<img class="space_img" src="ndsr_5.png" alt="WAITING FOR!" />
+				</p>
+
+				<p class="inner_text">I&#39;m 110% excited. This is the moment I&#39;ve wanted for a <em>loooooong</em> time. Now I finally made it. I can only go up from here, and I&#39;m very much looking forward to working on NDS emulation more and more from now on.</p>
+
 				<p class="inner_text_large"><strong>November 20, 2018</strong></p>
 
 				<p class="inner_text">This rolling blog is NOT dead. Just got sidetracked between 70+ hours of Octopath Traveler and reverse-engineering Mobile Adapter GB games. The Mobile Adapter was a &#34;must finish by end of year&#34; kinda project, at least as far as supporting internal servers for two games. Man, that took a <strong>ton</strong> of time and energy, and left no space in my life for all things NDS emulation related. Also, been kinda bummed out that after 4 years of starting GBE+, no professionally developed software actually ran in the NDS core. Seeing something that Nintendo made themselves boot up in your own emulator has proven elusive for me. Well, until last week that is. Some demo software is running in GBE+&#39;s NDS core. Finally, something besides homebrew works! Had a number of errors in the 2D graphics engine, minor oversights that led to a handful of glitches. My experimental branch dealing with better NDS timings didn't prove as useful as I&#39;d hoped; there are still a bunch of things GBE+ just isn&#39;t getting right. But, I&#39;m super excited to start moving away from homebrew, even just a little!</p>
