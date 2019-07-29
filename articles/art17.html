@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Edge of Emulation: Multi Plust On System</title>
+		<link rel="stylesheet" type="text/css" href="./../main.css" />
+
+		<meta property="og:title" content="Edge of Emulation: Multi Plust On System" />
+		<meta property="og:image" content="https://shonumi.github.io/articles/mpos_mini.png" />
+		<meta property="og:description" content="Emulating the unknown: More Proto-Amiibo GBA Goodness" />
+		<meta property="og:type" content="article" />
+ 		<meta charset="utf-8" />
+
+	</head>
+
+	<body>
+
+		<!-- Main Header -->
+		<div class="header">
+
+			<!-- Left Header -->
+			<div class="header_left">
+				<div class="header_text"><strong>Shonumi</strong></div>
+			</div>
+		
+			<!-- Right Header -->
+			<div class="header_right">
+				<a class="header_link" href="../downloads.html">Downloads</a>
+				<a class="header_link_current" href="../articles.html">Articles</a>
+				<a class="header_link" href="../blog.html">Blog</a>
+				<a class="header_link" href="../index.html">Main</a>
+			</div>
+
+		</div>
+
+		<!-- Main Page Outer Box -->
+		<div class="box_outer">
+			
+			<!-- Main Page Inner Box -->
+			<div class="box_inner">
+
+				<div class="center_headline">Edge of Emulation: Multi Plust On System</div>
+				<div class="headline_underline">. . . . . . . . . . .</div>
+
+				<p class="center_img"><img src="mpos_1.png" alt="Another crappy, filtered image courtesy of my mad art skills" /></p>
+
+
+				<p class="inner_text_large"><strong>Losing my edge</strong></p>
+
+				<p class="inner_text">As my quest to explore all things Game Boy continued, I found myself hitting a brick wall of sorts. I hadn&#39;t lost my motivation or my desire to dive into the unknown, far from it. Instead, I simply couldn&#39;t make any progress on my intended project. So far, I&#39;ve only been able to get partial support for the Singer IZEK 1500 in GBE+. Perhaps I was too ambitious and hasty in trying to emulate a sewing machine on a PC. Initially, I believed I could get everything done in a couple of weeks, but as it&#39;s been months since I started, it appears cracking the IZEK 1500 is simply going to take some long-term time and research. I&#39;ve been in a few rough spots before where it takes quite a while to fully figure out some hardware. The Soul Doll Adapter took a solid 2 months of work, the DMG-07 took about 3 months of on-off work, Net de Get took a solid 3 months. Patience and persistence are key to success in this field, so eventually I&#39;ll be doing a proper article about the IZEK 1500.</p>
+
+				<p class="inner_text">Even so, I worried over my inability to reverse engineer it. Was I off my game? Was I getting old? Was I losing my edge? While it may seem silly for someone to fret over such questions, I had set certain expectations for myself in 2019. However, standing in front of a dead-end isn&#39;t very productive, so I moved on to something else. Sometimes it&#39;s better to step away from one problem and tackle a totally different one meanwhile. Switching focus, I jumped into yet another &#34;toys-to-life&#34; accessory for the Game Boy Advance. As I mentioned earlier this year, there were two such franchises competing with each other on Nintendo&#39;s handheld: Legendz from Bandai and Bouken Yuuki Pluster World from Takara.</p>
+
+				<p class="inner_text">Bouken Yuuki Pluster World revolves around creatures called &#34;Plusters&#34; who can merge with humans to become powerful and defeat enemies. A unique piece of hardware called the &#34;Multi Plust On System&#34; (MPOS for short) allowed players to stick plastic figurines into a slot which attached directly to the GBA. Once the Pluster was secured inside, the MPOS sent back data detailing which character it held. In this way, gamers could summon a Pluster by swapping them out as necessary. A total of 3 games were released in 2003, 2 of which were standard RPGs, and a third which happened to be a racing game that comes across as a weird combination of Mario Kart, F-Zero, and Pokemon.</p>
+
+				<p class="inner_text">Until recently, none of these games had any significant amount of information available. Besides a smattering of screenshots and a few snippets of text floating around the internet, Pluster World otherwise existed in a void. Each title absolutely requires the MPOS and a Pluster figure to even start playing, so perhaps that prohibits most people from investigating it. Previously, the only way Pluster World could be accessed in an emulator was through old cracked versions from the &#34;scene&#34; that bypassed the checks and hacked in the Plusters. No one knew what the MPOS did exactly or how it communicated with the GBA. So, once again I found myself looking into hardware that had remained a complete mystery for over a decade, with few clues as to how it really operated. It was time to uncover secrets that had virtually been forgotten over the years.</p>
+
+				<p class="inner_text_large"><strong>Boku no Bluster</strong></p>
+
+				<p class="inner_text">I made the decision to throw everything I had at emulating the MPOS for the Pluster World games. I was absolutely determined to &#34;win&#34; after getting setback by the Singer IZEK 1500 for so long. I practically charged through this one, taking a total of about 5 hours over 2 days to do all the research, testing, and implementation. That&#39;s probably the fastest I&#39;ve every worked on stuff like this. Digressing, as part of the usual routine, I purchased a so-called Starter Set for Bouken Yuuki Pluster World: Pluston GP, the lone racing variant of the series. It came with the game, the MPOS accessory, and a green Pluster figure named Wyburst. Collectors can easily find the Pluster World special bundles at decent prices, quite unlike the rival line of games for Legendz.</p>
+
+				<p class="center_img"><img src="mpos_2.png" alt="The box" /> <img src="mpos_3.png" alt="MPOS and Pluster" /> <img src="mpos_4.png" alt="MPOS and Pluster again" /></p>
+				<p class="img_caption">Each Pluster World game came with a special starter set featuring larger-than-normal boxes to hold all of the additional items.</p>
+
+				<p class="inner_text">The Pluster sits on a small, blue pedastal from which it can be detached. The bottom of the base is hollow for the most part, save for a few plastic spokes that stick out a bit. These tiny protrusions are essential to the MPOS&#39; whole design, which I&#39;ll get to in a moment. At any rate, the Pluster has no circuitry whatsoever. In contrast to the Soul Dolls from Legendz, no data is stored in the Pluster. The figurine fits into the MPOS&#39; large circular opening. Once in place, the edge of the ring turns like a dial, securing the Pluster during gameplay. Even though the MPOS was years ahead of Skylanders, the unit itself evokes a very similar feel to the Portal of Power. It connects to the GBA&#39;s serial port and features clamps to keep it tightly coupled with the system. The MPOS was obviously designed with the first models of the GBA in mind, as it sits comfortably on top of an AGB-001, but on SPs it faces upside down, although it remains usable.</p>
+
+				<p class="inner_text">My first task was to observe how the game worked with real hardware. To properly emulate things, I needed a point of reference. Before starting any race in Pluston GP, a Pluster must be inserted into the MPOS, the ring must be turned 90 degrees, and the MPOS must be connected to the GBA. Once that&#39;s done, the game presents a brief animation sequence of the Pluster transforming into a car... Yeah, it&#39;s a pretty unique game. Players can choose which version of the Pluster-car they want to drive; each has different attributes to suit various approaches to racing. After that part, the MPOS has done its job and sits inactive until the game prompts the player again for a Pluster (either at the start of the next race or during pitstops mid-race). Naturally, when running Pluston GP through any emulator, an error message appears every time a race is selected because it can&#39;t detect the MPOS. The emulator doesn&#39;t provide the correct response, and the rest of the game code fails. Getting this working in GBE+ was all a matter of replicating the response, but what sort of data did Pluston GP want?</p>
+
+				<p class="inner_text">After doing a bit of debugging, I saw what mode Pluston GP was using for the serial port. Like Legendz and the Soul Doll Adapter, Pluston GP and the MPOS talked using General Purpose Mode. This mode lets the GBA transfer data by directly reading from and writing values to most of the wires inside the actual cable. Initially, I was disappointed in this discovery, since the transmission protocol could have been anything. Although this potentially made my efforts harder, I understood why this method was chosen. Pluster World was more than just video games; it had an entire set of electronic toys that also interacted with the Pluster figures. Those devices, each with their own built-in MPOS, likely had hardware that wasn&#39;t immediately compatible with the GBA. When Takara decided to make Pluster World games, they probably had to bridge the gap somehow. To get the GBA to communicate with different chips that had their own way to doing things, General Purpose Mode serial communication was the answer.</p>
+
+				<p class="inner_text">Even though GBE+ couldn&#39;t emulate the MPOS just yet, it could record what kinds of data the GBA was trying to send. Looking at those logs gave me insight as to what was going on. Right away, I noticed that the GBA kept sending the same data over and over again, 37 transfers that repeated indefinitely. Apparently, Pluston GP constantly polled the MPOS rather than waiting for the player to press A or something like that. I had a theory that the MPOS did nothing more than pass along an ID or a number to the GBA. Once the GBA read that number, it could look up which Pluster to use in the game. If all you want to do is bring the toy to the game, what more information would you really need? It should have been nothing more elaborate than matching entries in a list. The small amount of transfers indicated that not a lot of data was needed. Although I entertained other possibilities regarding how the MPOS worked, I felt the &#34;ID-as-Pluster&#34; idea was the best fit for the situation.</p>
+
+				<p class="inner_text">ROM hacks are my preferred way of examining these kinds of devices. However, I recognized that hacks would have been overkill in this case. Given that I only needed to see the response of 37 transfers, I whipped up a small homebrew program as a test. Whatever data Pluston GP sent, so too did my homebrew. I had unsuccessfully tried something like this before with the Soul Doll Adapter, so I applied some minor modifications to existing homebrew. Fortunately, this time my test actually worked, and I captured the response that the MPOS should have sent back to the GBA. Since my theory was that the MPOS simply sends a single number again and again, I double-checked by requesting 74 transfers to make sure both sets of 37 were identical. Thankfully, they were in fact byte-for-bytes copies of one another. Very quickly, I got barebones emulation of the MPOS up and running in GBE+ by forcing it to return those 37 values in a loop. Though the technique was pretty basic, it got Pluston GP to load the Pluster and start the race!</p>
+
+				<p class="center_img"><img src="mpos_5.png" alt="The whole car-transformation thing reminds me Michael Jackson turning into a Lancia Stratos in the Smooth Criminal segment of Moonwalker. Pluston GP is equally as bizarre, but not nearly as cool." />
+				<p class="img_caption">Previously Pluston GP would only ever show the error message on the left. With the right input, however, an emulator can get the game working.</p>
+
+				<p class="inner_text_large"><strong>A numbers game</strong></p>
+
+				<p class="inner_text">I had completed the first phase in about 2.5 hours and called it a day. For the next stage, I began probing deeper into the values I had received from the MPOS. There had to be a pattern to it, and within that pattern would be the ID of the Pluster figurine. All of the data had been recorded as 16-bit values of the <strong>RCNT</strong> memory-mapped IO register, essentially the state of the wires in the link cable during each transfer. The first 4 transfers appeared to be some type of signal, perhaps some kind of handshake the GBA sends to the MPOS the begin receiving the ID. The rest of the transfers looked to be the ID itself represented as individual zeroes and ones. While the GBA and MPOS are communicating, the SD line (the data bit) is continually toggled on and off, back and forth. Odd behavior, but I assumed that this was how the hardware inside the MPOS functioned. The only other line that changed was SI (the input line). When both the SD and SI lines went high, Pluston GP recorded a &#34;1&#34;. When the SD line went high but the SI line went low, Pluston GP recorded a &#34;0&#34;. At least, that was my educated guess at the time.</p>
+
+				<p class="center_img"><img src="mpos_6.png" alt="texty texty" /></p>
+				<p class="img_caption">A sample of the response data pulled from the homebrew test. These transfers form the first 8-bits of the Pluster ID.</p>
+
+				<p class="inner_text">To verify everything I started disassembling parts of the game&#39;s code to see how it read RCNT values. True enough, it did exactly as I had expected. Out of the 37 transfers, the first 4 are ignored by the software. The next 33 transfers create a 16-bit number (2 transfers per bit). The last transfer appeared to just dangle there. Again, I thought that was probably something required by the underlying electronics of the MPOS, maybe as a sign that the data is finished. The game stores this 16-bit number in memory for validation, and it matched the binary output from the SD and SI lines. The Pluster was in fact just an ID.</p>
+
+				<p class="inner_text">Remember those spokes at the bottom of every Pluster figurine? Each toy comes with a different configuration of these, and the MPOS uses them to create the ID. Just beneath the surface where the Pluster sits is an array of pressure sensitive pads. When the Pluster is locked down, it pushes those spokes onto those pads. Depending on which pads are pressed, a different number is generated by the hardware and ultimately sent out across the Link Cable. It&#39;s a relatively simple yet effective way of getting a physical item to produce various kinds of electronic output.</p>
+
+				<p class="center_img"><img src="mpos_7.png" alt="Bottom of Pluster figurine" /> <img src="mpos_8.png" alt="top of MPOS" /> <img src="mpos_9.png" alt="MPOS pressure pads. It took me 12 screws just to get this pic." /></p>
+				<p class="img_caption">The bottom of the Pluster uses those spokes on the pad. From above, you can only see the Multi Plus On System logo, but underneath tells another story.</p>
+
+				<p class="inner_text">Since every Pluster figurine was just a representation of a number, changing that number should get the game to recognize more characters. With an understanding of the protocol, GBE+ could create the necessary response data for any ID. I only had one Pluster figurine, but I was able to generate valid IDs for 11 other Plusters. By experimenting with different IDs, I saw which ones passed or failed and recorded what Plusters they produced. Admittedly, the best route would have been completely disassembling the game code that processes IDs, but manually checking a bunch of IDs got results in minutes. As far as I can tell, there are at least 12 Pluster figurines labeled PF001 through PF012. Only by scrapping together some screenshots from a few auctions did I come up with a list, but other than that I could not find any definitive sources online.</p>
+
+				<p class="inner_text">While these IDs in theory should match the data a real Pluster figurine would generate, the only way to be certain is to do the extraction on real hardware. Unfortunately, finding these things outside of the starter sets is both hard and expensive. The IDs I&#39;ve documented all work with the game software, so this feature is technically preserved from an emulation point of view. Just as exciting, the artifical IDs can be used in conjunction with a second GBA running homebrew to fake a MPOS, thereby eliminating the need for the MPOS when using real hardware. Even so, it would be nice to have and verify the real IDs for those 11 Plusters. If anyone is interested in helping and they also happen to have an MPOS, Pluster figures, and a flashcart, they can download this <a href="https://shonumi.github.io/download/mpos_id.gba">homebrew ROM</a> and extract the ID themselves. If you do, let me know what the results were!</p>
+
+				<p class="inner_text">On the subject of numbers, as I wrote earlier, it seems Legendz became the more popular toys-to-life franchise, beating out Pluster World by a large margin. Although both spawned their own merchandise, anime, and video games, only Legendz seems to have any sort of recognition outside of Japan. Legendz also has an active fan community, whereas I have not been able to find even a dead one for Pluster World. Legendz had far more figurines to collect, and their interactions with the video games were much more complex. Although Takara&#39;s Pluster World was the first on the GBA to tie real-life plastic creatures to games, until now it&#39;s barely been more than a footnote in the handheld&#39;s history, almost as if the games never even happened. This is a shame given how innovative Pluster World was trying to be. In some regards, it helped pave the way for the real successes of Skylanders and Amiibos. It just didn&#39;t have the numbers to turn itself into a widespread phenomenon.</p>
+
+				<p class="inner_text">Now however, with support for the MPOS added to GBE+ and documentation of the hardware, we can all play the Pluster World games without hacks. As I said before, there&#39;s basically no information about them at all. Preservation can make these types of games playable, but reproducing the experience is only part of the larger equation. Saving video game history is more than technical and academic work like this; it also involves looking at the source and making relevant content of our own. People need to take that electronic copy of the game and investigate it, comment on it, critique it, study it, enjoy it, or hate it. Maybe Pluster World is hidden gem of a JRPG, or maybe it should be left buried where it lies, who knows? It&#39;d be awesome if a review or an FAQ popped up, anything to fill the void here. Hopefully this article has done its role, and hopefully so will the video below.</p>
+
+				<p class="center_img"><iframe width="560" height="315" src="https://www.youtube.com/embed/07p7d8ndOfo" frameborder="0" allowfullscreen></iframe></p>
+				<p class="img_caption">Though it isn&#39;t saying much, this is probably the most extensive footage of Pluston GP game to date.</p>
+
+				<p class="inner_text_large">More edge cases</p>
+
+				<p class="inner_text">It&#39;s been over 2 years since I started writing these <strong>Edge of Emulation</strong> articles, and this edition makes the 10th such one. Despite all I&#39;ve managed to discover in that time, despite the amount of work that&#39;s been done, I&#39;m still nowhere near my long-term goal of seeing all the gaps in Game Boy emulation once and for all plugged up. We&#39;ll definitely get there, some day, but not without a lot more effort. To illustrate that point, the next item in my sights wasn&#39;t even on my radar until after I finished the MPOS here. As soon as I had crossed off one entry on my TODO list, I had to make a brand new one.</p>
+
+				<p class="inner_text">I still haven&#39;t forgotten about the Singer IZEK 1500, but sometimes before you can beat a tough boss battle, you have to level up. I will say this though, if anyone reading this happens to have access to a <a href="jn2000.jpg">Jaguar JN-2000</a> (the big red Game Boy-powered sewing machine) and a Game Boy flashcart, <strong>please contact me</strong>. This is a rarer variant with an entirely separate protocol. I have not been able to acquire this model, so if you&#39;re willing to help do some hardware testing, get in touch! In the meantime, I&#39;m going to check out something else for a while. The next accessory isn&#39;t nearly as flashy and exotic as the MPOS, however, I&#39;m quite excited to get started on yet another mysterious device. Expect to see something about that very soon.</p>
+
+				
+
+
+			</div>
+		</div>
+
+		<p> </p> 
+
+	</body>
+</html>
+	 
