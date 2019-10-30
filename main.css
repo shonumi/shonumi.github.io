@@ -139,6 +139,16 @@ code
 	margin-right: 10px;
 }
 
+.inner_sub_text
+{
+	padding-left: 50px;
+	padding-right: 50px;
+	margin-top: 30px;
+	margin-bottom: 30px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
 .list_text
 {
 	text-indent: 50px;
@@ -240,6 +250,13 @@ code
 	padding: 3px;
 }
 
+.highlight_hor_gray
+{
+	background-color: #D0D0D0;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
 .code
 {
 	margin-top: 10px;
@@ -249,4 +266,9 @@ code
 	border: 1px #808080 solid;
 	background-color: #D0D0D0;
 	padding: 5px;
+}
+
+.game_title
+{
+	  font-style: italic;
 }
