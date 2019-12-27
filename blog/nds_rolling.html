@@ -3,6 +3,21 @@
 	<head>
 		<title>NDS Stuff</title>
 		<link rel="stylesheet" type="text/css" href="./../main.css" />
+
+		<style type="text/css">
+
+			.center_code
+			{
+   				text-align: center;
+			}
+
+			pre
+			{
+				display: inline-block;
+				text-align: left;
+			}
+
+		</style>
 	</head>
 
 	<body>
@@ -33,6 +48,35 @@
 
 				<div class="center_headline">NDS Stuff</div>
 				<div class="headline_underline">. . . . . . . . . . .</div>
+
+				<p class="inner_text_large"><strong>December 27, 2019</strong></p>
+
+				<p class="inner_text">What a crazy month it&#39;s been. GBE+ keeps getting more and more games to at least boot and go in-game. I&#39;m going to have to implement save states soon since they&#39;re such a boon for debugging purposes. I had been holding off on tackling save states because a lot of stuff in the NDS core was in flux, but now that things are coming together nicely, I believe a lot of components in GBE+ are mature and won&#39;t significantly change. Now that a number of games boot and go in-game, bugs and glitches occur much later than just the first few screens. For a game like Luminous Arc, which has a pretty lengthy intro (4-5 minutes long), that makes it hard to debug why the game freezes before the first battle.</p>
+
+				<p class="inner_text">I want to talk about Super Princess Peach. It&#39;s a favorite of mine, and I&#39;d really like GBE+ to play it. Until recently, it kept freezing after the title screen. It would start trying to access out-of-bounds memory hundreds and thousands of times infinitely. After tracking down the source, I saw that one bit of the game&#39;s code had a bizarre instruction that placed the Program Counter at some wild address. That instruction came from part of the game that copied other code into a particular area of RAM for later execution. The thing was, GBE+ was making the game load the wrong code. Looking at the instructions that handled the copy operation, I saw that it was writing more data than it should have. The game used one CPU register (R1) to act as start address to copy from and another (R2) as the final address to copy from. R1 was being set way too high. The game calculates the start address via the a multiply instruction in ARM mode, and that&#39;s where things got complicated.</p>
+
+				<p class="inner_text">For the ARM9 CPU in the NDS, the Carry Flag is not affected when using multiplication instructions, but for the ARM7 CPU, the Carry Flag is supposed to be corrupted or destroyed. Essentially, the Carry Flag on that CPU should be considered garbage and unreliable immediately following a multiplication instruction. I suppose internally, the Carry Flag on ARMv4 architectures might get used as scratch or something during the multiplication operation. So code running on the ARM7 shouldn&#39;t rely on the Carry Flag after multiplication until it can it&#39;s certain that another operation has affected it. No commercial game would dare to run crucial code without taking that precaution, right? WRONG! Observe the following code from Super Princess Peach:</p>
+
+<div class="center_code"><pre>0x37f8f64       CMP{P} R3, R12 LSL 0x00		//Sets Carry Flag (and unsets Zero Flag) for this specific problem
+0x37f8f68       LDRHI R2, [R8 + 0x14]		//The following 3 instructions then execute (Carry Flag is set AND Zero Flag unset)
+0x37f8f6c       MOVHI R0, 0x18 ROR #0
+0x37f8f70       MLAHI R1, R12, R0, R2		//Multiplication potentially affects Carry Flag! (and Zero Flag!)
+0x37f8f74       LDRLS R2, [R8 + 0x14]		//The following 3 instructions only execute if Carry Flag is unset (OR Zero Flag is set)
+0x37f8f78       MOVLS R0, 0x18 ROR #0		//The 1st MLA instruction *could* cause the 2nd one to run unintentionally!
+0x37f8f7c       MLALS R1, R12, R0, R2		//Only 1 MLA instruction should run, otherwise address calculation is messed up.</pre></div>
+
+				<p class="inner_text">ARM code is executed conditionally, which means instructions can be skipped depending on what CPU flags are set. Here, the relevant condition codes are <strong>HI</strong> and <strong>LS</strong>. Those effectively translate into &#34;Is the Carry Flag set and Zero Flag unset?&#34; and &#34;Is the Carry Flag unset or Zero Flag set?&#34; respectively. Here the issue is with the Carry Flag specifically, so ignore the Zero Flag going forward. The Carry Flag will get set or unset by the CMP instruction; for the context of the problem it was always set (with R3 > R12 at the time of debugging). All of those -HI instructions execute in this case, but notice how the last instruction is a multiplication operation (MLA). That means the Carry Flag = whatever. Could be <strong>anything</strong>. And right after that are instructions that conditionally execute based on the status of the Carry Flag! If those -LS instructions are executed right after the -HI instructions, it messes the address calculation the game uses to copy code to RAM.</p>
+
+				<p class="inner_text">None of the bits of ARM7TDMI documentation I have on hand explains exactly how the Carry Flag gets corrupted, so I always just set it to zero, figuring that games would never be so bold as to <strong>not</strong> set the Carry Flag after a multiplication instruction. But no, there it is, by Nintendo&#39;s own hand no less. Perhaps the developers just got lucky here. Maybe they actually knew something about how multiplication destroyed the Carry Flag and made sure the input values would never cause the Carry Flag in the first multiplication instruction to become unset. It&#39;s dumb either way, so for now, I&#39;m no longer touching the Carry Flag in ARM7 multiplication instructions. The Carry Flag is supposed to be meaningless anyway for those instructions, but setting it to zero has proven unsafe for at least one game. I notice that many emulators (mGBA for example) do this for ARM7TDMI emulation, so there must be something to this hands-off approach.</p>
+
+				<p class="inner_text">Anyway, with that small change, Super Princess Peach goes in game and is largely playable (with graphical issues, none particularly game-breaking though). The real reason I&#39;m very excited about this progress is that it signals a new phase for GBE+&#39;s NDS core: emulating additional hardware! The NDS has a lot of extra stuff, just like the DMG, GBC, and GBA before it. I can&#39;t wait to take a crack at some of them. The Rumble Pak is low-hanging fruit, as far as I&#39;m concerned. Simple to implement, and it can be used right away in a game like Super Princess Peach. Who knows. It may not be long before I start tackling obscure NDS hardware for the <strong>Edge of Emulation</strong> articles.</p>
+
+				<p class="center_img">
+					<img class="space_img" src="ndsr_22.png" alt="Rumble Pak detected" />
+					<img class="space_img" src="ndsr_23.png" alt="Super Princess Peach seems to be playable now" />
+					<img class="space_img" src="ndsr_24.png" alt="Some obvious graphical issues remain, however" />
+				</p>
+
 
 				<p class="inner_text_large"><strong>December 15, 2019</strong></p>
 
