@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Edge of Emulation: Power Antenna & Bug Sensor</title>
+		<link rel="stylesheet" type="text/css" href="./../main.css" />
+
+		<meta property="og:title" content="Edge of Emulation: Power Antenna & Bug Sensor" />
+		<meta property="og:image" content="https://shonumi.github.io/articles/sensor_mini.png" />
+		<meta property="og:description" content="Emulating the unknown: Flashing lights?" />
+		<meta property="og:type" content="article" />
+ 		<meta charset="utf-8" />
+
+	</head>
+
+	<body>
+
+		<!-- Main Header -->
+		<div class="header">
+
+			<!-- Left Header -->
+			<div class="header_left">
+				<div class="header_text"><strong>Shonumi</strong></div>
+			</div>
+		
+			<!-- Right Header -->
+			<div class="header_right">
+				<a class="header_link" href="../downloads.html">Downloads</a>
+				<a class="header_link_current" href="../articles.html">Articles</a>
+				<a class="header_link" href="../blog.html">Blog</a>
+				<a class="header_link" href="../index.html">Main</a>
+			</div>
+
+		</div>
+
+		<!-- Main Page Outer Box -->
+		<div class="box_outer">
+			
+			<!-- Main Page Inner Box -->
+			<div class="box_inner">
+
+				<div class="center_headline">Edge of Emulation: Power Antenna & Bug Sensor</div>
+				<div class="headline_underline">. . . . . . . . . . .</div>
+
+				<p class="center_img"><img src="sensor_1.png" alt="Too lazy for any attempt at real art. Have the crappy collage instead :)" /></p>
+
+				<p class="inner_text_large"><strong>Blinkenlights</strong></p>
+
+				<p class="inner_text">2019 is coming to a close. In the final days of this year, I look back at everything that&#39;s happened over the past months. The Soul Doll Adapter and the mysteries of its figurines were finally crushed. Together, endrift and I conquered the Chip Gates for the Mega Man Battle Network games. The Multi-Plust On System was vanquished swiftly with ease. And last but not least, the twin terrors of the Game Boy Turbo Files fell victim to reverse-engineering and research. In terms of emulating all of the weird, wacky, and wonderful hardware for the Game Boy, we&#39;ve managed to cover a lot of ground. As I look at my TODO list for next year, I can pleasantly say that we&#39;re almost there folks. Only a few big items really remain as uncharted territory. 2020 probably won&#39;t be the year where every single crazy peripheral for the Game Boys will be emulated, but it&#39;ll be damn close.</p>
+
+				<p class="inner_text">Before I go on about the future, there were a few other items I ran across earlier that I never wrote about. To finish this year off, I&#39;d like to introduce the Power Antenna and Bug Sensor. The Power Antenna came in 2 flavors for Keitai Denjuu Telefang on the GBC and for its sequel Keitai Denjuu Telefang 2 on the GBA. They are little plastic add-ons of various shapes that fit onto the serial port. The first version was meant to imitate the look and feel of the D-Shot used in the game, while the second version mimics a small transmitter on top of a GBA. The Bug Sensor is another small, almost rectangular piece of hardware used for the Network Adventure Bugsite games. So what do these accessories do? Do they add over-the-air Link Cable-esque functionality? Do they allow data downloads from the internet or cellphones? Maybe even something like the Neo Geo Pocket Wireless Communication Unit&#39;s ability to read radio waves?</p>
+
+				<p class="inner_text">Nope. They&#39;re just LEDs. All they do is flash on and off in response to certain events in the game. For example, in Telefang 1, whenever the player receives a phone call, the Power Antenna blinks rapidly. The three models are purely cosmetic. Interestingly enough, however, all three models are compatible with each game. If using something like a GBA, players can mix and match them as they please, as they all work in the same manner, more or less. I mean, it&#39;s an LED; there&#39;s no need to reinvent anything.</p>
+
+				<p class="inner_text">This is by far the most mundane and relatively tame accessory I&#39;ve handled so far. It&#39;s just so... ordinary. There&#39;s nothing really special about a little red light encased in plastic. It calls into question whether or not something of this nature should be emulated at all. Video game preservation isn&#39;t always about the big and bold stuff. Many of the items I&#39;ve investigated for these <strong>Edge of Emulation</strong> articles have been some pretty wild and innovative products, but I&#39;m here to emulate <em>everything</em>, not just bits and pieces. For the sake of completeness and satisfying my own curiosity, I couldn&#39;t ignore the Power Antenna or the Bug Sensor.</p>
+
+				<p class="inner_text_large"><strong>Lightweight</strong></p>
+
+				<p class="inner_text">Since there are 3 versions of these LEDs, I had to track down a copy of each game. The first trick here is making sure they had the accessory. The second was finding them at acceptable prices. At least on eBay, some sellers have some funny ideas of just what a real Complete-In-Box copy of Telefang 1 should cost. While CIB copies of Network Adventure Bugsite and Telefang 2 run anywhere from $15 - $25 USD, Telefang 1 runs anywhere from $15 - $120. The high end isn&#39;t for brand-new sealed copies either. A lot of Buy-It-Nows didn&#39;t come with the Power Antenna, and the ones that did seemed to be charging around $50 - $60. A bit of patience landed me one for well below that, and I&#39;d say $25 - $35 is a fair range (as it is today, but back in January when I was looking around that was not the case). A hacked version of Telefang 1 was popularized as a bootleg Pokemon game for years, so perhaps that explains why some feel it has to command such a steep price.</p>
+
+				<p class="center_img"><img src="sensor_2.png" alt="Boxed copies of all three games" /> <img src="sensor_3.png" alt="All three LEDs" /> <img src="sensor_4.png" alt="All three LEDs attached to Game Boys" /></p>
+				<p class="img_caption">Here we have all three games (at least one version of each) along with all three LEDs.</p>
+
+				<p class="inner_text">Around the start of March, I had managed to assemble all three versions of the LEDs and began testing them. I first observed how Telefang 1 worked on real hardware. As one can expect, there wasn&#39;t a great deal to see. Whenever a phone call came for the player, the Power Antenna blinked quickly. I did note that trying to enter the game&#39;s multiplayer mode triggered the LED. This hinted that it must have been rather trivial to activate the light. I theorized that simply blasting a couple of bytes through the serial port would be enough. If it&#39;s just a light, a binary on/off state would require nothing more fancy than sending a &#34;0&#34; or a &#34;1&#34;.</p>
+
+				<p class="inner_text">Next, I dumped the Telefang 1&#39;s ROM to my PC and booted it up in GBE+. I had the emulator record all writes to the serial port so I could see exactly what the game was sending during that phone call. As I expected, the game sent two values that caused the LED to flicker. One flipped it on, and the other flipped it off. Telefang 1 sent <strong>0xFF</strong> to turn it on and <strong>0x00</strong> to turn it off. Easy enough, right? I didn&#39;t stop probing there, however. Since the game&#39;s multiplayer mode activated the light with different values, I suspected that the Power Antenna used only 1 bit in particular. <strong>0xFF</strong> covers all 8-bits in a byte, but it provided no clue as to which one the hardware actually used. As a matter of science, I had to know which one exactly.</p>
+
+				<p class="inner_text">Fortunately, a while ago, I had whipped up a homebrew Game Boy test ROM that could ping any device attached to the serial port with any byte of my choosing. At first I thought the last bit, Bit 7 might have been responsible for turning on the light. Interestingly enough, while setting Bit 7 got the light to come on, it barely stayed lit for but a few fractions of a second. Eventually I discovered that Bit 0 being set permanently causes the light to turn on. As strange as it may seem, the Power Antenna is capable of producing two separate kinds of lights. The first one is &#34;Weak Light&#34; and fades swiftly. The other is &#34;Strong Light&#34; which stays on until the game explictly disables it. For Weak Light, the Game Boy writes any non-zero value to the serial port with Bit 0 of that value not set. The light turns on and shuts off extremely fast. For Strong Light, the Game Boy writes any non-zero value to the serial port with Bit 0 of that value set. The light turns on indefinitely. The only way to turn off the light is by writing zero to the serial port. The Bug Sensor and the second version of the Power Antenna behaved in that same fashion, demonstrating Strong and Weak Lights. I have not fully played through all three of the games, but I don&#39;t believe the Weak Light was ever meant to happen under normal circumstances. The LED is far too faint in that mode, to the point where it&#39;s barely visible without playing in total darkness. It&#39;s probably just a funny little quirk of the hardware.</p>
+
+				<p class="inner_text">At any rate, I had only discovered how things on the GBC worked. The GBA has a similar serial interface, but it has some notable differences as well. Armed with more homebrew test ROMs of my own, I began poking and prodding the 3 peripherals. While the GBA can use &#34;Normal 8-bit&#34; or &#34;Normal 32-bit&#34; modes that model DMG/GBC style transfers, the Power Antennae and Bug Sensor completely ignore the 8-bit or 32-bit data sent. Instead, the GBA sends a transfer while keeping its Serial Out line (Bit 3 of the SIOCNT register) high to turn the light on. To turn it off, the GBA simply pulls its Serial Out line low, no transfer necessary. Strong Light requires the Serial Out line to be set high when transferring. Weak Light requires the Serial Out line to be low when transferring.. Essentially, when writing values to the GBA&#39;s serial communications control register, <strong>0x89</strong> is used is used for Strong Light, <strong>0x81</strong> is used for Weak Light, and <strong>0x00</strong> can be used to turn it off.</p>
+
+				<p class="inner_text">This is probably going to be the shortest, lightest article yet. There really isn&#39;t much else to say. The GBA does mess around with serial communications a bit when the BIOS runs and the boot-up screen plays. It&#39;s enough to cause the Power Antennae and Bug Sensor to light up permanently until the game sends something else. By turning the lights on and off, any sort of pattern can be made. Weak Light is generally so short-lived that it can&#39;t be seen unless software constantly keeps sending the correctly values. To date, all 3 LEDs are the only devices I&#39;ve seen on the GBA that make use of the Serial Out line&#39;s status during inactivity. Other than all that, there aren&#39;t a lot of secrets here. GBE+ emulates the LEDs by displaying a tiny icon at the bottom right corner. It&#39;s pretty useless though, given that each game uses audio cues anyway to alert players to events that trigger the light. It&#39;s also worth mentioning that the GBA SP screen completely blocks the LEDs, thereby rendering them moot. Even if the Power Antennae and the Bug Sensor are small bits of the Game Boy&#39;s history, it was still important and worthwhile to fully explore them.</p>
+
+				<p class="center_img"><img src="sensor_5.png" alt="GBE+ emulating the Power Antenna" /></p>
+				<p class="img_caption">It would be cool to have a custom background (similar to the Super Game Boy) that mimics an attached Power Antenna, but that&#39;s a lot of work for such a simple accessory.</p>
+
+				<p class="inner_text_large">Light at the end of the tunnel</p>
+
+				<p class="inner_text">As I said, the world of exotic Game Boy hardware is a lot less mysterious now than a few years ago. We&#39;ve really cracked a number of major cases, and 2020 is going to be no different. What exactly comes next? Well, I&#39;ve already spoken about the Singer IZEK 1500 and its Jaguar JN-100 and JN-2000 counterparts. They&#39;re prime targets for next year. There are still a number of special cartridges with their own IR functions, along with RTCs and built-in speakers. And what would the new decade be without throwing in a few robot dinosaurs for the GBA?</p>
+
+				<p class="inner_text">On a related note, I&#39;ll finally be picking up where I left off with my <a href="https://shonumi.github.io/articles/art3.html">Emulating the Nintendo DS</a> series of articles. It&#39;s been almost 3 years since I wrote about my initial experiences emulating NDS stuff, but I&#39;ve honestly been stuck in a rut for most of that time, making very little progress. As detailed in my continuous <a href="https://shonumi.github.io/blog/nds_rolling.html">NDS rolling blog</a>, I&#39;ve made significant progress over the past month to the point where many games boot and a handful are in a playable state. As such, expect something on that front soon. With all the improvements made to GBE+&#39;s NDS core, it&#39;s now at the point where it can at least begin emulating some of the more unique pieces of additional hardware. With the number of unemulated Game Boy add-ons decreasing, is 2020 the year I take the <strong>Edge of Emulation</strong> to a new handheld?</p>
+
+				
+
+				
+
+
+			</div>
+		</div>
+
+		<p> </p> 
+
+	</body>
+</html>
+	 
