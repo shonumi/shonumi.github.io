@@ -33,6 +33,11 @@ code
 	margin-bottom: 0px;
 }
 
+.img_border
+{
+	border: 2px solid #000000;
+}
+
 .space_img
 {
 	margin-right: 5px;
