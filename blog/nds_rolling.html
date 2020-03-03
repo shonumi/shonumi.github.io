@@ -49,6 +49,43 @@
 				<div class="center_headline">NDS Stuff</div>
 				<div class="headline_underline">. . . . . . . . . . .</div>
 
+				<p class="inner_text_large"><strong>March 2, 2020</strong></p>
+
+				<p class="inner_text">So, it&#39;s been almost 2 months and no updates here. Must mean I&#39;m stuck right? That was the old me. The new me is always reaching for more progress, more compatibility, more... anything. A lot of January + early February was dedicated to GBA stuff, namely the AGB-006 and Zoids Cyberdrive, but I also started picking apart some Slot-2 NDS hardware. That&#39;s the next frontier for me. I&#39;ve already researched and emulated two devices, and I&#39;ve got plenty more odds and ends sitting in my collection waiting to be probed. I&#39;ll hold off until the next <strong>Edge of Emulation</strong> articles to elaborate more on those.</p>
+
+				<p class="inner_text">My other area of focus has been 3D rendering on the NDS, and a lot has happened. I talked about implementing a z-buffering system (years ago???) but I got stuck back then and never improved it. I know, I know, it should be such a simple thing, right? Something basic and essential to any 3D renderer. Without that, you&#39;ll have a hard time drawing anything more than one polygon correctly. Handling stuff in 3D is not something that just clicks with me. I tried z-buffering, got it halfway right, but lost heart and motivation and didn&#39;t touch it for the longest time. Once again, however, I was sick of the status quo of GBE+ not emulating NDS stuff like it should, so a while ago I sat down and really got to work.</p>
+
+				<p class="inner_text">The hardest part for me was figuring out <em>how do I calculate Z values inside a polygon?</em> Drawing the polygon&#39;s lines was simple, since it reduces to 2D fairly easily with just the X and Y values. Calculate the slope, plot the pixels, and boom, you have the outline of a triangle or a quad. It&#39;s not a big leap either to calculate the Z values of the lines. If the starting 3D point is <code>(0.0, 0.0, 1.0)</code> and the end point is <code>(2.0, 0.0, 3.0)</code> we know that the Z values gradually changes from <code>1.0</code> to <code>3.0</code>. Since I&#39;m already calculating X and Y changes to get the polygon outline, adding Z values is straightforward. But that&#39;s just the perimeter of the polygon, what about the insides?</p>
+
+				<p class="inner_text">For any given X coordinate, if we take the tallest point in the polygon and compare it to the lowest point in the polygon, we can actually tell how all three coordinates change when moving vertically (well the X coordinate will remain constant). We just need to do something like <code>(LINE_Z_BOTTOM - LINE_Z_TOP) / (SCREEN_Y_BOTTOM - SCREEN_Y_TOP)</code> to see how the Z value changes for that given X coordinate when moving along by the Y axis. That way, GBE+ can scan the polygon, left to right, top to bottom, and collect the polygon&#39;s internal Z coordinates. The polygon&#39;s outline is used to determine the top-most and bottom-most coordinates to use for the calculations. Now, this is actually something I very much tried to do in 2018, but I got things mixed up (swapping top for bottom), got the depths reversed, and used the wrong Z coordinates (forgot to apply the clip matrix, and therefore the perspective matrix). So, getting z-buffering done was mainly a matter of correcting a bunch of silly mistakes that initially scared me away. Just like that, GBE+ now does spinning cubes without z-fighting!</p>
+
+				<p class="center_img">
+					<img class="space_img" src="ndsr_28.png" alt="Crude diagram of Z coordinate calculation from polygon outline" />
+					<img class="space_img" src="ndsr_29.png" alt="WRONG!" />
+					<img class="space_img" src="ndsr_30.png" alt="NOT WRONG!" />
+				</p>
+
+				<p class="inner_text">So, a proper z-buffer paves the way for GBE+ to realistically handle the rest of 3D stuff for the NDS. This was basically a major roadblock I had, but now I&#39;ve cleared that hurdle. Again, maybe this all seems a bit trivial to some folks, especially those who have dealt with 3D graphics before. But 3D is very intimidating to me, so when I stumbled around and failed in 2018, I had a very hard time picking myself back up and taking another shot at it. At any rate, I wasn&#39;t content to just stop there, not when there&#39;s so much more to do. I figured I&#39;d take on something that looked fun and interesting, so I chose to deal with interpolating vertex colors. In laymen&#39;s terms, this is basically just gradients.</p>
+
+				<p class="inner_text">At first, vertex color interpolation puzzled me. Again, a similar question popped into my head. <em>How do I calculate the color values inside a polygon?</em> It&#39;s easy enough to calculate the colors for the outline. If you have a triangle with one red, green, and blue vertex, just gradually change the color when moving from one vertex to another. When starting at the red one and ending at the blue, draw a line that starts red and bit by bit changes to blue. The math is rudimentary and so is the concept. But what about all those pesky internal colors? A little lightbulb flashed in my head at this point. Just calculate it like I did the Z values. DUH! For every X coordinate, take the top-most color of a polygon and gradually change that to the bottom-most color of a polygon, and that should produce the correct fill colors. And what do you know, it worked on my first try.</p>
+
+				<p class="center_img">
+					<img class="space_img" src="ndsr_31.png" alt="Polygon with interpolated outlines" />
+					<img class="space_img" src="ndsr_32.png" alt="Polygon with fully interpolated colors" />
+				</p>
+
+				<p class="inner_text">Nice! PSI (CorgiDS and DobieStation author) wrote a concise summary of <a href="https://corgids.wordpress.com/2017/09/27/interpolation/">NDS color interpolation</a> and that helped to solidify and reinforce my understanding on this matter. The color transitions here are smooth like on real hardware too, a bit too smooth actually! I&#39;m still using 24-bit color instead of the reducing it to 18-bits. I&#39;ll have to take care of that sooner rather than later, but I&#39;m thrilled with the progress so far. Not wanting to stop, I jumped into another important area of 3D rendering, using textures.</p>
+
+				<p class="inner_text">I&#39;ll readily admit that studying up on many 3D things tends to make my eyes glaze over, then I start doubting myself when it comes to programming it. But textures, now there&#39;s something I understand. I used to deal with OpenGL 2.0 and textured quads all the time for 2D games I made in SDL 1.2, long before I started dabbling with emulation. Furthermore, the affine sprites used by the GBA and NDS have a lot in common with textured quads. So I&#39;m not totally in unfamiliar territory. On the NDS, it&#39;s pretty much like old-school OpenGL. A TEXPARAM command is sent, and then TEXCOORD commands are sent for every vertex. Textures are stored in VRAM, so decoding them in many cases isn&#39;t much different than handling backgrounds or sprites from the 2D side of the NDS. The example from devkitPro uses Direct Color mode (15-bit RGB), so it&#39;s not too difficult to get something displayed.</p>
+
+				<p class="center_img">
+					<img class="space_img" src="ndsr_33.png" alt="The first textured quad in GBE+" />
+				</p>
+
+				<p class="inner_text">Whoops! Heh heh, it&#39;s facing the wrong way. Well, I kinda got too excited about all the stuff I&#39;d done and wrote this blog post before I even had the chance to fix it... That&#39;s my homework I guess. At any rate, I made some pretty decent headway. I plan on implementing support for more texture formats soon. With that done, more games will be able to display graphics where they previously couldn&#39;t. I can&#39;t wait to see where this leads me.</p>
+
+				<p class="inner_text">I&#39;ll just take this moment to give a brief shoutout to one of my best friends growing up. Today&#39;s his birthday. We were gaming buddies, spending endless hours during weekends and summer breaks lost in virtual worlds. From the PSX, N64, GBA, to GCN, it seemed like we played it all. Those were some real nice childhood memories we made, stuff that sticks with me even today. Haven&#39;t seen you in years, but here&#39;s hoping you have a good one, wherever you are man!</p>
+
 				<p class="inner_text_large"><strong>January 7, 2020</strong></p>
 
 				<p class="inner_text">So here&#39;s a funny story. On a whim, a few weeks ago I wanted to see how far I could get Cory in the House to run in GBE+. For those of you that don&#39;t know, this is basically the best game ever made. Surprisingly, GBE+ made it to the title screen and almost kinda went in-game (though it freezes later, and there are no 3D models yet). The title screen itself was glitched just a bit, as PSISP pointed out. No biggie, I thought. It should be an easy fix. The title screen is just a bunch of sprites. It must have been something to do with rendering.</p>
@@ -96,7 +133,6 @@
 					<img class="space_img" src="ndsr_23.png" alt="Super Princess Peach seems to be playable now" />
 					<img class="space_img" src="ndsr_24.png" alt="Some obvious graphical issues remain, however" />
 				</p>
-
 
 				<p class="inner_text_large"><strong>December 15, 2019</strong></p>
 
