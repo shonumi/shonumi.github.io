@@ -33,6 +33,53 @@ code
 	margin-bottom: 0px;
 }
 
+.center_code
+{
+	text-align: center;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-right: 10px;
+	margin-left: 10px;
+	background-color: #E0E0E0;
+	border-left: 1px solid #000000;
+	border-right: 1px solid #000000;
+}
+
+.center_code_top
+{
+	text-align: center;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-right: 10px;
+	margin-left: 10px;
+	background-color: #E0E0E0;
+	border-left: 1px solid #000000;
+	border-right: 1px solid #000000;
+	border-top: 1px solid #000000;
+}
+
+.center_code_bottom
+{
+	text-align: center;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-right: 10px;
+	margin-left: 10px;
+	background-color: #E0E0E0;
+	border-left: 1px solid #000000;
+	border-right: 1px solid #000000;
+	border-bottom: 1px solid #000000;
+}
+
+.code_left
+{
+	text-indent: 50px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-right: 10px;
+	margin-left: 10px;
+}
+
 .img_border
 {
 	border: 2px solid #000000;
