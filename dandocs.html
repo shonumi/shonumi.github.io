@@ -548,6 +548,7 @@ Set 2 [14:0] [15:1] [14:0] [45:1] ...</code>
 		<li class="list_item">Janshirou</li>
 		<li class="list_item">Janshirou II</li>
 		<li class="list_item">Jinsei Game Densetsu</li>
+		<li class="list_item">Nakajima Satoru F-1 Hero GB World Championship &#39;91</li>
 		<li class="list_item">Nekketsu Koukou Dodge Ball-Bu</li>
 		<li class="list_item">Super R.C. Pro-Am</li>
 		<li class="list_item">Top Rank Tennis</li>
@@ -558,6 +559,8 @@ Set 2 [14:0] [15:1] [14:0] [45:1] ...</code>
 		<li class="list_item">Wave Race</li>
 		<li class="list_item">Yoshi&#39;s Cookie</li>
 	</ul>
+
+	<p>F1 Pole Position is the localization of the Japanese game Nakajima Satoru F-1 Hero GB &#39;92: The Graded Driver. Both versions support the DMG-07. The prequel, Nakajima Satoru F-1 Hero GB World Championship '91, was however a Japanese exclusive.</p>
 
 	<p>Several games are claimed to be compatible but actual support for the DMG-07 remains dubious at best for those titles. Gauntlet II advertises 4-player action via the Link Cable, but this may simply refer to 2-player mode with each Game Boy controlling 2 characters (and switching among friends when appropiate).</p>
 
@@ -728,52 +731,109 @@ P4_byte_4	P4_byte_4	P4_byte_4	P4_byte_4	31</code>
 	<a name="zzh_com"></a>
 	<p class="gray_title">[Full Changer] : IR Communication</p>
 
-	<p>The Full Changer sends a total of 18 IR pulses (ON then OFF periods) when transmitting data. The length of these pulses varies and determines what values the Full Changer is trying to send. Zok Zok Heroes runs in a couple of loops while the pulse takes place. Each iteration, it increments a counter to get an idea of the overall &#34;delay&#34; it takes for the IR light to turn on then turn off. That counter is then placed in WRAM as a single byte (anything greater than 0xFF causes a timeout) and verified later. In this way, Zok Zok Heroes can view data from the Full Changer as a series of bytes rather than light pulses. These 18 bytes do not appear to have to be especially strict values (e.g. changing them +1 or -1 should still yield the same Bright Hero transformation). The overall data format, if any, is currently unknown, making it difficult to determine what those 18 bytes should be without intercepting an actual transmission from the Full Changer (this could change in the future with more analysis).</p>
+	<p>The Full Changer sends a total of 18 IR pulses (ON then OFF periods) when transmitting data. The length of these pulses varies and determines what values the Full Changer is trying to send. Zok Zok Heroes runs in a couple of loops while the pulse takes place. Each iteration, it increments a counter to get an idea of the overall &#34;delay&#34; it takes for the IR light to turn on then turn off. That counter is then placed in WRAM as a single byte (anything greater than 0xFF causes a timeout) and verified later. In this way, Zok Zok Heroes can view data from the Full Changer as a series of bytes rather than light pulses. These 18 bytes do not have especially strict values, rather they are expected to fall within a certain range to indicate long or short pulses.</p>
 
 	<a name="zzh_cap"></a>
 	<p class="gray_title">[Full Changer] : Capturing IR Data</p>
 
-	<p>Below is the disassembled GBZ80 code Zok Zok Heroes uses to grab the 18 bytes:</p>
+	<p>Below is psuedo-code representing how Zok Zok Heroes grabs the 18 bytes:</p>
 
-<code>&#47;&#47;This all happens at ROM Bank 1
-&#47;&#47;Wait for IR light to come on (Bit 1 of 0xFF46 goes to zero)
-&#47;&#47;D is set to 0xFF, timeout if it reaches zero
-DEC D
-RET Z
-LDH A, (0xFF56)
-BIT 1, A
-JR NZ, 0xF9
+<code>==================================
+LABEL CHECK_ON_LOOP:
+==================================
 
-&#47;&#47;E acts as a counter for total number of bytes processed from Full Changer
-LD E 0x12
-LD HL, 0xD005
+	&#47;&#47;Use an 8-bit CPU register as a Time-Out Counter, initially set to 0xFF, exit if it hits zero
+	TIMEOUT_COUNTER--
+	
+	IF(TIMEOUT_COUNTER == 0)
+	{
+		RETURN
+	}
 
-&#47;&#47;Wait for IR light to go off (Bit 1 of 0xFF46 goes to one)
-LD D, 0x00
-CALL 0x575E
-	INC D
-	RET Z
-	LDH A, (0xFF56)
-	BIT 1, A
-	JR Z, 0xF9
-	RET
+	&#47;&#47;Load A from 16-bit immediate address for RP register
+	A = [0xFF56]
 
-&#47;&#47;Wait for IR light to go on (Bit 1 of 0xFF46 goes to one)
-CALL 0x576C
-	INC D
-	RET Z
-	LDH A, (0xFF56)
-	BIT 1, A
-	JR NZ, 0xF9
-	RET
+	&#47;&#47;Wait for IR light to come on (Bit 1 of 0xFF46 goes to zero)
+	IF(A AND 0x1)
+	{
+		GOTO CHECK_ON_LOOP
+	}
 
-&#47;&#47;Save results to 0xD005 - 0xD017
-LD (HL), D
-INC HL
-DEC E
+	&#47;&#47;Use another 8-bit CPU register to act as a counter for total number of bytes processed from Full Changer
+	TOTAL_BYTES = 0x12
 
-&#47;&#47;Jump back to LD, 0x00. Repeat loop until E is zero.
-JR NZ, 0xF3</code>
+	&#47;&#47;Set a 16-bit CPU register pair as the destination address (0xD005+) to write IR data
+	DEST_ADDR = 0xD005
+
+==================================
+LABEL GRAB_IR_BYTES:
+==================================
+
+	&#47;&#47;Wait for IR light to go off (Bit 1 of 0xFF46 goes to one)
+	&#47;&#47;Set an 8-bit CPU register to act as an IR pulse length counter, initialized to 0x00
+	PULSE_LENGTH = 0x00
+
+	CALL WAIT_FOR_OFF
+	CALL WAIT_FOR_ON
+
+	&#47;&#47;Save pulse length results to 0xD005 - 0xD017
+	[DEST_ADDR] = PULSE_LENGTH
+
+	DEST_ADDR++
+	TOTAL_BYTES--
+
+	IF(TOTAL_BYTES != 0)
+	{
+		GOTO GRAB_IR_BYTES
+	}
+	
+	...
+
+	&#47;&#47;IR handling code ends here
+
+==================================
+FUNCTION WAIT_FOR_OFF:
+==================================
+
+	PULSE_LENGTH++
+	
+	IF(PULSE_LENGTH == 0)
+	{
+		RETURN
+	}
+
+	&#47;&#47;Load A from 16-bit immediate address for RP register
+	A = [0xFF56]
+
+	&#47;&#47;Wait for IR light to come on (Bit 1 of 0xFF46 goes to one)
+	IF((A AND 0x1) == 0x00)
+	{
+		GOTO WAIT_FOR_OFF
+	}
+
+	RETURN
+
+==================================
+FUNCTION WAIT_FOR_ON:
+==================================
+
+	PULSE_LENGTH++
+	
+	IF(PULSE_LENGTH == 0)
+	{
+		RETURN
+	}
+
+	&#47;&#47;Load A from 16-bit immediate address for RP register
+	A = [0xFF56]
+
+	&#47;&#47;Wait for IR light to come on (Bit 1 of 0xFF46 goes to zero)
+	IF(A AND 0x1)
+	{
+		GOTO WAIT_FOR_ON
+	}
+
+	RETURN</code>
 
 	<p>Once all 18 bytes have been stored in WRAM, it&#39;s possible to read them and save them using a ROM hack. Alternatively, homebrew software can use code with the same timing to accurately capture IR data from the Full Changer.</p>
 
@@ -782,15 +842,22 @@ JR NZ, 0xF3</code>
 
 	<p>The Full Changer can be successfully emulated by setting Bit 1 of RP register (located at 0xFF56) to 0 or 1 at the appropiate times. To do so requires accurate timing and knowing the amount of cycles it takes to generate the delays represented by those 18 bytes in WRAM. When activating the Full Changer, GBE+ always fires the 1st &#34;ON&#34; IR signal at a specific time to get consistent timings:</p>
 
-<code>DEC D
-RET Z
-LDH A, (0xFF56)
+<code>TIMEOUT_COUNTER--
+	
+IF(TIMEOUT_COUNTER == 0)
+{
+	RETURN
+}
+
+A = [0xFF56]
 
 &lt;---- After the CPU reads 0xFF56 and the user activates the Full Changer, IR light is turned on here
-&lt;---- This happens after the actual instruction is executed, so the loop runs once more
+&lt;---- This happens after the actual read instruction is executed, so the loop runs once more
 
-BIT 1, A
-JR NZ, 0xF9</code>
+IF(A AND 0x1)
+{
+	GOTO CHECK_ON_LOOP
+}</code>
 
 	<p>Afterwards, the timings for ON and OFF pulses can be calculated as such (ALL TIMING IS IN DOUBLE SPEED):</p>
 
@@ -800,7 +867,7 @@ Every other ON pulse length		78 + (20 * (LENGTH-2))
 
 OFF pulse length			38 + (20 * (LENGTH-2))</code>
 
-	<p>The LENGTH is number of times the CPU register D is incremented at 0x575E or 0x576C. The sum two LENGTHs from one ON pulse and one OFF pulse must be equal to the delay data in WRAM. For example, say the delay data contains 0x30. This means that the TOTAL amount of times D was incremented is 0x30. In a perfect world, the Full Changer would probably turn on the IR light so that D is incremented 0x18 times, then turn off the IR light so that D is incremented again 0x18 times. In reality, however, the length of the ON&#47;OFF pulses could run a bit longer or shorter. As far as Zok Zok Heroes is concerned, the total amount of time the IR light is ON then OFF is what matters, so the ON&#47;OFF pulse timings ultimately have to add up.</p>
+	<p>The LENGTH is number of times the 8-bit CPU register is incremented in the WAIT_FOR_OFF or WAIT_FOR_ON functions. The sum of two LENGTHs from one ON pulse and one OFF pulse must be equal to the delay data in WRAM. For example, say the delay data contains 0x20. This means that the TOTAL amount of times the 8-bit register was incremented is 0x20. In a perfect world, the Full Changer would probably turn on the IR light so that this 8-bit register is incremented 0x10 times, then turn off the IR light so that D is incremented again 0x10 times. In reality, however, the length of the ON&#47OFF pulses could run a bit longer or shorter. As far as Zok Zok Heroes is concerned, the total amount of time the IR light is ON then OFF is what matters, so the ON&#47OFF pulse timings ultimately have to add up</p>
 
 	<p>The current database GBE+ uses recreates ON&#47;OFF pulses that generally run for the same amount of cycles. However, based on hardware tests, the ON pulses have variable lengths, while the OFF pulses are typically constant. Again, Zok Zok Heroes won&#39;t care, as long as the total time of the ON&#47;OFF pulses meets whatever value it expects.</p>
 
@@ -925,35 +992,36 @@ ID	| Japanese Name		| Translated Name		| Cosmic Character Movements
 	<a name="ir_gam"></a>
 	<p class="gray_title">[GBC Infrared] : Compatible Games</p>
 
-	<p>This list represents all the games that have been verified to use the IR port. While exhaustive, this list is probably not complete. There are likely more Japanese exclusives that need to be added. It's dubious whether or not Animorphs actually is a "Ubi Key" game. The back boxart doesn't have the "IR Compatible" logo, and the manual makes no mention of IR communication.</p>
+	<p>This list represents all the games that have been verified to use the IR port. While exhaustive, this list is probably not complete. There are likely more Japanese exclusives that need to be added. It&#39;s dubious whether or not Animorphs actually is a &#34;Ubi Key&#34; game. The back boxart doesn&#39;t have the &#34;IR Compatible&#34; logo, and the manual makes no mention of IR communication.</p>
+
+	<p>The North American version of Disney&#39;s Aladdin claims to have infrared support on the box, supposedly for Ubi Key functionality, however, no such option is accessible in the game. Additionally, European variants omit the GBC IR logo from their boxes. It's possible that like Animorphs, Aladdin had its IR features stripped.</p>
 
 	<ul>
 		<li class="list_tab"><div class="x">Austin Powers: Oh Behave!</div><div class="y">Trade items and messages</div></li>
 		<li class="list_tab"><div class="x">Austin Powers: Welcome to My Underground Lair!</div><div class="y">Trade items and messages</div></li>
 		<li class="list_tab"><div class="x">Bomberman Max: Blue Champion</div><div class="y">Combine Charaboms&#47;Trade completed levels&#47;Unlock hidden areas</div></li>
 		<li class="list_tab"><div class="x">Bomberman Max: Red Challenger</div><div class="y">Combine Charaboms&#47;Trade completed levels&#47;Unlock hidden areas</div></li>
-		<li class="list_tab"><div class="x">Carl Lewis Alhletics 2000</div><div class="y">Ubi Key</div></li>
+		<li class="list_tab"><div class="x">Carl Lewis Alhletics 2000</div><div class="y">Ubi Key -> Unlocks Decathalon mode</div></li>
 		<li class="list_tab"><div class="x">Catz</div><div class="y">Trade Petz and Toyz</div></li>
 		<li class="list_tab"><div class="x">Chee-Chai Alien</div><div class="y">Enhances IR sensor to detect artificial light sources. Catch&#47;trade Chaliens</div></li>
 		<li class="list_tab"><div class="x">Dancing Furby</div><div class="y">Sends signal to Furby doll, Furby reacts based on dance performance</div></li>
-		<li class="list_tab"><div class="x">Disney&#39;s Aladdin</div><div class="y">Ubi Key</div></li>
 		<li class="list_tab"><div class="x">Dogz</div><div class="y">Trade Petz and Toyz</div></li>
 		<li class="list_tab"><div class="x">Donkey Kong Country</div><div class="y">Transfer pictures to stickerbook</div></li>
-		<li class="list_tab"><div class="x">Flipper &#38; Lopaka</div><div class="y">Ubi Key</div></li>
+		<li class="list_tab"><div class="x">Flipper &#38; Lopaka</div><div class="y">Ubi Key -> Unlocks a bonus &#34;Ubi Key Level&#34;</div></li>
 		<li class="list_tab"><div class="x">Game Boy Wars 3</div><div class="y">Wireless multiplayer</div></li>
 		<li class="list_tab"><div class="x">Hamtaro: Ham-Hams Unite!</div><div class="y">Trade Hamtaro&#39;s clothes</div></li>
 		<li class="list_tab"><div class="x">Harry Potter and the Sorceror&#39;s Stone</div><div class="y">Trade &#34;Famous Witches and Wizards&#34; cards</div></li>
 		<li class="list_tab"><div class="x">Harry Potter and the Chamber of Secrets</div><div class="y">Trade &#34;Famous Witches and Wizards&#34; cards</div></li>
-		<li class="list_tab"><div class="x">Hype: The Time Quest</div><div class="y">Ubi Key</div></li>
-		<li class="list_tab"><div class="x">Inspector Gadget: Operation Madkactus</div><div class="y">Ubi Key</div></li>
+		<li class="list_tab"><div class="x">Hype: The Time Quest</div><div class="y">Ubi Key -> Unlocks a bonus level</div></li>
+		<li class="list_tab"><div class="x">Inspector Gadget: Operation Madkactus</div><div class="y">Ubi Key -> Unlocks a bonus level</div></li>
 		<li class="list_tab"><div class="x">Kaijin Zona</div><div class="y">Receive randomized puzzles via IR signals</div></li>
 		<li class="list_tab"><div class="x">Mary-Kate and Ashley Pocket Planner</div><div class="y">Send and receive &#34;G-mail&#34; messages</div></li>
 		<li class="list_tab"><div class="x">Mickey&#39;s Racing Adventure</div><div class="y">Send and receive messages. Unlocks a secret race track in Mickey&#39;s Speedway USA</div></li>
 		<li class="list_tab"><div class="x">Mickey&#39;s Speedway USA</div><div class="y">???</div></li>
 		<li class="list_tab"><div class="x">Mission Impossible</div><div class="y">Send and receive messages, notes, addresses + custom TV remote</div></li>
-		<li class="list_tab"><div class="x">Papyrus</div><div class="y">Ubi Key</div></li>
+		<li class="list_tab"><div class="x">Papyrus</div><div class="y">Ubi Key -> Unlocks a bonus level</div></li>
 		<li class="list_tab"><div class="x">Perfect Dark</div><div class="y">Trade multiplayer maps and other unlockables</div></li>
-		<li class="list_tab"><div class="x">Playmobil Interactive: Laura</div><div class="y">Ubi Key</div></li>
+		<li class="list_tab"><div class="x">Playmobil Interactive: Laura</div><div class="y">Ubi Key -> Unlocks &#34;Catch the Hazelnuts&#34; minigame</div></li>
 		<li class="list_tab"><div class="x">Pocket Family GB 2</div><div class="y">Transfer characters and data</div></li>
 		<li class="list_tab"><div class="x">Pokemon Pinball</div><div class="y">Trade/combine Top Scores</div></li>
 		<li class="list_tab"><div class="x">Pokemon Gold</div><div class="y">Mystery Gift + Send trainer data to Viridian City Trainer House</div></li>
@@ -964,16 +1032,16 @@ ID	| Japanese Name		| Translated Name		| Cosmic Character Movements
 		<li class="list_tab"><div class="x">Return of the Ninja</div><div class="y">Trade &#34;Ninja Cards&#34;</div></li>
 		<li class="list_tab"><div class="x">Rayman</div><div class="y">Ubi Key -> Unlocks secret level Ubi Cliff</div></li>
 		<li class="list_tab"><div class="x">Robopon Sun Version</div><div class="y">Boost stats via infrared signals. Open certain chests</div></li>
-		<li class="list_tab"><div class="x">The Road to El Dorado</div><div class="y">Ubi Key</div></li>
+		<li class="list_tab"><div class="x">The Road to El Dorado</div><div class="y">Ubi Key -> Unlocks a secret level similar to Levels 6 and 7</div></li>
 		<li class="list_tab"><div class="x">Sakura Taisen GB</div><div class="y">Send step-based &#34;Points&#34; to GBC from Pocket Sakura, or between two GBCs</div></li>
 		<li class="list_tab"><div class="x">Shin Megami Tensei Devil Children White</div><div class="y">Used for &#34;Infrared Fusion&#34; to strengthen some demons, obtain rare ones</div></li>
-		<li class="list_tab"><div class="x">Spirou: The Robot Invasion</div><div class="y">Ubi Key</div></li>
+		<li class="list_tab"><div class="x">Spirou: The Robot Invasion</div><div class="y">Ubi Key -> Unlocks a bonus level</div></li>
 		<li class="list_tab"><div class="x">Super Mario Bros. DX</div><div class="y">Trade/combine Top Scores</div></li>
-		<li class="list_tab"><div class="x">Suzuki Alstare Extreme Racing</div><div class="y">Ubi Key</div></li>
-		<li class="list_tab"><div class="x">Tonic Trouble</div><div class="y">Ubi Key</div></li>
-		<li class="list_tab"><div class="x">Toonsylvania</div><div class="y">Ubi Key</div></li>
+		<li class="list_tab"><div class="x">Suzuki Alstare Extreme Racing</div><div class="y">Ubi Key -> Unlocks the Extreme Championship mode</div></li>
+		<li class="list_tab"><div class="x">Tonic Trouble</div><div class="y">Ubi Key -> Unlocks a bonus level/demo</div></li>
+		<li class="list_tab"><div class="x">Toonsylvania</div><div class="y">Ubi Key -> Unlocks a bonus level with extra lives and items</div></li>
 		<li class="list_tab"><div class="x">Tottoko Hamtaro: Tomodachi Daisakusen Dechu</div><div class="y">???</div></li>
-		<li class="list_tab"><div class="x">V.I.P.</div><div class="y">Ubi Key</div></li>
+		<li class="list_tab"><div class="x">V.I.P.</div><div class="y">Ubi Key -> Unlocks a bonus &#34;Ubi Key Level&#34;</div></li>
 		<li class="list_tab"><div class="x">Warlocked</div><div class="y">Trade wizards</div></li>
 		<li class="list_tab"><div class="x">Zok Zok Heroes</div><div class="y">Transmit &#34;Cosmic Characters&#34; from Full Changer accessory to transform hero</div></li>
 	</ul>
@@ -1725,7 +1793,25 @@ Byte 0x18 - 0x3F	| Should all be 0x00
 
 	<p></p> 
 
-	<p>A majority of the software was released exclusively to take advantage of the EM-2000 embroidery arm. Sewing Machine Operation Software and Raku x Raku Mishin are functionally identical, save for some cosmetic differences and offering Latin character stitching instead of kana. Otherwise, an IZEK-1500 can use the Japanese version of the software without issue and vice versa. The IZEK-1500 and the JN-100 cannot use Moji, Cut Shuu, or Mario Family as they have no slot to accept an embroidery arm. The JN-2000 is the ONLY sewing machine that can do embroidery. The general functionality of each piece of software is detailed below:</p>
+	<p class="list_item"><strong>[*] Kanji Shishuu</strong></p>
+	<ul class="list_item">
+		<li class="list_item_none">[-] IZEK-1500</li>
+		<li class="list_item_none">[-] JN-100</li>
+		<li class="list_item_none">[!] JN-2000</li>
+	</ul>
+
+	<p></p> 
+
+	<p class="list_item"><strong>[*] Kirby Family</strong></p>
+	<ul class="list_item">
+		<li class="list_item_none">[-] IZEK-1500</li>
+		<li class="list_item_none">[-] JN-100</li>
+		<li class="list_item_none">[!] JN-2000</li>
+	</ul>
+
+	<p></p> 
+
+	<p>A majority of the software was released exclusively to take advantage of the EM-2000 embroidery arm. Sewing Machine Operation Software and Raku x Raku Mishin are functionally identical, save for some cosmetic differences and offering Latin character stitching instead of kana. Otherwise, an IZEK-1500 can use the Japanese version of the software without issue and vice versa. The IZEK-1500 and the JN-100 cannot use Moji, Cut Shuu, Kanji Shishuu, Mario Family, or Kirby Family as they have no slot to accept an embroidery arm. The JN-2000 is the ONLY sewing machine that can do embroidery. The general functionality of each piece of software is detailed below:</p>
 
 	<p class="list_item"><strong>Sewing Machine Operation Software</strong></p>
 	<ul class="list_item"><li class="list_item">Stitches preset patterns, custom patterns, buttonholes, and Latin characters.</li></ul><p></p>
@@ -1742,6 +1828,14 @@ Byte 0x18 - 0x3F	| Should all be 0x00
 	<p class="list_item"><strong>Jaguar Mishin Sashi Senyou Soft: Mario Family</strong></p>
 	<ul class="list_item"><li class="list_item">Embroiders various Mario-themed designs (mushroom, super star, Yoshi, etc).</li></ul><p></p>
 
+	<p class="list_item"><strong>Kanji Shishuu</strong></p>
+	<ul class="list_item"><li class="list_item">Embroiders kana, some Latin characters, and a wide range of kanji.</li></ul><p></p>
+
+	<p class="list_item"><strong>Kirby Family</strong></p>
+	<ul class="list_item"><li class="list_item">Embroiders various Kirby-themed designs (Waddle Dee, King DeDeDe, Adeleine, etc).</li></ul><p></p>
+
+	<p>Kanji Shishuu and Kirby Family were never commercially released, thus out of the 7 known compatible titles, only 5 were sold to the public. Kanji Shishuu is very similar to Moji except it has a vastly larger pool of available kanji. Kirby Family is very similar to Cut Shuu and Mario Family, with embroidery patterns that appear largely inspired by Kirby 64.</p>
+
 	<a name="sew_pro"></a>
 	<p class="gray_title">[Sewing Machines] : Transmission Protocol</p>
 
@@ -1754,6 +1848,8 @@ External Transfer 1		| Short &#34;dummy&#34; transfer with 0x00. Quickly cancell
 External Transfer 2		| Payload data sent to sewing machine. Machine status may be returned
 Internal Transfer 1		| Send 0x00, receive 0xFF. Signals end of transfer for 1 byte
 -------------------------------------------------</code>
+
+	<p>When transferring a pattern to the sewing machine, the first few bytes of payload data are as follows: [0x80, 0x80, 0x80, 0x86]. This acts as a start signal, after which the Game Boy starts trasmitting packets. After all packets for a pattern have been sent to the machine, the Game Boy sends 0x80 endlessly until the next pattern is submitted. During that time, it&#39;s possible for the Game Boy to check the current status of machine.</p>
 
 	<a name="sew_fmt"></a>
 	<p class="gray_title">[Sewing Machines] : Packet Format</p>
@@ -1927,7 +2023,7 @@ Checksum
 0x20				Shift Up 0.75mm
 -------------------------------------------------</code>
 
-	<p>Ultimately, the sewing machines can program stitching to move vertically in 0.0625 increments and horizontally in 0.25 increments. Horizontal movement is limited to a set &#34;window&#34;, e.g. setting multiple X coordinates to 0x1F keeps the stitching at farthest point right. Vertical movement is unlimited, as the machines will move the fabric up or down like a feed.</p>
+	<p>Ultimately, the sewing machines can program stitching to move vertically in 0.0625mm increments and horizontally in 0.25mm increments. Horizontal movement is limited to a set &#34;window&#34;, e.g. setting multiple X coordinates to 0x1F keeps the stitching at farthest point right. Vertical movement is unlimited, as the machines will move the fabric up or down like a feed.</p>
 
 	<p>While the X and Y coordinates come in pair, it is important to note how each affects the movement of the needle and fabric. The below example demonstrates how X and Y coordinates actually dictate movement, assuming there are only 4 sets of Real Coordinate data.</p>
 
@@ -2251,7 +2347,7 @@ Bit 7               | Bit 6               | Bit 5               | Bit 4         
 
 	<ul>
 		<li class="list_item">Battle Chip Gates come in 3 hardware revisions: the original Battle Chip Gate, Progress Gate, and Beast Link Gate (Battle Network 4, 5, and 6 respectively).</li>
-		<li class="list_item">Each Battle Chip Gate accepts physical Battle Chip into a slot on the top or side of the unit (Progress Chip Gate and Beast Link Gate do the latter).</li>
+		<li class="list_item">Each Battle Chip Gate accepts physical Battle Chips into a slot on the top or side of the unit (Progress Chip Gate and Beast Link Gate do the latter).</li>
 		<li class="list_item">Each Battle Chip Gate exposes a Link Cable port on its side, allowing for multiplayer while using the device.</li>
 		<li class="list_item">Each Battle Chip Gate uses semi-retractable clamps (similar the the GBA-GCN cable) to keep the unit stable and in place.</li>
 		<li class="list_item">Internally, Battle Chips are essentially simple electronic circuits. Their configuration effectively represents a numerical ID to the Battle Chip Gates, which the games then use.</li>
@@ -2365,7 +2461,7 @@ Player 2 Battle Chip Gate	Child 3</code></p>
 		<li class="list_item">Bouken Yuuki Pluster World: Pluston GP</li>
 	</ul>
 
-	<p>All 3 games are more or less unplayable with the MPOS. A few minigames can be played in Densetsu no Plust Gate EX, but in both that game and the regular Densetsu no Plust Gate, starting the main RPG requires the MPOS be attached with a Pluster Figure inserted. In Pluston GP, many of the menus can be navigated, but beginning a race also require the accessory and an inserted figurine.</p>
+	<p>All 3 games are more or less unplayable without the MPOS. A few minigames can be played in Densetsu no Plust Gate EX, but in both that game and the regular Densetsu no Plust Gate, starting the main RPG requires the MPOS be attached with a Pluster Figure inserted. In Pluston GP, many of the menus can be navigated, but beginning a race also requires the accessory and an inserted figurine.</p>
 
 	<a name="mpos_com"></a>
 	<p class="gray_title">[Multi Plust On System] : Communication Protocol</p>
@@ -4083,7 +4179,17 @@ Offset + 0x08 ...		::	Minigame data (as described below in Minigame Format).</co
 
 	<p>The minigame is copied to various RAM locations (SRAM and WRAM) until it is finally written to Flash. A maximum of 0x200 bytes is copied at a time. The wrapper, however, expects a 0x100 &#34;footer&#34; to be inserted after each of the 0x200 chunks. This is only necessary if the minigame size is greater than 0x200 bytes. For example, if a minigame is only 0x100 bytes, then the footer can be ignored, although such a small size is rather impractical. Additionally, only the last footer technically needs to be correctly formatted. The default footer is as follows:</p>
 
-	<p>0x00, 0x00, 0x01, 0x00, 0x02, 0x03, 0x00, 0x04, 0x00, 0x05, 0x00, 0x06, 0x00, 0x07, 0x00, 0x08, 0x00, 0x09, 0x00, 0x0A, 0x00, 0x0B, 0x0C, 0x00, 0x0D, 0x00, 0x0E, 0x00, 0xFF ... (the remaining 225 bytes should be 0x00).</p>
+<code>
+0x00, 0x00, 0x01, 0x00,
+0x02, 0x00, 0x03, 0x00,
+0x04, 0x00, 0x05, 0x00,
+0x06, 0x00, 0x07, 0x00,
+0x08, 0x00, 0x09, 0x00,
+0x0A, 0x00, 0x0B, 0x00,
+0x0C, 0x00, 0x0D, 0x00,
+0x0E, 0x00, 0xFF, 0x00,
+... (the remaining 224 bytes should be 0x00).
+</code>
 
 	<p>So in summary, the wrapper effectively looks like this:</p>
 
