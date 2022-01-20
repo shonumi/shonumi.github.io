@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>AM3 SmartMedia Card Dumping Guide</title>
+		<link rel="stylesheet" type="text/css" href="./../main.css" />
+
+		<meta property="og:title" content="AM3 SmartMedia Card Dumping Guide" />
+		<meta property="og:description" content="A guide on dumping AM3 SmartMedia cards" />
+		<meta property="og:type" content="article" />
+ 		<meta charset="utf-8" />
+
+	</head>
+
+	<body>
+
+		<!-- Main Header -->
+		<div class="header">
+
+			<!-- Left Header -->
+			<div class="header_left">
+				<div class="header_text"><strong>Shonumi</strong></div>
+			</div>
+		
+			<!-- Right Header -->
+			<div class="header_right">
+				<a class="header_link" href="../downloads.html">Downloads</a>
+				<a class="header_link_current" href="../articles.html">Articles</a>
+				<a class="header_link" href="../blog.html">Blog</a>
+				<a class="header_link" href="../index.html">Main</a>
+			</div>
+
+		</div>
+
+		<!-- Main Page Outer Box -->
+		<div class="box_outer">
+			
+			<!-- Main Page Inner Box -->
+			<div class="box_inner">
+
+				<div class="center_headline">AM3 SmartMedia Card Dumping Guide</div>
+				<div class="headline_underline">. . . . . . . . . . .</div>
+
+				<p class="inner_text_large"><strong>Getting Started</strong></p>
+
+				<p class="inner_text">This document will serve as a quick how-to on dumping and preserving AM3&#39;s SmartMedia cards, used in conjunction with the Advance Movie Adapter. To begin, there are three pieces of data that must be extracted:</p>
+
+				<ol>
+					<p class="list_text">
+						<li><strong class="highlight_med_gray">SmartMedia Card Data</strong>
+							<ul>
+								<li>This is the raw disk image of the SmartMedia card.</li>
+								<li>Size: 33554432 (32MiB) or 67108864 (64MiB) bytes</li>
+							</ul>
+						</li>
+					</p>
+
+					<p class="list_text">
+						<li><strong class="highlight_med_gray">SmartMedia Card ID</strong>
+							<ul>
+								<li>ID unique to every SmartMedia card. Used for copy-protection.</li>
+								<li>Size: 16 bytes</li>
+							</ul>
+						</li>
+					</p>
+
+					<p class="list_text">
+						<li><strong class="highlight_med_gray">Advance Movie Adapter Firmware</strong>
+							<ul>
+								<li>The adapter&#39;s built-in software used to boot and play audio/video from the SmartMedia card.</li>
+								<li>Size: 12288 (12KiB) bytes</li>
+							</ul>
+						</li>
+					</p>
+				</ol>
+
+				<p class="inner_text">The first two, SmartMedia Card Data and SmartMedia Card ID, are necessary to archive the videos themselves. The firmware is necessary for the purposes of emulation.</p>
+
+				<p class="inner_text_large"><strong>Dumping SmartMedia Card Data - Overview</strong></p>
+
+				<p class="inner_text">To dump the SmartMedia Card Data, first obtain hardware capable of reading standard SmartMedia cards. This may require purchasing a second-hand reader, as the SmartMedia format has been obselete for well over a decade. Many older printers may still have a built-in slot capable of reading these cards. SmartMedia cards are evidently not well supported by many products today, but some newer devices can still read them, such as <a href="https://www.amazon.com/SmartMedia-Reader-Universal-Adapter-Windows/dp/B07J9WQGDX/">INDMEM&#39;s multi-card reader.</a></p>
+
+				<p class="center_img"><img src="am3_guide_02.png" alt="Sexy product" /></p>
+				<p class="img_caption">Be sure to check eBay and other sites as well for cheap card readers!</p>
+
+				<p class="inner_text">Note that while it is possible to dump most of the SmartMedia Card Data through GBA or NDS homebrew or standard ROM dumpers like the GBxCartRW, all data pertaining to the File Allocation Table lost. Therefore, it is not possible to <strong>completely dump</strong> all of binary data found on the card without a dedicated SmartMedia card reader.</p>
+
+				<p class="inner_text">Once the SmartMedia card reader hardware is connected to a PC, software must be used to create a 1:1 copy of the disk image. For Linux, the standard <code class="highlight_hor_gray">dd</code> command can be used to create the image. For those on Windows, use an equivalent program. This guide will demonstrate <a href="https://www.msys2.org/">MSYS2</a>, as it provides its own version of the <code class="highlight_hor_gray">dd</code> command that mirrors Linux usage.</p>
+
+				<p class="inner_text_large"><strong>Dumping SmartMedia Card Data - Instructions</strong></p>
+
+				<p class="inner_text">First, identify the <code class="highlight_hor_gray">/dev/</code> device associated with the SmartCard reader. Open up a terminal for the command line on Linux, or open up a MSYS2 shell on Windows. Next make sure all unnecessary drives (such as external USB drives) have been disconnected to simplify the following process. Do not connect the SmartMedia card reader yet. Run the command below:</p>
+
+				<p class="inner_text"><code class="highlight_hor_gray">cat /proc/partitions</code></p>
+
+				<p class="inner_text">Take note of the output. Connect the SmartMedia card reader to the PC and insert the SmartMedia card into the correct slot. Run the above command again. If the card reader is working correctly, the command should show a new device listed. Look for the new entry and take note of the value in the <strong>NAME</strong> column. This is the ID of the SmartMedia card reader that will be used in the following command.</p>
+
+				<p class="center_img"><img src="am3_guide_03.png" alt="cat to the rescue uWu" /></p>
+				<p class="img_caption">Here, the new device is labeled &#34;sdb&#34;.</p>
+
+				<p class="inner_text">Once the ID of the card reader has been obtained, use it in the following command, replacing YOUR_ID_HERE with the appropiate value. Be careful with this command! <strong>Always</strong> make sure the output file (the &#34;of=&#34; part) does not point towards a storage device! Point it towards a file, such as a specific .bin or .img or something! If the file does not exist, the command will generate one.</p>
+
+				<p class="inner_text"><code class="highlight_hor_gray">dd if=/dev/YOUR_ID_HERE of=/home/some_user/somefile.bin status=progress</code></p>
+
+				<p class="inner_text">Wait for the command to finish, and now the SmartMedia Card Data should be dumped.</p>
+
+				<p class="inner_text_large"><strong>Dumping SmartMedia Card ID - Instructions</strong></p>
+
+				<p class="inner_text">There are a total of 3 methods to dumping the SmartMedia ID. They are listed below in order of ease and accessibility. Choose the one that fits your needs.</p>
+
+				<p class="inner_text"><strong>OPTION #1:</strong> The simplest method is to use the NDS homebrew <a href="https://shonumi.github.io/downloads/AM3_FID_DUMPER.nds">AM3 Firmware + ID Dumper</a>. Insert the SmartMedia card into the Advance Movie Adapter, then insert the adapter into Slot-2 of the NDS. Run the homebrew software, and it will automatically dump ID into the file <strong>&#34;SMID.KEY&#34;</strong>.</p>
+
+				<p class="center_img"><img src="am3_guide_04.png" alt="ez clap" /></p>
+				<p class="img_caption">The easiest and most straightforward way is to use NDS homebrew, as it dumps both the firmware and SmartMedia ID.</p><hr class="inner_text" />
+
+				<p class="inner_text"><strong>OPTION #2:</strong> While normal GBA ROM dumpers cannot read all of the data on the SmartMedia card, they can dump the card&#39;s 16-byte ID. No special instructions are required; simply insert the SmartMedia card into the Advance Movie Adapter and perform a normal/automatic dump as if it were an ordinary cartridge. The ID can then manually be extracted with a hex editor. The ID occupies the bytes <code class="highlight_hor_gray">0x410</code> through <code class="highlight_hor_gray">0x41F</code>.</p>
+
+				<p class="center_img"><img src="am3_guide_05.png" alt="Also ez clap" /></p>
+				<p class="img_caption">Regular cart dumpers can read the SmartMedia ID as well with no special handling.</p><hr class="inner_text" />
+
+				<p class="inner_text"><strong>OPTION #3:</strong> Finally, the latest bleeding-edge versions of GBE+ (anything newer than January 19, 2022) is capable of dumping the SmartMedia ID automatically. This is the most complicated method as the feature is relatively new in GBE+. The Advance Movie Adapter&#39;s firmware calculates the correct values and temporarily stores them in RAM. As a result, GBE+ can pull these values and write them to a file. Ensure that the Advance Movie Adapter firmware is stored in GBE+&#39;s <strong>data</strong> folder as such:</p>
+
+				<p class="inner_text"><code class="highlight_hor_gray">data/am3_firmware.bin</code></p>
+
+				<p class="inner_text">Make sure the Smart Media card has been dumped as well. Now launch GBE+ from the command line as such:</p>
+
+				<p class="inner_text"><code class="highlight_hor_gray">gbe_plus PATH_TO_SMART_MEDIA_CARD_DUMP_HERE --agb-am3 --auto-gen-key</code></p>
+
+				<p class="inner_text">GBE+ will then write the ID to .key file in the same directory as the Smart Media card dump.</p>
+
+				<p class="inner_text_large"><strong>Dumping Advance Movie Adapter Firmware - Instructions</strong></p>
+
+				<p class="inner_text">Use the NDS homebrew <a href="https://shonumi.github.io/downloads/AM3_FID_DUMPER.nds">AM3 Firmware + ID Dumper</a>. Insert the adapter into Slot-2 of the NDS. Run the homebrew software, and it will automatically dump ID into the file <strong>&#34;AM3_FIRMWARE.BIN&#34;</strong>. This step does not require the SmartMedia card at all.</p>
+
+				<p class="inner_text">As a note to technically minded individuals attempting to add firmware dumping support to products such as Sanni cart reader or GBxCart RW, refer to the documentation in <a href="https://shonumi.github.io/dandocs.html#ama">Dan Docs</a> for a complete overview/guide on the adapter&#39;s operation. For a <strong>tl;dr</strong>, set PHI Terminal Output to 16.78MHz, write to the I/O registers in the cart to read in the next 1KB block of firmware, then actually read the firmware at <code class="highlight_hor_gray">0x8000000</code> through <code class="highlight_hor_gray">0x80003FF</code>.</p>
+
+
+
+			
+
+			</div>
+		</div>
+
+	</body>
+</html>
+
+		
+
+		

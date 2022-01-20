@@ -3387,6 +3387,7 @@ Bit		| Function
 	<p class="list_item"><a href="#ama_ptr">Read Pointer</a></p>
 	<p class="list_item"><a href="#ama_sys">File System And Hierarchy</a></p>
 	<p class="list_item"><a href="#ama_lok">00.AM3</a></p>
+	<p class="list_item"><a href="#ama_lst">List of AM3 Cards and Products</a></p>
 
 
 	<a name="ama_gen"></a>
@@ -3407,7 +3408,7 @@ Bit		| Function
 	<a name="ama_map"></a>
 	<p class="gray_title">[Advance Movie Adapter] : Cartridge Mapping</p>
 
-	<p>Unlike many other GBA cartridge, the Advance Movie Adapter has an unusual method of mapping cartridge data. Only 2KB are addressable at any given time. The lower 1KB (0x8000000 - 0x80003FF) contains data pulled from either the firmware or the SmartMedia card. The upper 1KB (0x8000400 - 0x80007FF) contains memory-mapped I/O registers used to control what data is accessible from the lower half. Data is &#34;swapped&#34; or &#34;banked&#34; dynamically into the lower 1KB in a manner similar to the old memory bank controllers found in DMG/GBC cartridges.</p>
+	<p>Unlike many other GBA cartridges, the Advance Movie Adapter has an unusual method of mapping cartridge data. Only 2KB are addressable at any given time. The lower 1KB (0x8000000 - 0x80003FF) contains data pulled from either the firmware or the SmartMedia card. The upper 1KB (0x8000400 - 0x80007FF) contains memory-mapped I/O registers used to control what data is accessible from the lower half. Data is &#34;swapped&#34; or &#34;banked&#34; dynamically into the lower 1KB in a manner similar to the old memory bank controllers found in DMG/GBC cartridges.</p>
 
 	<p>These 2KB sections of data and I/O registers are mirrored endlessly across the 32MB of addresses the GBA reserves for the cartridge. Within the 1KB region reserved for the adapter&#39;s I/O registers, the registers are mirrored every 64 bytes.</p>
 
@@ -3426,7 +3427,7 @@ AM_BLK_STAT	(R/W)	0x08010420 	16-bit		Controls block operations / Reports operat
 
 	<p>AM_BLK_ADDR determines where any data (from either the firmware or the SmartMedia card) will be mapped to. This is always 0x8000000 as far as the firmware is concerned.</p>
 
-	<p>AM_BLK_SIZE determines the size of data to read from the firmware. As the Advance Movie Adapter only maps in a maximum of 1KB for data blocks, this value never greater than 0x400 as far as the firmware is concerned. Note that setting the size of data for SmartMedia card reads is a separate register.</p>
+	<p>AM_BLK_SIZE determines the size of data to read from the firmware. As the Advance Movie Adapter only maps in a maximum of 1KB for data blocks, this value is never greater than 0x400 as far as the firmware is concerned. Note that setting the size of data for SmartMedia card reads is a separate register.</p>
 
 	<p>AM_BLK_STAT controls the majority of operations on the Advance Movie Adapter. By writing to the register and setting certain bits, it starts the mapping process, switches between firmware and SmartMedia card, and makes the 128-bit DES key readable. It also reserves several bits that report on the status of current operations. See the next section for further details.</p>
 
@@ -3441,11 +3442,11 @@ AM_SMC_EOF	(R)	0x0801040E	16-bit		Remaining bytes from current read pointer to E
 
 	<p>AM_SMC_OFFS adjusts the current read pointer by a signed (2&#39;s complement) 32-bit integer, making it possible to shift it forwards or backwards. This is used when a select portion of data or data at a specific location must be read. The read pointer does have some quirks, as detailed in a following section.</p>
 
-	<p>AM_SMC_SIZE determines the size of data to read from the SmartMedia card. As the Advance Movie Adapter only maps in a maximum of 1KB for data blocks, this value never greater than 0x400 as far as the firmware is concerned. Note that setting the size of data for firmware reads is a separate register.</p>
+	<p>AM_SMC_SIZE determines the size of data to read from the SmartMedia card. As the Advance Movie Adapter only maps in a maximum of 1KB for data blocks, this value is never greater than 0x400 as far as the firmware is concerned. Note that setting the size of data for firmware reads is a separate register.</p>
 
 	<p>AM_SMC_FILE selects the current file to begin reading data from. Below in further section, a thorough explanation of the AM3 file hierarchy is provided.</p>
 
-	<p>AM_SMC_EOF returns the remaining bytes from the current read pointer until the current End-Of-File is reached. This value normally reports the same 16-bit value as AM_SMC_SIZE at least that many bytes remain between the read pointer and EOF. If the read pointer advances after mapping in new data, and the distance between the read pointer and the EOF is less than AM_SMC_SIZE, AM_SMC_EOF will report the smaller value. Note that AM_SMC_EOF can also change when simply switching to a new file (by writing to AM_SMC_FILE) that is smaller than AM_SMC_SIZE.</p>
+	<p>AM_SMC_EOF returns the remaining bytes from the current read pointer until the current End-Of-File is reached. This value normally reports the same 16-bit value as AM_SMC_SIZE when at least that many bytes remain between the read pointer and EOF. If the read pointer advances after mapping in new data, and the distance between the read pointer and the EOF is less than AM_SMC_SIZE, AM_SMC_EOF will report the smaller value. Note that AM_SMC_EOF can also change when simply switching to a new file (by writing to AM_SMC_FILE) that is smaller than AM_SMC_SIZE.</p>
 
 <code>----------------------------------------------------------------------------------------------------------------------
 Misc
@@ -3456,12 +3457,12 @@ AM_DES_KEY	(R)	0x08010410	128-bit		16-byte key used for DES decryption
 
 	<p>AM_FILE_SIZE returns the current file size as determined by the FAT of the SmartMedia card. Note that this register overlaps with AM_DES_KEY. To switch, the CPU must write the value 0x05 to AM_BLK_STAT.</p>
 
-	<p>AM_DES_KEY returns the 128-bit (16-byte) DES key responsible for decrypting data. This key is unique to different SmartMedia cards and in embedded in a region not normally accessible by standard card readers. When no SmartMedia card is inserted in the adapter these bytes return zero. Note that this register partially overlaps with AM_FILE_SIZE. To switch, the CPU must write the value 0x03 to AM_BLK_STAT.</p>
+	<p>AM_DES_KEY returns the 128-bit (16-byte) DES key responsible for decrypting data. This key is unique to every SmartMedia card and is embedded in a region not normally accessible by standard card readers. When no SmartMedia card is inserted in the adapter, these bytes return zero. Note that this register partially overlaps with AM_FILE_SIZE. To switch, the CPU must write the value 0x03 to AM_BLK_STAT.</p>
 
 	<a name="ama_sta"></a>
 	<p class="gray_title">[Advance Movie Adapter] : AM_BLK_STAT</p>
 
-	<p>This I/O register is heavily used by the adapter and is central to its operation. It acts a way for the CPU to send commands to the adapter as well as determine the status of firmware or SmartMedia card mapping. Its various bits work as follows:</p>
+	<p>This I/O register is heavily used by the adapter and is central to its operation. It acts as a way for the CPU to send commands to the adapter as well as determine the status of firmware or SmartMedia card mapping. Its various bits work as follows:</p>
 
 <code>-----------------------------------------------------------
 Bit 0		(R/W)		Execute Operation
@@ -3492,7 +3493,7 @@ Value		| Operation Description
 
 	<p>Set File Size Mode and Set DES Key Mode refer to the values held in AM_FILE_SIZE and AM_DES_KEY. Since these registers have overlapping addresses, AM_BLK_STAT controls which mode the adapter will use, and which values to return when reading these memory locations. Once the DES key is read, there is usually no need to return to this mode.</p>
 
-	<p>These operations can be further divided as being &#34;internal&#34; or &#34;external&#34;. The first deals with data that resides on the Advance Movie Adapter itself, such as reading firmware or writing to I/O registers. The second deals with data residing on the SmartMedia card, such as its data, file sizes, and DES keys. A value of &#34;1&#34; chooses internal operations, while a value of &#34;0&#34; chooses external operations. In practice, however, only a few limited values are ever written to AM_BLK_STAT. These can then be seen as single-byte &#34;commands&#34;.</p>
+	<p>These operations can be further divided as being &#34;internal&#34; or &#34;external&#34;. The first deals with data that resides on the Advance Movie Adapter itself, such as reading firmware or writing to I/O registers. The second deals with data residing on the SmartMedia card, such as the files themselves, file sizes, and DES keys. A value of &#34;1&#34; chooses internal operations, while a value of &#34;0&#34; chooses external operations. In practice, however, only a few limited values are ever written to AM_BLK_STAT. These can then be seen as single-byte &#34;commands&#34;.</p>
 
 <code>-----------------------------------------------------------
 Command		| Description
@@ -3689,6 +3690,93 @@ INFO.AM3
 	<p>Although this &#34;security&#34; is easily defeated, at the time, it was only meant to deter casual, physical piracy, as SmartMedia card readers and writers were once common. The SmartMedia&#39;s 128-bit ID is permanently set at the time of manufacture, so even commercially available blank cards would have a different ID, meaning the AM3 files could not blindly be copied over. Digital solutions, however, such as emulators, are not bound by these constraints.</p>
 
 	<p>The key can be legitimately extracted by any GBA ROM dumper or other homebrew by simply trying to read the Advance Movie Adapter as if it were a normal game cartridge. As long as an AM3 SmartMedia card is inserted, the key will appear at the bytes 0x08010410 through 0x0801041F.</p>
+
+	<a name="ama_lst"></a>
+	<p class="gray_title">[Advance Movie Adapter] : List of AM3 Cards and Products</p>
+
+<code>-----------------------------------------------------------
+Individual Cards with Video
+-----------------------------------------------------------
+am3-00002		Detective Conan Episode 2: 社長令嬢誘拐事件
+am3-00003		Detective Conan Episode 3: アイドル密室殺人事件
+am3-00004		Detective Conan Episode 4: 大都会暗号マップ事件
+am3-00007		Time Bokan Episode 1: ｢発進！タイムボカンだペッチャ｣
+am3-00008		Time Bokan Episode 2: ｢ギリシャのズッコケ戦争だペッチャ｣
+am3-00009		Time Bokan Episode 3: ｢恐怖の魔女狩りだペッチャ｣
+am3-00010		Time Bokan Episode 4: ｢へんてこ西遊記だペッチャ｣
+am3-00012		Detective Conan Episode 5: 新幹線大爆破事件
+am3-00013		Detective Conan Episode 6: バレンタイン殺人事件
+am3-00014		Detective Conan Episode 7: 月いちプレゼント脅迫事件
+am3-00015		Time Bokan Episode 5: ｢原始人はやさしいだペッチャ｣
+am3-00016		Time Bokan Episode 6: ｢海賊はオウムが好きだペッチャ｣
+am3-00017		Time Bokan Episode 7: ｢合図はひらけゴマだペッチャ｣
+am3-00018		Detective Conan Episode 8: 美術館オーナー殺人事件
+am3-00019		Detective Conan Episode 9: 天下一夜祭殺人事件
+am3-00020		Detective Conan Episode 10: プロサッカー選手脅迫事件
+am3-00025		Rerere no Tensai Bakabon Vol. 1
+am3-00026		Rerere no Tensai Bakabon Vol. 2
+am3-00027		Detective Conan Episode 12: 歩美ちゃん誘拐殺人事件
+am3-00028		Detective Conan Episode 13: 奇妙な人捜し殺人事件
+am3-00029		Detective Conan Episode 14: 謎のメッセージ殺人事件
+am3-00030		Detective Conan Episode 11: ピアノソナタ『月光』殺人事件
+am3-00033		Pokemon Movie: 劇場版ポケットモンスター ピカチュウのなつやすみ
+am3-00035		Pokemon TV Anime Episode 1
+am3-00046		Pokemon TV Anime Episode 2
+am3-00047		Pokemon TV Anime Episode 3
+am3-00067		Pokemon Movie: 劇場版ポケットモンスター ミュウツーの逆襲　完全版
+am3-00069		Pokemon Movie: 劇場版ポケットモンスター ピカチュウたんけんたい
+am3-00085		Pokemon Movie: 劇場版ポケットモンスター ピチューとピカチュウ
+am3-00104		Pokemon Movie: 劇場版ポケットモンスター 幻のポケモン　ルギア爆誕
+am3-00131		Pokemon Movie: 劇場版ポケットモンスター 結晶塔の帝王　エンテイ
+am3-00137		Bakusho Mondai no Bakuten: パラパラまんが
+am3-00144		Crayon Shin-chan Movie: ブリブリ王国の秘宝
+am3-00167		Pokemon Movie: 劇場版ポケットモンスターセレビィ～時を超えた遭遇～
+
+
+-----------------------------------------------------------
+Individual Cards with Video + Adapter Bundle
+-----------------------------------------------------------
+am3-00001		Detective Conan Episode 1: ジェットコースター殺人事件
+am3-00006		Time Bokan Episode 1: ｢発進！タイムボカンだペッチャ｣
+am3-00024		Rerere no Tensai Bakabon Vol. 1
+am3-00031		Pokemon Movie: 劇場版ポケットモンスター ピカチュウのなつやすみ
+am3-00034		Pokemon TV Anime Episode 1
+am3-00065		Pokemon Original Animation: オリジナルアニメーション ピカチュウのふゆやすみ
+am3-00068		Pokemon Movie: 劇場版ポケットモンスター ピカチュウたんけんたい
+am3-00084		Pokemon Movie: 劇場版ポケットモンスター ピチューとピカチュウ
+am3-00090		Akubi-chan: Episode 1 (???)
+am3-00111		Ocha-ken: ちょこっとものがたり vol.1収録
+
+
+-----------------------------------------------------------
+Blank Gashapon Cards
+-----------------------------------------------------------
+am3-00049		Pikachu Gashapon Card
+am3-00052		Bulbasaur Gashapon Card
+am3-00054		Charmander Gashapon Card
+am3-00056		Squirtle Gashapon Card
+am3-00080		Mew Gashapon Card
+am3-00082		Lucario Gashapon Card
+am3-00083		Munchlax Gashapon Card
+am3-00086		Akubi-chan Gashapon Card #1
+am3-00088		Akubi-chan Gashapon Card #2
+am3-00089		Akubi-chan Gashapon Card #3
+am3-00112		Ocha-ken Gashapon Card
+am3-00116		Time Bokan Gashapon Card
+am3-00130		Kyorge Gashapon Card
+am3-00139		Bakusho Mondai no Bakuten Gashapon Card
+am3-00146		Crayon Shin-chan Gashapon Card #1
+am3-00147		Crayon Shin-chan Gashapon Card #2
+am3-00148		Crayon Shin-chan Gashapon Card #3
+am3-00166		Manaphy Gashapon Card
+
+
+------------------------------------------------------------
+Blank Gashapon Cards + Adapter Bundle
+------------------------------------------------------------
+am3-00049		Pikachu Gashapon Card
+am3-00081		Lucario Gashapon Card
+am3-00087		Akubi-chan Gashapon Card #1</code>
 
 
 	<!-- Ubisoft Thrustmaster Pedometer -->
