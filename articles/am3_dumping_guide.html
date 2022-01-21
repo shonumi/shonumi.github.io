@@ -49,7 +49,7 @@
 						<li><strong class="highlight_med_gray">SmartMedia Card Data</strong>
 							<ul>
 								<li>This is the raw disk image of the SmartMedia card.</li>
-								<li>Size: 33554432 (32MiB) or 67108864 (64MiB) bytes</li>
+								<li>Size: 32768000 (32MB) or 65536000 (64MB) bytes</li>
 							</ul>
 						</li>
 					</p>
@@ -77,14 +77,16 @@
 
 				<p class="inner_text_large"><strong>Dumping SmartMedia Card Data - Overview</strong></p>
 
-				<p class="inner_text">To dump the SmartMedia Card Data, first obtain hardware capable of reading standard SmartMedia cards. This may require purchasing a second-hand reader, as the SmartMedia format has been obselete for well over a decade. Many older printers may still have a built-in slot capable of reading these cards. SmartMedia cards are evidently not well supported by many products today, but some newer devices can still read them, such as <a href="https://www.amazon.com/SmartMedia-Reader-Universal-Adapter-Windows/dp/B07J9WQGDX/">INDMEM&#39;s multi-card reader.</a></p>
+				<p class="inner_text">To dump the SmartMedia Card Data, first obtain hardware capable of reading standard SmartMedia cards. This may require purchasing a second-hand reader, as the SmartMedia format has been obselete for well over a decade. Many older multifunction printers may still have a built-in slot designed for these cards. SmartMedia cards are evidently not well supported by many products today, but some newer devices can still read them, such as <a href="https://www.amazon.com/SmartMedia-Reader-Universal-Adapter-Windows/dp/B07J9WQGDX/">INDMEM&#39;s multi-card reader.</a></p>
 
 				<p class="center_img"><img src="am3_guide_02.png" alt="Sexy product" /></p>
 				<p class="img_caption">Be sure to check eBay and other sites as well for cheap card readers!</p>
 
-				<p class="inner_text">Note that while it is possible to dump most of the SmartMedia Card Data through GBA or NDS homebrew or standard ROM dumpers like the GBxCartRW, all data pertaining to the File Allocation Table lost. Therefore, it is not possible to <strong>completely dump</strong> all of binary data found on the card without a dedicated SmartMedia card reader.</p>
+				<p class="inner_text">Note that while it is possible to dump most of the SmartMedia Card Data through GBA or NDS homebrew or standard ROM dumpers like the GBxCartRW, all data pertaining to the File Allocation Table is lost. Therefore, it is not possible to <strong>completely dump</strong> all of the binary data found on the card without a dedicated SmartMedia card reader.</p>
 
 				<p class="inner_text">Once the SmartMedia card reader hardware is connected to a PC, software must be used to create a 1:1 copy of the disk image. For Linux, the standard <code class="highlight_hor_gray">dd</code> command can be used to create the image. For those on Windows, use an equivalent program. This guide will demonstrate <a href="https://www.msys2.org/">MSYS2</a>, as it provides its own version of the <code class="highlight_hor_gray">dd</code> command that mirrors Linux usage.</p>
+
+				<p class="inner_text">An important note to those attempting to make 100% clean dumps: <strong>disable all writes to removeable storage devices.</strong> SmartMedia cards are readable/writeable disks, and as such the File Allocation Table may be updated inadvertedly by your operating system when inserting the card. On Linux systems, take care never to mount the device associated with the your card reader. For a more rigorous approach, refer to <a href="https://dumping.guide/todo/removable-flash-media">this link.</a> On Windows, <a href="https://www.tenforums.com/tutorials/124842-enable-disable-access-all-removable-storage-devices-windows.html#option2">a simple edit to the registry</a> will disable writes to all removeable storage, making it read-only. Keep in mind the change to the registry should be temporary; revert it after completing this guide.</p>
 
 				<p class="inner_text_large"><strong>Dumping SmartMedia Card Data - Instructions</strong></p>
 
@@ -92,12 +94,12 @@
 
 				<p class="inner_text"><code class="highlight_hor_gray">cat /proc/partitions</code></p>
 
-				<p class="inner_text">Take note of the output. Connect the SmartMedia card reader to the PC and insert the SmartMedia card into the correct slot. Run the above command again. If the card reader is working correctly, the command should show a new device listed. Look for the new entry and take note of the value in the <strong>NAME</strong> column. This is the ID of the SmartMedia card reader that will be used in the following command.</p>
+				<p class="inner_text">Take note of the output. Connect the SmartMedia card reader to the PC and insert the SmartMedia card into the correct slot. Run the above command again. If the card reader is working correctly, the command should show a new device listed. Look for the new entry and take note of the value in the <strong>NAME</strong> column. This is the ID of the SmartMedia card reader that will be used in the following command. Remember to look for the device itself rather than the partition. In the example pictured below, this is <strong>sdb</strong>, not to be confused with <strong>sdb1</strong>.</p>
 
 				<p class="center_img"><img src="am3_guide_03.png" alt="cat to the rescue uWu" /></p>
 				<p class="img_caption">Here, the new device is labeled &#34;sdb&#34;.</p>
 
-				<p class="inner_text">Once the ID of the card reader has been obtained, use it in the following command, replacing YOUR_ID_HERE with the appropiate value. Be careful with this command! <strong>Always</strong> make sure the output file (the &#34;of=&#34; part) does not point towards a storage device! Point it towards a file, such as a specific .bin or .img or something! If the file does not exist, the command will generate one.</p>
+				<p class="inner_text">Once the device ID of the card reader has been obtained, use it in the following command, replacing YOUR_ID_HERE with the appropiate value. Be careful with this command! <strong>Always</strong> make sure the output file (the &#34;of=&#34; part) does not point towards a storage device! That&#39;s a quick way to overwrite an entire drive, wiping out any data in the process... Point it towards a file, such as a specific .bin or .img or something! If the file does not exist, the command will generate one. On either Linux or Windows, you may need to had admin rights to run the command below:</p>
 
 				<p class="inner_text"><code class="highlight_hor_gray">dd if=/dev/YOUR_ID_HERE of=/home/some_user/somefile.bin status=progress</code></p>
 
@@ -105,9 +107,9 @@
 
 				<p class="inner_text_large"><strong>Dumping SmartMedia Card ID - Instructions</strong></p>
 
-				<p class="inner_text">There are a total of 3 methods to dumping the SmartMedia ID. They are listed below in order of ease and accessibility. Choose the one that fits your needs.</p>
+				<p class="inner_text">There are a total of 3 methods for dumping the SmartMedia ID. They are listed below in order of ease and accessibility. Choose the one that fits your needs.</p>
 
-				<p class="inner_text"><strong>OPTION #1:</strong> The simplest method is to use the NDS homebrew <a href="https://shonumi.github.io/downloads/AM3_FID_DUMPER.nds">AM3 Firmware + ID Dumper</a>. Insert the SmartMedia card into the Advance Movie Adapter, then insert the adapter into Slot-2 of the NDS. Run the homebrew software, and it will automatically dump ID into the file <strong>&#34;SMID.KEY&#34;</strong>.</p>
+				<p class="inner_text"><strong>OPTION #1:</strong> The simplest method is to use the NDS homebrew <a href="https://shonumi.github.io/downloads/AM3_FID_DUMPER.nds">AM3 Firmware + ID Dumper</a>. Insert the SmartMedia card into the Advance Movie Adapter, then insert the adapter into Slot-2 of the NDS. Run the homebrew software, and it will automatically dump the ID into the file <strong>&#34;SMID.KEY&#34;</strong>.</p>
 
 				<p class="center_img"><img src="am3_guide_04.png" alt="ez clap" /></p>
 				<p class="img_caption">The easiest and most straightforward way is to use NDS homebrew, as it dumps both the firmware and SmartMedia ID.</p><hr class="inner_text" />
@@ -117,7 +119,7 @@
 				<p class="center_img"><img src="am3_guide_05.png" alt="Also ez clap" /></p>
 				<p class="img_caption">Regular cart dumpers can read the SmartMedia ID as well with no special handling.</p><hr class="inner_text" />
 
-				<p class="inner_text"><strong>OPTION #3:</strong> Finally, the latest bleeding-edge versions of GBE+ (anything newer than January 19, 2022) is capable of dumping the SmartMedia ID automatically. This is the most complicated method as the feature is relatively new in GBE+. The Advance Movie Adapter&#39;s firmware calculates the correct values and temporarily stores them in RAM. As a result, GBE+ can pull these values and write them to a file. Ensure that the Advance Movie Adapter firmware is stored in GBE+&#39;s <strong>data</strong> folder as such:</p>
+				<p class="inner_text"><strong>OPTION #3:</strong> Finally, the latest bleeding-edge versions of GBE+ (anything newer than January 19, 2022) are capable of dumping the SmartMedia ID automatically. This is the most complicated method as the feature is relatively new in GBE+. The Advance Movie Adapter&#39;s firmware calculates the correct values and temporarily stores them in RAM. As a result, GBE+ can pull these values and write them to a file. Ensure that the Advance Movie Adapter firmware is stored in GBE+&#39;s <strong>data</strong> folder as such:</p>
 
 				<p class="inner_text"><code class="highlight_hor_gray">data/am3_firmware.bin</code></p>
 
@@ -131,7 +133,7 @@
 
 				<p class="inner_text">Use the NDS homebrew <a href="https://shonumi.github.io/downloads/AM3_FID_DUMPER.nds">AM3 Firmware + ID Dumper</a>. Insert the adapter into Slot-2 of the NDS. Run the homebrew software, and it will automatically dump ID into the file <strong>&#34;AM3_FIRMWARE.BIN&#34;</strong>. This step does not require the SmartMedia card at all.</p>
 
-				<p class="inner_text">As a note to technically minded individuals attempting to add firmware dumping support to products such as Sanni cart reader or GBxCart RW, refer to the documentation in <a href="https://shonumi.github.io/dandocs.html#ama">Dan Docs</a> for a complete overview/guide on the adapter&#39;s operation. For a <strong>tl;dr</strong>, set PHI Terminal Output to 16.78MHz, write to the I/O registers in the cart to read in the next 1KB block of firmware, then actually read the firmware at <code class="highlight_hor_gray">0x8000000</code> through <code class="highlight_hor_gray">0x80003FF</code>.</p>
+				<p class="inner_text">As a note to technically minded individuals attempting to add firmware dumping support to products such as the Sanni cart reader or GBxCart RW, refer to the documentation in <a href="https://shonumi.github.io/dandocs.html#ama">Dan Docs</a> for a complete overview/guide on the adapter&#39;s operation. For a <strong>tl;dr</strong>, set PHI Terminal Output to 16.78MHz, write to the I/O registers in the cart to read in the next 1KB block of firmware, then actually read the firmware at <code class="highlight_hor_gray">0x8000000</code> through <code class="highlight_hor_gray">0x80003FF</code>.</p>
 
 
 
