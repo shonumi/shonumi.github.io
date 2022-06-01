@@ -180,7 +180,7 @@
 				<p class="img_caption">AM3 video quality looks like what you&#39;d expect from scaling down video to 240x160.</p>
 
 				<p class="center_img"><img src="am3_12b.png" alt="Filthy American video quality" /></p>
-				<p class="img_caption">The GBA Video Cartridges on the other hand has a constant kind of moiré pattern. It seems to not use enough colors as well (see random bits of blue on Sonic&#39;s gloves) and numerous compression artifacts.</p>
+				<p class="img_caption">The GBA Video Cartridges on the other hand have a constant kind of moiré pattern. It seems to not use enough colors as well (see random bits of blue on Sonic&#39;s gloves) and numerous compression artifacts.</p>
 
 				<p class="inner_text">This brings me to the subject of preserving the AM3 SmartMedia cards. Surprisingly, the Advance Movie Adapter itself is not needed. It only provides the firmware and GBE+ can grab the 16-byte SmartMedia ID by itself. The SmartMedia data can be retrieved through any reader. The main problem facing preservation is the exact format of SmartMedia card dumps. While the most direct method would be to make a full disk image of the card, this is a less than optimal solution. Keep in mind that the SmartMedia card has a <strong>live, writeable</strong> FAT-12 filesystem. Any and all changes to the filesystem would result in a totally different CRC32, MD5, or SHA256 hash, making verification troublesome. Even something as simple as updating a file&#39;s timestamp would do that. There&#39;s also the issue that an operating system might make these kinds of minor changes to the filesystem just by accessing the drive, making a &#34;clean&#34; dump impossible to obtain.</p>
 
