@@ -322,5 +322,11 @@ code
 
 .game_title
 {
-	  font-style: italic;
+	font-style: italic;
 }
+
+.strike
+{
+	text-decoration: line-through;
+}
+

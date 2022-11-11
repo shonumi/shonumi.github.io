@@ -35,7 +35,6 @@
 			{
 				width: 100%;
 				height: 20%;
-				float: top;
 				overflow: auto;
 			}
 
@@ -141,6 +140,8 @@
 			<p class="list_item"><a href="#maw">Magical Watch</a></p>
 			<p class="list_item"><a href="#jcc">Joy Carry Cartridge</a></p>
 			<p class="list_item"><a href="#ama">Advance Movie Adapter</a></p>
+			<p class="list_item"><a href="#mus">Music Recorder</a></p>
+			<p class="list_item"><a href="#pyn">Play-Yan</a></p>
 
 			<p class="list_head"><strong>NDS</strong></p>
 			<p class="list_item"><a href="#utp">Ubisoft Thrustmaster Pedometer</a></p>
@@ -160,6 +161,7 @@
 			<p class="list_item"><a href="#hkh">Hello Kitty no Happy House</a></p>
 			<p class="list_item"><a href="#mbt">Mobile Trainer</a></p>
 			<p class="list_item"><a href="#ndg">Net de Get: Minigame @ 100</a></p>
+			<p class="list_item"><a href="#zng">Zen Nihon GT Senshuken</a></p>
 		</div>
 	</div>
 
@@ -265,6 +267,8 @@ Handshake	---&gt;
 	<p>Since the Barcode Boy acts as master (after the handshake at least), the Game Boy never initiates a transfer during barcode transmission. When sending barcode data, the Barcode Boy doesn&#39;t seem to care what value the Game Boy writes to SB, although no Barcode Boy games write to SB at that time anyway. Ultimately unknown if the Barcode Boy accepts input beyond the handshake, but no evidence has been observed to suggest otherwise.</p>
 
 	<p>Once the Barcode Boy sends the handshake [0x10, 0x07] back to the Game Boy, the scanner returns 0xFF anytime the Game Boy tries to send additional data while the handheld is still on its own internal clock. After the Barcode Boy finishes sending back the barcode data to the Game Boy, it requires the handshake again. It appears the handshake can fail for unknown reasons (probably related to the hardware). For example, the Barcode Boy at times may send back [0x90, 0x07], which seems to indicate an error of some sort.</p>
+
+	<p>It should be noted that the barcode data itself is encapsulated by ASCII control codes, where 0x02 represents the Start of Text (STX) and 0x03 represents the End of Text (ETX).</p>
 
 	<a name="bcb_bar"></a>
 	<p class="gray_title">[Barcode Boy] : Barcode Format</p>
@@ -507,14 +511,38 @@ Set 2 [14:0] [15:1] [14:0] [45:1] ...</code>
 	<a name="btb_cod"></a>
 	<p class="gray_title">[Barcode Taisen Bardigun] : Barcodes</p>
 
-<code>* ラルフ			&#34;Ralph&#34;
-* 4900758340136
+	<p>Below is a chart with barcodes verified to work with the game. Each barcode will produce a single Bardigun when scanning to hatch an egg. The barcode can also be used to give Bardigun unique attacks when scanned before a battle begins. The names of each are listed in kana as well as Romanji or English when translatable.</p>
 
-* タマッピ		&#34;Tamapi&#34;
-* 4900269429252
-
-* チビッシー		&#34;Chibisshii&#34;
-* 4900287167419</code>
+<code>------------------------------------------------------------------------------------------------
+Bardigun Name	| Attack Name		| Barcode
+------------------------------------------------------------------------------------------------
+Chakanan&#34;	| &#34;High Hearing&#34;	| 4580245316402
+チャカナン	| ハイヒーリング		|
+------------------------------------------------------------------------------------------------
+&#34;Chibisshii&#34;	| &#34;Sword&#34;		| 4900287167419
+チビッシー	| ソード			|
+------------------------------------------------------------------------------------------------
+&#34;Chibisshii&#34;	| &#34;Eye Beam&#34;		| 4901330547479
+チビッシー	| めからベーム		|
+------------------------------------------------------------------------------------------------
+&#34;Chip&#34;		| &#34;Lullaby&#34;		| 4983164730678
+チップ		| こもりうた		|
+------------------------------------------------------------------------------------------------
+&#34;Noise&#34;		| &#34;Ikikaeeru&#34;		| 4900753335663
+ノイヅー		| イキカエール 		|
+------------------------------------------------------------------------------------------------
+&#34;Nyaari&#34;	| &#34;Kaenhoushaki&#34;	| 4900363432103
+ニャーリー	| かえんほうしゃき		|
+------------------------------------------------------------------------------------------------
+&#34;Ralph&#34;		| &#34;Ikikaeeru&#34;		| 4900758340136
+ラルフ		| イキカエール 		|
+------------------------------------------------------------------------------------------------
+&#34;Takora&#34;	| &#34;Fire Bolt&#34;		| 4902370501445
+タコラ 		| ファイアーボルト		|
+------------------------------------------------------------------------------------------------
+&#34;Tamappi&#34;	| &#34;Nandemonaooru&#34;	| 4900269429252
+タマッピ		| ナンデモナオール		|
+------------------------------------------------------------------------------------------------</code>
 
 	<!-- DMG-07 -->
 
@@ -566,7 +594,7 @@ Set 2 [14:0] [15:1] [14:0] [45:1] ...</code>
 		<li class="list_item">Yoshi&#39;s Cookie</li>
 	</ul>
 
-	<p>F1 Pole Position is the localization of the Japanese game Nakajima Satoru F-1 Hero GB &#39;92: The Graded Driver. Both versions support the DMG-07. The prequel, Nakajima Satoru F-1 Hero GB World Championship '91, was however a Japanese exclusive.</p>
+	<p>F1 Pole Position is the localization of the Japanese game Nakajima Satoru F-1 Hero GB &#39;92: The Graded Driver. Both versions support the DMG-07. The prequel, Nakajima Satoru F-1 Hero GB World Championship &#39;91, was however a Japanese exclusive.</p>
 
 	<p>Several games are claimed to be compatible but actual support for the DMG-07 remains dubious at best for those titles. Gauntlet II advertises 4-player action via the Link Cable, but this may simply refer to 2-player mode with each Game Boy controlling 2 characters (and switching among friends when appropiate).</p>
 
@@ -873,7 +901,7 @@ Every other ON pulse length		78 + (20 * (LENGTH-2))
 
 OFF pulse length			38 + (20 * (LENGTH-2))</code>
 
-	<p>The LENGTH is number of times the 8-bit CPU register is incremented in the WAIT_FOR_OFF or WAIT_FOR_ON functions. The sum of two LENGTHs from one ON pulse and one OFF pulse must be equal to the delay data in WRAM. For example, say the delay data contains 0x20. This means that the TOTAL amount of times the 8-bit register was incremented is 0x20. In a perfect world, the Full Changer would probably turn on the IR light so that this 8-bit register is incremented 0x10 times, then turn off the IR light so that D is incremented again 0x10 times. In reality, however, the length of the ON&#47OFF pulses could run a bit longer or shorter. As far as Zok Zok Heroes is concerned, the total amount of time the IR light is ON then OFF is what matters, so the ON&#47OFF pulse timings ultimately have to add up</p>
+	<p>The LENGTH is number of times the 8-bit CPU register is incremented in the WAIT_FOR_OFF or WAIT_FOR_ON functions. The sum of two LENGTHs from one ON pulse and one OFF pulse must be equal to the delay data in WRAM. For example, say the delay data contains 0x20. This means that the TOTAL amount of times the 8-bit register was incremented is 0x20. In a perfect world, the Full Changer would probably turn on the IR light so that this 8-bit register is incremented 0x10 times, then turn off the IR light so that D is incremented again 0x10 times. In reality, however, the length of the ON&#47;OFF pulses could run a bit longer or shorter. As far as Zok Zok Heroes is concerned, the total amount of time the IR light is ON then OFF is what matters, so the ON&#47;OFF pulse timings ultimately have to add up</p>
 
 	<p>The current database GBE+ uses recreates ON&#47;OFF pulses that generally run for the same amount of cycles. However, based on hardware tests, the ON pulses have variable lengths, while the OFF pulses are typically constant. Again, Zok Zok Heroes won&#39;t care, as long as the total time of the ON&#47;OFF pulses meets whatever value it expects.</p>
 
@@ -1000,7 +1028,7 @@ ID	| Japanese Name		| Translated Name		| Cosmic Character Movements
 
 	<p>This list represents all the games that have been verified to use the IR port. While exhaustive, this list is probably not complete. There are likely more Japanese exclusives that need to be added. It&#39;s dubious whether or not Animorphs actually is a &#34;Ubi Key&#34; game. The back boxart doesn&#39;t have the &#34;IR Compatible&#34; logo, and the manual makes no mention of IR communication.</p>
 
-	<p>The North American version of Disney&#39;s Aladdin claims to have infrared support on the box, supposedly for Ubi Key functionality, however, no such option is accessible in the game. Additionally, European variants omit the GBC IR logo from their boxes. It's possible that like Animorphs, Aladdin had its IR features stripped.</p>
+	<p>The North American version of Disney&#39;s Aladdin claims to have infrared support on the box, supposedly for Ubi Key functionality, however, no such option is accessible in the game. Additionally, European variants omit the GBC IR logo from their boxes. It&#39;s possible that like Animorphs, Aladdin had its IR features stripped.</p>
 
 	<ul>
 		<li class="list_tab"><div class="x">Animal Breeder 3</div><div class="y">Matchmaking between animals raised by the player</div></li>
@@ -2168,6 +2196,8 @@ Bit 7 - Pause Operation		| Alerts software when sewing operations are immediatel
 	<p class="list_item"><a href="#sda_out">Communication Protocol - Read Operations</a></p>
 	<p class="list_item"><a href="#sda_inp">Communication Protocol - Write Operations</a></p>
 	<p class="list_item"><a href="#sda_fmt">Soul Doll Data Format</a></p>
+	<p class="list_item"><a href="#sda_sta">Soul Doll Data Stats</a></p>
+	<p class="list_item"><a href="#sda_enc">Soul Doll Data Obfuscation</a></p>
 
 	<a name="sda_gen"></a>
 	<p class="gray_title">[Soul Doll Adapter] : General Hardware Information</p>
@@ -2284,98 +2314,152 @@ Bit 7               | Bit 6               | Bit 5               | Bit 4         
 	<a name="sda_fmt"></a>
 	<p class="gray_title">[Soul Doll Adapter] : Soul Doll Data Format</p>
 
-	<p>Most of the 1KB data contained on the 24LC08 appears to be related to the Talispod or Talisdam accessories, e.g. such data as the Legend's preferred humidity and tempurature, and their stats. For the games, however, only bytes 0x300 - 0x3FF are relevant. This area of memory specifies the nickname, the owner's name, and various other flags related to auto-training mode. Most importantly, these bytes determine what kind of Legend is generated from the Soul Doll. Byte 0x302 acts as this ID:</p>
+	<p>Most of the 1KB data contained on the 24LC08 appears to be related to the Talispod or Talisdam accessories, e.g. such data as the Legend&#39;s preferred humidity and tempurature, and their stats. For the games, however, only bytes 0x300 - 0x3FF are relevant. This area of memory specifies the nickname, the owner&#39;s name, and various other flags related to auto-training mode and attached items. Most importantly, these bytes determine what kind of Legend is generated from the Soul Doll.</p>
 
-	<p><code>0x01 = Windragon (A)?
-0x03 = Windragon (B)?
-0x04 = Mermaid
-0x05 = Werewolf
-0x06 = Will 'o' Wisp
-0x07 = Tornado Kingdragon
-0x08 = Blaze Dragon (A)?
-0x09 = Goblin
-0x0A = Yeti
-0x0B = Hell Hound
-0x0C = Volcano Kingdragon
-0x0D = Windragon Berserker Mode
-0x0E = Blazedragon Berserker Mode
-0x0F = Fire Giant
-0x10 = Undine
-0x11 = Peryton
-0x12 = Troll
-0x13 = Command Windragon
-0x14 = Manticore
-0x15 = Carbuncle
-0x16 = Command Blazedragon
-0x17 = Dwarf
-0x18 = Skeleton
-0x19 = Earthquake Kingdragon
-0x1A = Storm Kingdragon
-0x1B = Wyvern
-0x1E = Ranshiin (A)?
-0x1F = Ranshiin (B)?
-0x20 = Chibi Shiron
-0x21 = Command Windragon Break Armed
-0x22 = Command Blazedragon Volk Armed
-0x23 = Chimaera
-0x24 = Triton
-0x25 = Gargoyle
-0x26 = Cloud Giant
-0x27 = Command Windragon
-0x28 = Command Blazedragon
-0x2B = Spiritual Windragon
-0x2C = Hexadragon
-0x2D = Windragon Berserker Mode (Growing)?
-0x2E = Blazedradon Berserker Mode (Growing)?
-0x31 = Devour Crocodile (Dandy)
-0x32 = Harpy
-0x33 = Cait Sith
-0x34 = Command Blazedragon Volk Armed
-0x35 = Devour Crocodile
-0x36 = Vampire
-0x37 = Spiritual Kingdragon
-0x38 = Ogre
-0x39 = Spriggan
-0x3A = Command Windragon Break Armed
-0x3B = Bicorn
-0x3C = Centaur
-0x3D = Nekrom Kingdragon
-0x3E = Golem
-0x3F = Ifrit
-0x41 = Gorgon
-0x42 = Kraken
-0x43 = Minotauros
-0x44 = Oberon
-0x45 = Lich
-0x48 = Colonel Windragon Tornado Soul
-0x49 = Pheonix
-0x4A = Behemoth
-0x4B = Jabberwock
-0x4C = Leviathan
-0x4D = Fenrir
-0x4E = Colonel Blazedragon Volcano Soul
-0x4F = Sphinx
-0x50 = Cyclops
-0x54 = Syclla
-0x55 = Titan
-0x56 = Echidna
-0x59 = Ranshiin (B)?
-0x5A = Chibi Shiron (Manga Version)?
-0x5B = Blazedragon (B)?
-0x5C = Windragon (Manga Version)
-0x5D = Griffin
-0x5E = Bigfoot
-0x5F = Tiamat
-0x66 = Wyvern
-0x67 = Storm Kingdragon
-0x68 = Carbuncle
-0x6D = Giant Crab
-0x71 = Hydra
-0x72 = Iron Golem
-0x73 = Valkyrie
-0x74 = Cerberus</code>
+	<p>The layout of this memory varies depending on which Legendz game is being played. Data for Legendz: Yomigaeru Shiren no Shima and Legendz: Sign of Necrom change the location of the fields. While Sign of Necrom can recognize the format of Yomigaeru Shiren no Shima, data from Sign of Nekrom is incompatible with Yomigaeru Shiren no Shima.</p>
+
+	<p>For Yomigaeru Shiren no Shima, EEPROM data is arranged as follows:</p>
+
+<p><code>-----------------------------------------------------------
+Address		| Data Description
+-----------------------------------------------------------
+0x302		| Legend ID
+0x398 - 0x39C	| Owner Name
+0x3A1 - 0x3B0	| Message
+0x3B1 - 0x3B9	| Legend Name
+0x3D4		| Legend Level
+0x3D5 - 0x3DE	| Legend Stats
+0x3EE		| Auto Adventure Flag
+0x3F0		| Attached Item Flag
+0x3F1 - 0x3F2	| Attached Item Type & Quantity
+0x3FE - 0x3FF	| Checksum
+-----------------------------------------------------------</code></p>
+
+	<p>For Sign of Nekrom, EEPROM data is arranged as follows:</p>
+
+<p><code>-----------------------------------------------------------
+Address		| Data Description
+-----------------------------------------------------------
+0x302		| Legend ID
+0x390 - 0x394	| Owner Name
+0x3A1 - 0x3B0	| Message
+0x399 - 0x3A0	| Legend Name
+0x3BD		| Legend Level
+0x3BE - 0x3C7	| Legend Stats
+0x3CC		| Auto Adventure Flag
+0x3CE - 0x3CF	| Attached Item Type & Quantity
+0x3FC		| Attached Item Flag
+0x3FE - 0x3FF	| Checksum
+-----------------------------------------------------------</code></p>
+
+	<p>Byte 0x302 acts as the Legend ID. Depending on the value of this, the games will produce a different Legend. Their values are listed below:</p>
+
+<p><code>0x01 = Windragon (A)?			0x21 = Command Windragon Break Armed		0x43 = Minotauros
+0x03 = Windragon (B)?			0x22 = Command Blazedragon Volk Armed		0x44 = Oberon
+0x04 = Mermaid				0x23 = Chimaera					0x45 = Lich
+0x05 = Werewolf				0x24 = Triton					0x48 = Colonel Windragon Tornado Soul		
+0x06 = Will &#39;o&#39; Wisp			0x25 = Gargoyle					0x49 = Pheonix
+0x07 = Tornado Kingdragon		0x26 = Cloud Giant				0x4A = Behemoth
+0x08 = Blaze Dragon (A)?		0x27 = Command Windragon			0x4B = Jabberwock
+0x09 = Goblin				0x28 = Command Blazedragon			0x4C = Leviathan
+0x0A = Yeti				0x2B = Spiritual Windragon			0x4D = Fenrir
+0x0B = Hell Hound			0x2C = Hexadragon				0x4E = Colonel Blazedragon Volcano Soul
+0x0C = Volcano Kingdragon		0x2D = Windragon Berserker Mode (Growing)?	0x4F = Sphinx
+0x0D = Windragon Berserker Mode		0x2E = Blazedradon Berserker Mode (Growing)?	0x50 = Cyclops
+0x0E = Blazedragon Berserker Mode	0x31 = Devour Crocodile (Dandy)			0x54 = Syclla
+0x0F = Fire Giant			0x32 = Harpy					0x55 = Titan
+0x10 = Undine				0x33 = Cait Sith				0x56 = Echidna
+0x11 = Peryton				0x34 = Command Blazedragon Volk Armed		0x59 = Ranshiin (B)?
+0x12 = Troll				0x35 = Devour Crocodile				0x5A = Chibi Shiron (Manga Version)?
+0x13 = Command Windragon		0x36 = Vampire					0x5B = Blazedragon (B)?
+0x14 = Manticore			0x37 = Spiritual Kingdragon			0x5C = Windragon (Manga Version)
+0x15 = Carbuncle			0x38 = Ogre					0x5D = Griffin
+0x16 = Command Blazedragon		0x39 = Spriggan					0x5E = Bigfoot
+0x17 = Dwarf				0x3A = Command Windragon Break Armed		0x5F = Tiamat
+0x18 = Skeleton				0x3B = Bicorn					0x66 = Wyvern
+0x19 = Earthquake Kingdragon		0x3C = Centaur					0x67 = Storm Kingdragon
+0x1A = Storm Kingdragon			0x3D = Nekrom Kingdragon			0x68 = Carbuncle
+0x1B = Wyvern				0x3E = Golem					0x6D = Giant Crab
+0x1E = Ranshiin (A)?			0x3F = Ifrit					0x71 = Hydra
+0x1F = Ranshiin (B)?			0x41 = Gorgon					0x72 = Iron Golem
+0x20 = Chibi Shiron			0x42 = Kraken					0x73 = Valkyrie
+											0x74 = Cerberus</code></p>
 
 	<p>Several IDs appear to be mapped to the same Legend. This may be explained by the fact that some Soul Dollz were released in A, B, and sometimes C variants. The plastic figurine is different, but the GBA games generate the same sprite and default name for the Soul Doll. All of the potential duplicates are marked with &#34;?&#34; in the list above. Although there are 103 Soul Dollz, the list remains incomplete. The gaps between entries do not generate valid Legendz, which suggests other bytes in EEPROM are also responsible for the ID.</p>
+
+	<p>2 bytes represent the quantity and type of attached items for a Soul Doll. A Legend can temporarily hold onto items from the player&#39;s inventory. Only 1 type of item can be given to a Legend at a time, but its quanitity can vary (1 = Minimum, 9 = Maximum).</p>
+
+	<p>5 bytes are used to store the owner&#39;s name. During the Soul Doll Initialization process, the player&#39;s name is registered to the Soul Doll. The games use this to lock the Soul Doll to a particular player. If the owner name written to EEPROM doesn&#39;t match the current one from the game&#39;s save file, EEPROM must be erased and the Soul Doll reset in order to use it. Each byte in EEPROM represents one character. The exact string format is currently unknown.</p>
+
+	<p>16 bytes are used to store a brief message inside the Soul Doll. This message can be checked during the Reborn process on a Soul Doll that was previously initialized for a given player. Each byte in EEPROM represents one character. The exact string format is unknown.</p>
+
+	<p>8 bytes are used to store the Legend&#39;s name. Each byte in EEPROM represents one character. The exact string format is currently unknown.</p>
+
+	<p>1 byte represents the level of the Legend. Its value ranges from 1 to 99.</p>
+
+	<p>10 bytes represent the various stats about the player&#39;s Legend inside the Soul Doll (HP, Strength, Defense, Magic Power, Magic Defense, and Speed). The size of each value varies in terms of bits, and the same value is usually spread over multiple bytes. See the next section for more information.</p>
+
+	<p>1 byte represents the Auto Adventure flag. When the Legend goes on an Auto Adventure, this byte is set to a non-zero value, otherwise it is set to 0x00. For Yomigaeru Shiren no Shima, this flag is always 0x01 when set. For Sign of Nekrom, it varies depending on the type of Auto Adventure, acting as a sort of ID.</p>
+
+	<p>Bytes 0x3FE through 0x3FF are a 16-bit checksum the data 0x380 through 0x3FD. The checksum is computed by adding up every byte within that range. If the checksum is incorrect, both Legendz games will treat the entire Soul Doll data as invalid, which will require it to be reinitialized. After calculating the initial checksum, it must be XOR&#39;ed with a separate 16-bit value. Yomigaeru Shiren no Shima uses 0x4832, while Sign of Nekrom uses 0x4C32. Sign of Nekrom can detect both types of checksums and uses this to determine which game last modified EEPROM data.</p>
+
+	<a name="sda_sta"></a>
+	<p class="gray_title">[Soul Doll Adapter] : Soul Doll Data Stats</p>
+
+	<p>Use the following psuedocode to obtain the values for each attribute of the Soul Doll&#39;s Legend. Assume that ADDRESS the specified the EEPROM address 0x3D5 (for Yomigaeru Shiren no Shima) or 0x3BE (for Sign of Nekrom).</p>
+
+<p><code>-----------------------------------------------------------
+HP
+-----------------------------------------------------------
+VAL1 = READ 16 BITS FROM (ADDRESS)
+VAL2 = READ 08 BITS FROM (ADDRESS + 2)
+HP = (VAL_1 &gt;&gt; 6) | ((VAL & 0x0F) &lt;&lt; 10)
+
+
+-----------------------------------------------------------
+STRENGTH
+-----------------------------------------------------------
+VAL1 = READ 16 BITS FROM (ADDRESS + 2)
+STRENGTH = ((VAL1 &lt;&lt; 18) &gt;&gt; 22)
+
+
+-----------------------------------------------------------
+DEFENSE
+-----------------------------------------------------------
+VAL1 = READ 16 BITS FROM (ADDRESS + 6)
+DEFENSE = ((VAL1 &lt;&lt; 20) &gt;&gt; 22)
+
+
+-----------------------------------------------------------
+MAGIC POWER
+-----------------------------------------------------------
+VAL1 = READ 32 BITS FROM (ADDRESS + 2)
+MAGIC POWER = ((VAL1 &lt;&lt; 8) &gt;&gt; 22)
+
+
+-----------------------------------------------------------
+MAGIC DEFENSE
+-----------------------------------------------------------
+VAL1 = READ 32 BITS FROM (ADDRESS + 6)
+MAGIC DEFENSE = ((VAL1 &lt;&lt; 10) &gt;&gt; 22)
+
+
+-----------------------------------------------------------
+SPEED
+-----------------------------------------------------------
+VAL1 = READ 08 BITS FROM (ADDRESS + 6)
+VAL2 = READ 08 BITS FROM (ADDRESS + 5)
+SPEED = ((VAL1 & 0x03) &lt;&lt; 8) | VAL2</code></p>
+
+	<a name="sda_enc"></a>
+	<p class="gray_title">[Soul Doll Adapter] : Soul Doll Data Obfuscation</p>
+
+	<p>The EEPROM data is obfuscated with a repeating 32-bit key. This makes the data somewhat inaccessible unless parsed first. The 32-bit key is 0xA8262CDB as an LSB first value. Each 32-bit value from EEPROM is simply XOR&#39;ed by the key. Another way to unscramble EEPROM is demonstrated by the following psuedocode:</p>
+
+<p><code>ARRAY = 0xDB, 0x2C, 0x26, 0xA8
+UNSCRAMBLED VALUE = EEPROM BYTE XOR ARRAY[EEPROM ADDRESS AND 0x03]</code></p>
+
+	<p>This obfuscation only occurs on bytes 0x380 through 0x3FF. The checksum is calculated and XOR&#39;ed by its own 16-bit value before XOR&#39;ing this 128-byte region with the above mentioned 32-bit value.</p>
 
 	<!-- Battle Chip Gate -->
 	<a name="bcg"></a>
@@ -2974,7 +3058,7 @@ For Misc. Actions
 	<a name="vrs_pro"></a>
 	<p class="gray_title">[Virtureal Racing System] : VRS Protocol</p>
 
-	</p>All communication with the VRS uses the GBA&#39;s Multi16 mode with a baud rate of 115200bps. The first GBA acts as the Parent, while the second GBA acts as the Child 2. Even though the VRS has only two Link Cables, the entire setup behaves as if an additional GBA is connected as Child 1. This extra connection reports the status for each racer. The entire multiplayer model works as follows</p>
+	<p>All communication with the VRS uses the GBA&#39;s Multi16 mode with a baud rate of 115200bps. The first GBA acts as the Parent, while the second GBA acts as the Child 2. Even though the VRS has only two Link Cables, the entire setup behaves as if an additional GBA is connected as Child 1. This extra connection reports the status for each racer. The entire multiplayer model works as follows</p>
 
 <code>Racer 1 Input		 	Parent
 Race Status			Child 1
@@ -3387,8 +3471,8 @@ Bit		| Function
 	<p class="list_item"><a href="#ama_ptr">Read Pointer</a></p>
 	<p class="list_item"><a href="#ama_sys">File System And Hierarchy</a></p>
 	<p class="list_item"><a href="#ama_lok">00.AM3</a></p>
+	<p class="list_item"><a href="#ama_err">Error Handling</a></p>
 	<p class="list_item"><a href="#ama_lst">List of AM3 Cards and Products</a></p>
-
 
 	<a name="ama_gen"></a>
 	<p class="gray_title">[Advance Movie Adapter] : General Hardware Information</p>
@@ -3400,8 +3484,8 @@ Bit		| Function
 		<li class="list_item">Accepts SmartMedia cards from a slot on the side.</li>
 		<li class="list_item">The cartridge itself contains no hardware to accelerate audio/video playback. It is strictly for the GBA&#39;s CPU to read data.</li>
 		<li class="list_item">The cartridge has many hardware functions for reading and navigating FAT12 filesystems.</li>
-		<li class="list_item">The cartridge also contains a 12KB firmware responsible for loading, decrypting, decoding, and playing media.</li>
-		<li class="list_item">Small &#34;lock files&#34; are encrypted with 128-bit DES as an anti-piracy measure. Each AM3 SmartMedia card has a key that the adapter can retrieve.</li>
+		<li class="list_item">The cartridge also contains an 11KB firmware responsible for loading, decrypting, decoding, and playing media.</li>
+		<li class="list_item">Small &#34;lock files&#34; are encrypted with 128-bit DES as an anti-piracy measure. Each AM3 SmartMedia card has an ID that the adapter can retrieve.</li>
 		<li class="list_item">SmartMedia cards came in 32MB for TV shows/episodes, and 64MB for full-length movies.</li>
 	</ul>
 
@@ -3452,12 +3536,14 @@ AM_SMC_EOF	(R)	0x0801040E	16-bit		Remaining bytes from current read pointer to E
 Misc
 ----------------------------------------------------------------------------------------------------------------------
 AM_FILE_SIZE	(R)	0x08010410	32-bit		Current file size according to FAT
-AM_DES_KEY	(R)	0x08010410	128-bit		16-byte key used for DES decryption
+AM_SMID		(R)	0x08010410	128-bit		16-byte SmartMedia ID used for copy-protection
 ----------------------------------------------------------------------------------------------------------------------</code>
 
-	<p>AM_FILE_SIZE returns the current file size as determined by the FAT of the SmartMedia card. Note that this register overlaps with AM_DES_KEY. To switch, the CPU must write the value 0x05 to AM_BLK_STAT.</p>
+	<p>AM_FILE_SIZE returns the current file size as determined by the FAT of the SmartMedia card. Note that this register overlaps with AM_SMID. To switch, the CPU must write the value 0x05 to AM_BLK_STAT.</p>
 
-	<p>AM_DES_KEY returns the 128-bit (16-byte) DES key responsible for decrypting data. This key is unique to every SmartMedia card and is embedded in a region not normally accessible by standard card readers. When no SmartMedia card is inserted in the adapter, these bytes return zero. Note that this register partially overlaps with AM_FILE_SIZE. To switch, the CPU must write the value 0x03 to AM_BLK_STAT.</p>
+	<p>AM_SMID returns the 128-bit (16-byte) SmartMedia ID (SMID) that the firmware verifies for copy-protection purposes. This ID is unique to every SmartMedia cards and is embedded in a region not normally accessible by standard card readers. When no SmartMedia card is inserted in the adapter, these bytes return zero. Note that this register partially overlaps with AM_FILE_SIZE. To switch, the CPU must write the value 0x03 to AM_BLK_STAT.</p>
+
+	<p>To properly access any of the I/O registers, the PHI terminal output should be set to 16.78MHz. On that note, the amount of cycles spent in various waitstates does not appear to affect the overall operation of the adapter. However, slower access, if significant, could potentially degrade the firmware&#39;s video playback functions. The firmware should handle a small amount slower access without issue. For example, on the DS Lite, there is a brief pause during the initial setup (before the AM3 logo appears) with a small loading icon. This screen is not shown on an original Game Boy Advance due to apparent timing differences.</p>
 
 	<a name="ama_sta"></a>
 	<p class="gray_title">[Advance Movie Adapter] : AM_BLK_STAT</p>
@@ -3484,22 +3570,22 @@ Value		| Operation Description
 0		| Read Block
 1		| Write I/O Register
 2		| Set File Size Mode
-3		| Set DES Key Mode
+3		| Set SMID Mode
 -----------------------------------------------------------</code>
 
 	<p>The most common operation is &#34;Read Block&#34; which simply copies a data block of a set size from either firmware or the SmartMedia card.</p>
 
 	<p>Writing to an I/O register is exactly that. AM_BLK_STAT needs to signal to the adapter that the CPU will update one of its I/O registers.</p>
 
-	<p>Set File Size Mode and Set DES Key Mode refer to the values held in AM_FILE_SIZE and AM_DES_KEY. Since these registers have overlapping addresses, AM_BLK_STAT controls which mode the adapter will use, and which values to return when reading these memory locations. Once the DES key is read, there is usually no need to return to this mode.</p>
+	<p>Set File Size Mode and Set SMID Mode refer to the values held in AM_FILE_SIZE and AM_SMID. Since these registers have overlapping addresses, AM_BLK_STAT controls which mode the adapter will use, and which values to return when reading these memory locations. Once the SMID is read, there is usually no need to return to this mode.</p>
 
-	<p>These operations can be further divided as being &#34;internal&#34; or &#34;external&#34;. The first deals with data that resides on the Advance Movie Adapter itself, such as reading firmware or writing to I/O registers. The second deals with data residing on the SmartMedia card, such as the files themselves, file sizes, and DES keys. A value of &#34;1&#34; chooses internal operations, while a value of &#34;0&#34; chooses external operations. In practice, however, only a few limited values are ever written to AM_BLK_STAT. These can then be seen as single-byte &#34;commands&#34;.</p>
+	<p>These operations can be further divided as being &#34;internal&#34; or &#34;external&#34;. The first deals with data that resides on the Advance Movie Adapter itself, such as reading firmware or writing to I/O registers. The second deals with data residing on the SmartMedia card, such as the files themselves, file sizes, and SMID. A value of &#34;1&#34; chooses internal operations, while a value of &#34;0&#34; chooses external operations. In practice, however, only a few limited values are ever written to AM_BLK_STAT. These can then be seen as single-byte &#34;commands&#34;.</p>
 
 <code>-----------------------------------------------------------
 Command		| Description
 -----------------------------------------------------------
 0x01		| Read SmartMedia Card Data Block
-0x03		| Set DES Key Mode
+0x03		| Set SMID Mode
 0x05		| Set File Size Mode & Update File Size
 0x09		| Read Firmware Data Block
 0x0B		| Write I/O Register
@@ -3516,8 +3602,8 @@ Command		| Description
 	<p class="list_item">Data Size: AM_SMC_SIZE</p>
 	<p class="spc">This command reads a fixed amount of bytes as specified by AM_SMC_SIZE from the current file. The exact position within the file is the current read pointer plus the offsets specified by AM_SMC_OFFS. For further information on this command&#39;s various behaviors, see the next section regarding the read pointer.</p>
 
-	<p class="list_item"><strong>Command 0x03 - Set DES Key Mode</strong></p>
-	<p class="list_item">After issuing this command, the 16 bytes beginning at AM_DES_KEY (0x08010410 - 0x0801041F) will return the 128-bit DES Key/SmartCard ID whenever read.</p><p class="spc"></p>
+	<p class="list_item"><strong>Command 0x03 - Set SMID Mode</strong></p>
+	<p class="list_item">After issuing this command, the 16 bytes beginning at AM_SMID (0x08010410 - 0x0801041F) will return the 128-bit SmartMedia ID whenever read.</p><p class="spc"></p>
 
 	<p class="list_item"><strong>Command 0x05 - Set File Size Mode</strong></p>
 	<p class="list_item">After issuing this command, the 4 bytes at AM_FILE_SIZE (0x08010410 - 0x08010413) will return the current file size. These values are pulled from the File Allocation Table written to the SmartMedia card. Most importantly, when switching to a new file by writing to AM_SMC_FILE, this commands updates the current file size the CPU will read. When a new file is chosen, AM_SMC_FILE <strong>does not</strong> update automatically. That is to say, the old value will be read unless the Set File Size Mode command is called.</p><p class="spc"></p>
@@ -3613,17 +3699,17 @@ CURRENT_FILE_SIZE = [AM_FILE_SIZE]
 
 
 -----------------------------------------------------------
-Read DES Key in 32-bit Chunks
+Read SMID in 32-bit Chunks
 -----------------------------------------------------------
 [AM_BLK_STAT] = 0x03
 	
 WHILE [AM_BLK_STAT] NOT EQUAL TO 0x03
 	READ [AM_BLK_STAT] AGAIN
 
-DES_KEY_0 = [AM_DES_KEY + 0x00]			//Read 0x08010410 - 0x08010413
-DES_KEY_1 = [AM_DES_KEY + 0x04]			//Read 0x08010414 - 0x08010417
-DES_KEY_2 = [AM_DES_KEY + 0x08]			//Read 0x08010418 - 0x0801041B
-DES_KEY_3 = [AM_DES_KEY + 0x0C]			//Read 0x0801041C - 0x0801041F</code>
+SMID_0 = [AM_SMID + 0x00]			//Read 0x08010410 - 0x08010413
+SMID_1 = [AM_SMID + 0x04]			//Read 0x08010414 - 0x08010417
+SMID_2 = [AM_SMID + 0x08]			//Read 0x08010418 - 0x0801041B
+SMID_3 = [AM_SMID + 0x0C]			//Read 0x0801041C - 0x0801041F</code>
 
 	<a name="ama_ptr"></a>
 	<p class="gray_title">[Advance Movie Adapter] : Read Pointer</p>
@@ -3633,8 +3719,8 @@ DES_KEY_3 = [AM_DES_KEY + 0x0C]			//Read 0x0801041C - 0x0801041F</code>
 	<p class="list_item"><strong>Read Pointer Value On Boot</strong></p>
 	<p class="list_item">When turning on the Game Boy Advance, the first 1KB of firmware (the bootloader) is loaded into the address space at 0x8000000 - 0x80003FF. As such, it has already advanced by 0x400 bytes by the time the CPU begins executing instructions from that area of memory.</p><p></p>
 
-	<p class="list_item"><strong>Reading More Than 12KB of Firmware</strong></p>
-	<p class="list_item">If the CPU should try to read more 12KB of firmware, the read pointer essentially resets itself as zero. Reading a 13th 1KB data block will simply read the 1st 1KB data block (e.g. the bootloader. Note that when reading the 12th 1KB data block of firmware, Bit 8 of AM_BLK_STAT will be set to &#34;1&#34; to indicate that all the data for the firmware has been read, treating the firmware as if it were another file.</p><p></p>
+	<p class="list_item"><strong>Reading More Than 11KB of Firmware</strong></p>
+	<p class="list_item">If the CPU should try to read more 11KB of firmware, the read pointer essentially resets itself as zero. Reading a 12th 1KB data block will simply read the 1st 1KB data block (e.g. the bootloader. Note that when reading the 11th 1KB data block of firmware, Bit 8 of AM_BLK_STAT will be set to &#34;1&#34; to indicate that all the data for the firmware has been read, treating the firmware as if it were another file.</p><p></p>
 
 	<p class="list_item"><strong>Reading Data Past EOF</strong></p>
 	<p class="list_item">If the read pointer advances past a given file&#39;s EOF position, the read pointer will reset itself as zero. The next 0x01 command sent by the CPU will read data at the beginning of the file. Bit 8 of AM_BLK_STAT will be set to &#34;1&#34; to indicate that all the data for the file has been read.</p><p></p>
@@ -3670,9 +3756,9 @@ Data Region Logical Block Address = Root Directory Logical Address + (Maximum Nu
 INFO.AM3
 00.AM3</code></p>
 
-	<p>The first set of numbered AM3 files are for audio/video playback. INFO.AM3 contains more metadata that explains which files are mapped to a given index when writing to AM_SMC_FILE. 00.AM3 contains encrypted data. It must be decrypted with the card&#39;s DES key/SmartMedia ID, otherwise the firmware fails to boot.</p>
+	<p>The first set of numbered AM3 files are for audio/video playback. INFO.AM3 contains more metadata that explains which files are mapped to a given index when writing to AM_SMC_FILE. 00.AM3 contains encrypted data. It must be decrypted internally, then certain data from that file is checked against the card&#39;s SMID. The firmware fails to boot if the data from 00.AM3 and the SMID are different.</p>
 
-	<p>INFO.AM3 is particularly relevant for the Advance Movie Adapter. It consists of large table offset 512 bytes from the start of the file. Each 32-byte entry merely lists a file name. The first file listed is mapped to index &#34;0&#34; for AM_SMC_FILE; the second file listed in mapped to index &#34;1&#34; for AM_SMC_FILE, so on and so forth. The order that the card&#39;s files appear at the start of the Data Region thus does not reflect how the adapter ultimately arranges them internally.</p>
+	<p>INFO.AM3 is particularly relevant for the Advance Movie Adapter. It consists of large table offset 512 bytes from the start of the file. Each 32-byte entry merely lists a file name. The first file listed is mapped to index &#34;0&#34; for AM_SMC_FILE; the second file listed in mapped to index &#34;1&#34; for AM_SMC_FILE, so on and so forth. The order that the card&#39;s files appear at the start of the Data Region thus does not reflect how the adapter ultimately arranges them internally. Files not listed in INFO.AM3 are inaccessible to the Advance Movie Adapter.</p>
 
 	<p>For any invalid index written to AM_SMC_FILE, the adapter will treat it as if the index points to the last file in the list. For example, if there are only a total of 11 files, writing 12 to AM_SMC_FILE will point to the 11th file. The exception to this is when the value 0xFFFF is written to AM_SMC_FILE, in which case it points to the 1st file. Under normal circumstances, the firmware only ever does the first case, typically as a shortcut to read INFO.AM3, which is generally the last file on the card. If an error occurs that interferes with the boot process, the firmware does write 0xFFFF to AM_SMC_FILE before it aborts.</p>
 
@@ -3680,16 +3766,25 @@ INFO.AM3
 
 <p><code>Data Region Logical Address + ((File Cluster - 2) * Sectors Per Cluster * Bytes Per Sector)</code></p>
 
+	<p>It is important to note that as AM3 SmartMedia cards use FAT filesystems, they are still vulnerable to file fragmentation. Evidently, some cards were fragmented even when users first purchased them. However, as far as the Advance Movie Adapter is concerned, data can be extracted normally in continuous 1KB segments regardless of fragmentation. The adapter automatically pieces files together as a whole, so the firmware reads them without jumping across clusters.</p>
+
 	<a name="ama_lok"></a>
 	<p class="gray_title">[Advance Movie Adapter] : 00.AM3</p>
 
-	<p>This acts as a &#34;lock file&#34;, a small encrypted portion of the SmartMedia card that determines whether or not the DES key/SmartMedia ID is valid. The rest of the data on the SmartMedia card is apparently unencrypted. That is to say, between two separate copies of the same anime/TV show episode, the 00.AM3 file should be the only difference between them. For example, with multiple copies of Detective Conan Episode 1, the data for all files except 00.AM3 will match.</p>
+	<p>This acts as a &#34;lock file&#34;, a small encrypted portion of the SmartMedia card that determines whether or not the SMID is valid. The rest of the data on the SmartMedia card is apparently unencrypted. That is to say, between two separate copies of the same anime/TV show episode, the 00.AM3 file should be the only difference between them. For example, with multiple copies of Detective Conan Episode 1, the data for all files except 00.AM3 will match. When the firmware decrypts 00.AM3, a portion of the file contains its own 128-bit ID. This internal ID is compared again the external one from AM_SMID. In order to play any videos, both IDs must match.</p>
 
-	<p>The firmware reads the entire 128-bit DES key/SmartMedia ID and then verifies it. However, the firmware appears to calculate what the key/ID should be internally before comparing what the hardware provides it with. At multiple points while the firmware is running, it&#39;s possible to intercept a valid key by simply pausing its execution, i.e. through an emulator&#39;s debugger and reading select RAM locations. As long as a fake, non-zero key/ID is provided, the firmware generates its own for comparison.</p>
+	<p>As the firmware internally calculates what the correct ID should be, at multiple points it&#39;s possible to intercept the expected value. This can be done by simply pausing the firmware&#39;s execution through a debugger and reading select RAM locations. As long as a fake, non-zero ID is provided when reading AM_SMID, the firmware generates its own for comparison.</p>
 
 	<p>Although this &#34;security&#34; is easily defeated, at the time, it was only meant to deter casual, physical piracy, as SmartMedia card readers and writers were once common. The SmartMedia&#39;s 128-bit ID is permanently set at the time of manufacture, so even commercially available blank cards would have a different ID, meaning the AM3 files could not blindly be copied over. Digital solutions, however, such as emulators, are not bound by these constraints.</p>
 
-	<p>The key can be legitimately extracted by any GBA ROM dumper or other homebrew by simply trying to read the Advance Movie Adapter as if it were a normal game cartridge. As long as an AM3 SmartMedia card is inserted, the key will appear at the bytes 0x08010410 through 0x0801041F.</p>
+	<p>The ID can be legitimately extracted by any GBA ROM dumper or other homebrew by simply trying to read the Advance Movie Adapter as if it were a normal game cartridge. As long as an AM3 SmartMedia card is inserted, the ID will appear at the bytes 0x08010410 through 0x0801041F.</p>
+
+	<a name="ama_err"></a>
+	<p class="gray_title">[Advance Movie Adapter] : Error Handling</p>
+
+	<p>The Advance Movie Adapter behaves slightly differently when the SmartMedia card cannot be read. While the first 1KB section of the firmware is loaded normally for the initial bootloader, trying to read subsequent 1KB blocks of the firmware returns a repeating 5KB section of code dedicated to error handling. This 5KB section is distinct from the regular firmware 11KB that deals with decoding and playing audio/video files. It can only be accessed when a SmartMedia card related issue occurs. Examples include a missing/improperly inserted card, an unsupported SmartMedia card type, or a damaged SmartMedia card. The error handling code helpfully displays an on-screen message in Japanese and English (with a typo) in such an event.</p>
+
+	<p>Additionally, when the adapter needs to handle SmartMedia card errors, Bit 8 of AM_BLK_STAT no longer serves as an EOF flag. The GBA can read an indefinite amount of repeating 1KB blocks from firmware (the 5KB section) without ever changing the status of Bit 8. Lastly, AM_SMID will return zeroes for each of its 16-bytes. These two conditions can be used for software to manually check whether or not a SmartMedia card is inside the adapter.</p>
 
 	<a name="ama_lst"></a>
 	<p class="gray_title">[Advance Movie Adapter] : List of AM3 Cards and Products</p>
@@ -3777,6 +3872,790 @@ Blank Gashapon Cards + Adapter Bundle
 am3-00049		Pikachu Gashapon Card
 am3-00081		Lucario Gashapon Card
 am3-00087		Akubi-chan Gashapon Card #1</code>
+
+
+	<!-- Music Recorder -->
+	<a name="mus"></a>
+	<p class="gray_title">Music Recorder</p>
+	<p class="list_item"><a href="#mus_gen">General Hardware Information</a></p>
+	<p class="list_item"><a href="#mus_reg">I/O Registers</a></p>
+	<p class="list_item"><a href="#mus_ovr">Command Overview</a></p>
+	<p class="list_item"><a href="#mus_cmd">Command Usage</a></p>
+	<p class="list_item"><a href="#mus_ind">Index Overview & Usage</a></p>
+	<p class="list_item"><a href="#mus_fmt">Recording File Formats</a></p>
+	<p class="list_item"><a href="#mus_dir">CompactFlash File & Directory Structure</a></p>
+
+
+	<a name="mus_gen"></a>
+	<p class="gray_title">[Music Recorder] : General Hardware Information</p>
+
+	<p>The Game Boy Advance Music Recorder is a cartridge for the Game Boy Advance capable of playing MP3s, recording audio, and performing karaoke. Designed and developed by Kemco, it was released on November 15, 2002 in Japan. A year later, Radica Games became the distributor for the product in North America and released it as the Game Boy Advance Jukebox. It marked the first time an officially licensed product could playback media of the user&#39;s choosing on the Game Boy.</p>
+
+	<ul>
+		<li class="list_item">Comes in an oversized black or white cartridge that hangs over the backside of a Game Boy Advance.</li>
+		<li class="list_item">Comes with a red LED at the bottom to indicate activity.</li>
+		<li class="list_item">Comes with a built-in microphone along with a Line-In port.</li>
+		<li class="list_item">Requires 1 AA battery to operate.</li>
+		<li class="list_item">Requires a CompactFlash card to operate.</li>
+		<li class="list_item">Internally, PCB is split into two main sections connected together.</li>
+		<li class="list_item">Supports audio output through a headphone jack.</li>
+		<li class="list_item">Supports playing MP3 files, recording voice memos as WAV files, and recording music/karaoke as custom GB3 files.</li>
+		<li class="list_item">Capable of operating independently from the Game Boy Advance. Has physical buttons to control playback.</li>
+	</ul>
+
+	<a name="mus_reg"></a>
+	<p class="gray_title">[Music Recorder] : I/O Registers</p>
+
+	<p>All registers for the Music Recorder/Jukebox are 8-bit. They are located in the 0xB------ address range.</p>
+
+<code>-----------------------------------------------------------
+Address		| Register Name
+-----------------------------------------------------------
+0xB000000	| UNKNOWN
+0xB020000	| UNKNOWN
+0xB080000	| ZMP_INDEX_HI
+0xB0A0000	| ZMP_INDEX_LO
+0xB0C0000	| ZMP_DATA_HI
+0xB0E0000	| ZMP_DATA_LO
+0xB100000	| UNKNOWN
+0xB120000	| ZMP_STATUS_RESET</code>
+
+	<p>ZMP_INDEX_HI and ZMP_INDEX_LO are used to set the current index. Each index points to specific data from the hardware, such as the current output volume, users settings, battery level, and the time remaining for recording or music playback. Each index is 16-bit and ZMP_INDEX_HI and ZMP_INDEX_LO form two 8-bits components of that value. ZMP_INDEX_HI contains the upper 8-bits and ZMP_INDEX_LO contains the lower 8-bits.</p>
+
+	<p>ZMP_DATA_HI and ZMP_DATA_LO are used to read data from or write data to the selected index. Data inside each index is also 16-bit, therefore ZMP_DATA_HI accesses the upper 8-bits and ZMP_DATA_LO accesses the lower 8-bits.</p>
+
+	<p>ZMP_STATUS_RESET forcibly resets the current value of cartridge&#39;s reported status. To do so, ZMP_STATUS_RESET must first be set to 0x00. After brief delay (approximately 16ms is sufficient) ZMP_STATUS_RESET must then be set to 0x01. The cartridge&#39;s status will then reset to zero after a period of about 500ms. The status is reported by the Device Status index. The upper-half of the index appears to represent the current audio playback state while lower half represent the current command issued to the cartridge.</p>
+
+	<p>Registers 0xB000000, 0xB020000, and 0xB100000 appear to be used by the software under certain circumstances, however, their purpose is currently unknown.</p>
+
+	<a name="mus_ovr"></a>
+	<p class="gray_title">[Music Recorder] : Command Overview</p>
+
+	<p>The major functions of the Music Recorder/Jukebox are controlled from the software by sending a series of commands. Complex tasks such as reading the CompactFlash memory card or even deciding when to decode MP3 files are largely abstracted away from the CPU by a simple, high-level interface. To issue a command, software must follow the proceedure listed below:</p>
+	
+	<ol>
+		<li class="list_item">Write the value 0x0000 to the index 0x0081, then delay about 16ms.</li>
+		<li class="list_item">Write the command to the index 0x0080.</li>
+		<li class="list_item">Write the value 0x0000 to ZMP_STATUS_RESET, delay about 16ms, then write the value 0x0001 to ZMP_STATUS_RESET.</li>
+	</ol>
+
+	<p>After writing to ZMP_STATUS_RESET, the Device Status index will then return either 0x100 in most cases, or 0x8000 when performing certain audio operations.</p>
+
+	<p>Each command is 8-bits in length and occupy the lower half of the Device Status index. Their values serve as enumerations to various audio and memory related functions. The software has been observed using the below commands:</p>
+
+<code>-----------------------------------------------------------
+Command		| Description
+-----------------------------------------------------------
+0x00		| Unknown
+0x01		| Unknown
+0x02		| Format CompactFlash Card
+0x08		| Select Music Files
+0x09		| Record Music Files
+0x0A		| Select Voice Memo Files
+0x0B		| Record Voice Memo Files
+0x0C		| Select Karaoke Files
+0x0D		| Record Karaoke Files
+0x0E		| Unknown
+0x10		| Unknown
+0x11		| Commit Title/Artist Changes
+0x13		| Play Selected Audio File/Record New Audio File 	
+0x14		| Reset Currently Selected Audio File
+0x15		| Move Forward 1 Audio File
+0x16		| Move Backward 1 Audio File
+0x19		| Delete Current Audio File
+0x20		| Stop Playing/Recording Audio File</code>
+
+	<a name="mus_cmd"></a>
+	<p class="gray_title">[Music Recorder] : Command Usage</p>
+
+	<p>For all commands dealing with audio input/output (0x109, 0x10B, 0x10D, 0x113), refer to the section below for dealing with the actual data transfers.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x00 - Unknown</strong></p>
+	<p class="list_item">This is the first command that the software for the Music Recorder/Jukebox issues. The software also sends this command after finishing recording Music Files, indicating that it might reset or initialize functions related to the Line-In jack.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x01 - Unknown</strong></p>
+	<p class="list_item">This is the second command that the software for the Music Recorder/Jukebox issues, indicating that it is possibly used to initialize the hardware.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x02 - Format CompactFlash Card</strong></p>
+	<p class="list_item">This command will format the CompactFlash card inserted into the Music Recorder/Jukebox. Presumably, it also creates several directories used to separate music files into different categories. It also creates the AGB.INFO file in the root directory, which contains a list of all MP3 files detected by the hardware.</p>
+
+	<p>Once this command has been sent, the index 0x101 is used to measure the progress of the formatting process. The 16-bit value in that index represent progress in 1 / 32768 units. That is to say, 0% is 0x0000, 25% is 0x2000, 50% is 0x4000, 75% is 0x6000, and 100% is 0x8000. Various percentages can be created using any value in between 0x0000 through 0x8000. For example, ~14.22% would be 0x1234.</p>
+
+	<p>The software only displays whole integers, ignoring any decimals results. Surprisingly, it can measure 0% through 199%.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x08 - Select Music Files</strong></p>
+	<p class="list_item">This command is used to read information about MP3 music files or any music recordings via Line-In stored on the CompactFlash card. It is also used to select the Music/Line-In Recordings category when playing files. The command largely affects the output of indices 0x00A1 - 0x00A6 and 0x00B0 - 0x00CF for data relating to the music&#39;s filename, formal title, and artist.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x09 - Record Music</strong></p>
+	<p class="list_item">This command prepares the Music Recorder/Jukebox to record audio data from the Line-In jack. After sending this command, the software waits for the CompactFlash Status index to change to the value 0x1010 to indicate the hardware is ready. Input data from the jack is then stored as a sequentially numbered .GB3 file. The user can optionally turn on a &#34;Silence Detection&#34; feature that splits incoming audio data into seperate files when a period of silence appears in the stream, automatically breaking up songs from CDs or cassette players for example.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x0A - Select Voice Memo Files</strong></p>
+	<p class="list_item">This command is used to read information about Voice Memo files recorded via the built-in microphone and stored on the CompactFlash card. It is also used to select the Voice Memo category when playing files. The command largely affects the output of indices 0x00A1 - 0x00A6 for data relating to the memo&#39;s filename.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x0B - Record Voice Memo Files</strong></p>
+	<p class="list_item">This command prepares the Music Recorder/Jukebox&#39;s to record audio data from the microphone. Input data from the microphone is then stored in sequentially numbered .WAV files.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x0C - Select Karaoke Files</strong></p>
+	<p class="list_item">This command is used to read information about Karaoke Files stored on the CompactFlash card and created by playing audio from the Music Files and recording over them with the microphone. The command largely affects the output of indices 0x00A1 - 0x00A6 for data relating to the memo&#39;s filename.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x0D - Record Karaoke Files</strong></p>
+	<p>This command prepares the Music Recorder/Jukebox to record audio data from the microphone on top of the unit and by mixing audio samples from one of the Music Files. When recording Karaoke Files, the user is prompted to first select an existing Music File.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x0E - Unknown</strong></p>
+	<p class="list_item">This command always follows the 0x01 command. The Music Recorder/Jukebox&#39;s software appears to only issue this command at the very beginning when initializing hardware.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x10 - Unknown</strong></p>
+	<p class="list_item">This command always follows a command related to file access (0x08, 0x0A, 0x0C, 0x14, 0x15, 0x16, and 0x19), indicating that it might serve as a means to update the current list of files for a given category. For commands that select a given category (0x08, 0x0A, and 0x0C), the software for the Music Recorder/Jukebox issues this command twice in a row.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x11 - Commit Title/Artist Changes</strong></p>
+	<p class="list_item">For .GB3 files recorded via the Line-In jack, the Music Recorder/Jukebox software allows users to manually input the song&#39;s full name as well as the artist. Up to 30 characters can be used for either the title or artist fields. The software writes the data to the relevant indices at 0xB0 - 0xCF and sends this command to save the data.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x13 - Play Selected Audio File/Record New Audio File</strong></p>
+	<p class="list_item">This command either plays a selected audio file or starts recording a new file, depending on which commands were previously issued. All 3 categories of audio - Music, Voice Memo, and Karaoke - use this command to actually output audio. For recording, the commands 0x09, 0x0B, and 0x0D merely prep the hardware for recording a new file, while this command actually instructs the hardware to start grabbing input audio samples. Most importantly, this command affects the value of the CompactFlash Status index, depending on which category of audio has been selected and whether the mode is playing or recording:</p>
+
+<code>
+-----------------------------------------------------------
+Mode			| CompactFlash Status
+-----------------------------------------------------------
+Music Play		| 0x1001
+Music Record		| 0x1012
+Voice Memo Play 	| 0x1101
+Voice Memo Record	| 0x1112
+Karaoke Play		| 0x1201
+Karaoke Record		| 0x1211
+-----------------------------------------------------------</code>
+
+	<p>When the song is finished playing, or when there is no space left on the CompactFlash card, the CompactFlash Status index stops matching those above values.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x14 - Reset Currently Selected Audio File</strong></p>
+	<p class="list_item">This command appears to reset any information regarding the currently selected file. The Music Recorder/Jukebox issues this command on boot and again every time the user exits the &#34;PLAY&#34; or &#34;REC&#34; menus for a given category of audio.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x15 - Move Forward 1 Audio File</strong></p>
+	<p class="list_item">Select the next audio file for playback. If the current file is the last file for a given audio category, the audio file at the beginning of the list is selected instead.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x16 - Move Backward 1 Audio File</strong></p>
+	<p class="list_item">Selects the previous audio file for playback. If the current file is the first file for a given audio category, the audio file at the end of the list is selected instead.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x19 - Delete Current Audio File</strong></p>
+	<p class="list_item">Erases all data for the current audio file from the CompactFlash card.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 0x20 - Stop Playing/Recording Audio File</strong></p>
+	<p class="list_item">Halts all audio input/output for a given audio file.</p>
+
+	<a name="mus_ind"></a>
+	<p class="gray_title">[Music Recorder] : Index Overview & Usage</p>
+
+	<p>Each index is mapped to different hardware data, giving the CPU access to information regarding music playback or recording. Below is a list of known indices and their roles:</p>
+
+<code>-----------------------------------------------------------
+Index	| R/W	| Description
+-----------------------------------------------------------
+0x0080	| W	| Write Device Status
+0x0081	| R	| Read Device Status
+0x0082	| R	| CompactFlash Status
+0x0084	| R	| Remaining Playback Time (Minutes)
+0x0085	| R	| Remaining Playback Time (Seconds)
+0x0086	| R	| Remaining Recording Time (Minutes)
+0x0087	| R	| Remaining Recording Time (Seconds)
+0x0088	| R/W	| Music Output Volume (0x3F = Min, 0x00 = Max)
+0x008A	| R/W	| Voice Output Volume (0x3F = Min, 0x00 = Max)
+0x008C	| R/W	| Equalizer Settings
+0x008B	| R	| Recording Volume (0xFFEE = Min, 0x0004 = Max)
+0x008F	| R/W	| Voice Cancellation Settings
+0x009A	| R/W	| Spectrum Analyzer Update Status
+0x009B	| R/W	| GBA Speaker Volume db (0xFFEC = Min, 0x0013 = Max)
+0x009C	| R	| CompactFlash Detection Flag
+0x009D	| R	| Battery Level (Min = 0x02, Max = 0x00)
+0x00A0	| R	| Current File Track Number
+0x00AD	| R	| Current Number of Music Files Detected
+0x00AE	| R	| Current Number of Voice Memo Files Detected
+0x00AF	| R	| Current Number of Karaoke Files Detected
+0x0100	| R	| Audio Index Length
+0x0101	| R	| CompactFlash Format Progress / CompactFlash Access Progress???
+0x0102	| R	| Current Karaoke File Number for Recording (Hundreds Value)
+0x0103	| R	| Current Karaoke File Number for Recording (Tens and Ones Values)
+0x01C8	| R/W	| General Configuration Settings
+0x01C9	| R/W	| Line-In and Microphone Input Levels</code>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x0080 - Write Device Status</strong></p>
+	<p class="list_item">Allows the CPU to overwrite the cartridge&#39;s 16-bit STATUS value. When STATUS is set to certain values, it acts as a command.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x0081 - Read Device Status</strong></p>
+	<p class="list_item">Returns the CPU to read the cartridge&#39;s 16-bit STATUS value. Primarily used to see if the cartridge is ready to perform certain operations after issuing a command.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x0082 - CompactFlash Status</strong></p>
+	<p class="list_item">Returns the current state of the CompactFlash card. When recording music, it should read 0x1010.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x0084 - Remaining Playback Time (Minutes)</strong></p>
+	<p class="list_item">Returns the remaining minutes left when playing a music file or recording. Has a range of 0 - 99. The cartridge&#39;s hardware will automatically update the value during playback.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x0085 - Remaining Playback Time (Seconds)</strong></p>
+	<p class="list_item">Returns the remaining seconds left when playing a music file or recording. Has a range of 0 - 59. The cartridge&#39;s hardware will automatically update the value during playback.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x0086 - Remaining Recording Time (Minutes)</strong></p>
+	<p class="list_item">Returns the remaining minutes left when making any recording. Has a range of 0 - 99. The value is dependent on remaining free space of the CompactFlash card and the audio quality chosen for recording. The cartridge&#39;s hardware will automatically update the value during a recording session.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x0087 - Remaining Recording Time (Seconds)</strong></p>
+	<p class="list_item">Returns the remaining seconds left when making any recording. Has a range of 0 - 59. The value is dependent on remaining free space of the CompactFlash card and the audio quality chosen for recording. The cartridge&#39;s hardware will automatically update the value during a recording session.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x0088 - Music Output Volume</strong></p>
+	<p class="list_item">Specifies the output volume for Music and Karaoke Files through either the GBA&#39;s speakers or the cartridge&#39;s built-in headphone jack. Has a range of 0x3F - 0x00, for minimum to maximum volume. Operates separately from the Voice Output Volume index.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x008A - Voice Output Volume</strong></p>
+	<p class="list_item">Specifies the output volume for Voice Memo Files through either the GBA&#39;s speakers or the cartridge&#39;s built-in headphone jack. Has a range of 0x3F - 0x00, minimum to maximum volume. Operates separately from the Music Output Volume index, however an apparent software glitch seems to overwrite this index with the other volume index when switching audio categories.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x008C - Equalizer Settings</strong></p>
+	<p class="list_item">Specifies the type of equalizer to apply for music playback. Accepts values of 0 - 4 to select the following equalizers respectively: None, Jazz, Pop, Classical, Rock.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x008B - Recording Volume</strong></p>
+	<p class="list_item">Returns the current volume of input audio from the a recording (via Line-In or the microphone).</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x008F - Voice Cancellation Settings</strong></p>
+	<p class="list_item">Toggles voice cancellation during audio playback. 0 = OFF, 1 = ON.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x009A - Spectrum Analyzer Update Status</strong></p>
+	<p class="list_item">Represents when the spectrum analyzer for Music Files needs to be updated. When this value is zero, the spectrum analyzer is disabled. For any non-zero values, the spectrum analyzer is enabled. When enabled, this index will increase in to indicate the spectrum analyzer needs to be redrawn. The update only happens when the current value of the index is greater than the previously recorded value. If this index overflows 16-bits and reads zero or if the value is frozen, the software will not update the spectrum analyzer.</p>
+
+	<p>As it is limited to 16-bit values, the spectrum analyzer can only be updated a certain amount of times before it overflows. The software appears to check this index a maximum of 45 times per-second during playback, so the Music Record/Jukebox can play songs up about 18:30 long without issue.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x009B - GBA Speaker Volume db</strong></p>
+	<p class="list_item">Adjusts the output volume from the GBA speakers in the range of -20 to +19 db. The index itself goes from 0xFFEC as the minimum to 0x0013 as the maximum.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x009C - CompactFlash Detection Flag</strong></p>
+	<p class="list_item">Determines whether a CompactFlash card has been inserted into the cartridge. Any non-zero value indicates the card cannot be detected.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x009D - Battery Level</strong></p>
+	<p class="list_item">Returns the current level of the AA battery inside the cartridge. Has 3 levels total with the values 0x02 representing 1 bar, 0x01 representing 2 bars, and 0x00 representing 3 bars.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x00A0 - Current File Track Number</strong></p>
+	<p class="list_item">Returns the current file track number. This is determined by how the cartridge arranges files, not by any metadata from the file itself. For Music, Voice Memos, and Karaoke files, this value is used for playback purposes. For Music and Voice Memos, this value is also used during recording. When recording Karaoke files, however, indices 0x0102 and 0x0103 are used instead.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x00AC - Current Number of Music Files Detected</strong></p>
+	<p class="list_item">Returns the current number of Music Files detected on the CompactFlash card.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x00AE - Current Number of Voice Memo Files Detected</strong></p>
+	<p class="list_item">Returns the current number of Voice Memo Files detected on the CompactFlash card.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x00AF - Current Number of Karaoke Files Detected</strong></p>
+	<p class="list_item">Returns the current number of Karaoke Files detected on the CompactFlash card.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x0100 - Audio Index Length</strong></p>
+	<p class="list_item">Determines how many indices to read from 0x102 and beyond for audio input/output data.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x0101 - CompactFlash Format Progress / CompactFlash Access Progress</strong></p>
+	<p class="list_item">Appears to indicate the progress of certain tasks involving the CompactFlash card. For formatting the card, this index represents the overall progress of that process from 0% to 100% using the range 0x0000 through 0x8000. For playing and recording audio data, it seems to determine when certain chunks are finished using a range of 0x0000 through 0x4000.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x0102 - Current Karaoke File Number for Recording (Hundreds Value)</strong></p>
+	<p class="list_item">Returns 8-bits representing the current file number (in hundreds) for recording Karaoke files. It has an unusual offset not seen in the 0x00A0 index. It can be calculated as the following:</p>
+
+<code>
+INDEX = (((CURRENT_FILE / 100) + 0xA6) AND 0xFF)</code>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x0103 - Current Karaoke File Number for Recording (Tens and Ones Values)</strong></p>
+	<p class="list_item">Returns 8-bits representing the current file number (in tens and ones) for recording Karaoke files. It has an unusual offset not seen in the 0x00A0 index. It can be calculated as the following:</p>
+
+<code>
+INDEX = (((CURRENT_FILE modulo 100) + 0xA8) AND 0xFF)</code>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x01C9 - Line-In and Microphone Input Levels</strong></p>
+	<p class="list_item">Used to calibrate volumes when recording via Line-In or the microphone. The Music Recorder/Jukebox uses an 8-bit value for this calibration. The high byte is used for microphone sensitivity while the low byte is used for Line-In volumes.</p>
+
+	<p>Some indices have a widespread range and serve as string data or audio input/output</p>
+
+<code>-----------------------------------------------------------
+Index Range	| R/W	| Description
+-----------------------------------------------------------
+0x0090 - 0x0098	| R	| Spectrum Analyzer Level For Bars 1 - 9 (0x00 = Min, 0x13 = Max)
+0x00A1 - 0x00A6	| R/W	| &#34;8.3&#34; DOS-style short name for music file
+0x00B0 - 0x00BE	| R/W	| 30 character song title
+0x00BF - 0x00CD	| R/W	| 30 character artist name
+0x0102+		| R/W	| Audio in/out data for recording/playing</code>
+
+	<p>For the string data at 0x00A1 through 0x00CD, the string is terminated by a null character (value 0x00). The strings for the Jukebox use ASCII.</p>
+
+	<p>When reading input/output audio data, the software accesses indices starting at 0x0102 and ends at the length specified by index 0x100. For example, if the Audio Index Length is 0x0004, the CPU reads indices 0x0102 through 0x0105 inclusive. Note that the 0x0102 and 0x0103 are also used for other purposes. Depending on the context, it may represent audio sample data or a Karaoke file number.</p>
+
+	<a name="mus_fmt"></a>
+	<p class="gray_title">[Music Recorder] : Recording File Formats</p>
+
+	<p>The Music Recorder/Jukebox uses 2 different file formats for recording. For Voice Memos and Karaoke, the device encodes audio via IMA ADPCM into a WAV file. This format uses a 11025Hz sample rate, 16-bits per sample, and just one channel.</p>
+
+	<p>For Music recorded via the Line-In jack, an MP3 file is generated. Depending on the user&#39;s settings, it will have a bit-rate of 128Kbps, 96Kbps, or 64Kbps. It uses ID3v1 to store metadata at the very last 128 bytes of the file. Instead of regular MP3 files, the Music Recorder/Jukebox produces &#34;GB3&#34; files. However, these GB3 files appear to be normal MP3s without a header. This design prevents music from being recorded and copied to a PC and may have been intended to deter piracy.</p>
+
+	<a name="mus_dir"></a>
+	<p class="gray_title">[Music Recorder] : CompactFlash File & Directory Structure</p>
+
+	<p>The CompactFlash card used by the Music Recorder/Jukebox contains a FAT-12 filesystem. The hardware is capable of formatting the card as necessary without the need of a PC or any other kind of media writing device. By default, it has a volume label that reads &#34;AGB-MP3    &#34;. 4 folders and 1 file in the root directory are created after a formatting the card:</p>
+
+<code>-----------------------------------------------------------
+Name		| Description
+-----------------------------------------------------------
+ADPCM		| Folder - Holds all Voice Memo recordings
+GB3		| Folder - Holds all Music recordings
+MP3		| Folder - Holds all user MP3s for playback
+SONG		| Folder - Holds all Karaoke recordings
+INFO.AGB	| File - Contains filenames for content in the above folders</code>
+
+	<p>Despite its name, INFO.AGB contains no executable code intended to run on the GBA. Instead, simply has a list of all the files present for each category of audio. Additionally, it links MP3 and GB3 files to a given Karaoke recording. INFO.AGB is always 15KB exactly and is divided into the following 4 sections:</p>
+
+<code>-----------------------------------------------------------
+Offset 		| Description
+-----------------------------------------------------------
+0x0000		| MP3 + GB3 Folder File List
+0x1800		| ADPCM Folder File List
+0x2400		| Song Folder File List
+0x3000		| Karaoke Link Data</code>
+
+	<p>For sections listing filenames, MP3 files use &#34;8.3&#34; DOS-style short names in ASCII. WAV and GB3 files (named sequentially e.g. 0001.WAV or 0002.WAV) use an even shorter &#34;4.3&#34; style in ASCII. Data is stored as strings with no terminating character or padding. The strings are formatted such that they use 16-bit pairs of characters that need to be read LSB first. Do note that the MP3 and GB3 files are listed together rather than separately.</p>
+
+	<p>The Karaoke Link Data essentially points to the relevant MP3 or GB3 file that acted as the source of a Karaoke recording. The files here are ordered sequentially according to how the Music Recorder/Jukebox displays Karaoke files for playback. That is to say, the first file listed in INFO.AGB corresponds to the first file viewed from the Karaoke -> Play menu. This seems necessary for the Jukebox as it allows the software to pull up the 30 character song title and artist fields from the MP3 and GB3 files even though it plays the WAV Karaoke recording (which has no such metadata). If the Karaoke Link Data is corrupted or missing, the Music Recorder/Jukebox refuses to play any Karaoke recordings.</p>
+
+	<p>The Music Recorder/Jukebox automatically updates INFO.AGB during various operations, such as deleting files. After a reformat, the Music Recorder/Jukebox inserts a blank INFO.AGB in the root directory.</p>
+
+
+
+
+	<!-- Play-Yan -->
+	<a name="pyn"></a>
+	<p class="gray_title">Play-Yan</p>
+	<p class="list_item"><a href="#pyn_gen">General Hardware Information</a></p>
+	<p class="list_item"><a href="#pyn_reg">Hardware Registers and I/O</a></p>
+	<p class="list_item"><a href="#pyn_frm">Reading and Writing Firmware</a></p>
+	<p class="list_item"><a href="#pyn_sdc">Reading SD Card Data</a></p>
+	<p class="list_item"><a href="#pyn_cmd">Play-Yan Commands</a></p>
+	<p class="list_item"><a href="#pyn_irq">Game Pak IRQs</a></p>
+	<p class="list_item"><a href="#pyn_vtn">Reading Video Frames and Video Thumbnails</a></p>
+	<p class="list_item"><a href="#pyn_gga">Garage Games</a></p>
+
+	<a name="pyn_gen"></a>
+	<p class="gray_title">[Play-Yan] : General Hardware Information</p>
+
+	<p>On February 21, 2005, Nintendo released their very own video/music player for the Game Boy Advance in the form of a unique cartridge. It was branded the Play-Yan and was designated the product code AGS-006. Sold exclusively in Japan, it handled MP3 audio files as well and MPEG-4 video files. The hardware had a dedicated SD card slot so users could access their own media.</p>
+
+	<ul>
+		<li class="list_item">Features a normal-sized SD card reader.</li>
+		<li class="list_item">Can handle card capacities up to 2GB, depending on the manufacturer.</li>
+		<li class="list_item">Not compatible with SDHC, SDXC, or SDUC cards.</li>
+		<li class="list_item">Used hardware decoding for media files via an Alpha Mosiac VC01.</li>
+		<li class="list_item">Uploads firmware on boot, and can optionally update with the correct files on an SD card.</li>
+		<li class="list_item">Features a slightly larger than normal cartridge shell.</li>
+		<li class="list_item">Has a 3.5mm audio jack to output sound and bypass the GBA&#39;s speakers.</li>
+		<li class="list_item">Could generate video thumbnails and parse some ID3 tags.</li>
+		<li class="list_item">Videos used ASF or MP4 containers with G.726 or AAC as audio codecs, respectively.</li>
+		<li class="list_item">Maximum of 30 frames-per-second for video.</li>
+		<li class="list_item">Came with 13 &#34;Garage Games&#34; built into the ROM, unlockable with special video files.</li>
+	</ul>
+
+	<a name="pyn_reg"></a>
+	<p class="gray_title">[Play-Yan] : Hardware Registers and I/O</p>
+
+	<p>The Play-Yan has a large number of addresses mapped to cartridge ROM that control firmware access, issue playback commands, and retrieve information such as filenames, thumbnails, and other metadata.</p>
+
+<code>----------------------------------------------------------------------------------------------------------------------
+Hardware Registers	| R/W	| Address	| Size		| Description
+----------------------------------------------------------------------------------------------------------------------
+PY_INIT_DATA		| (R)	| 0x9000000	| 8-bit		| Appears to be some kind of data stream.
+PY_STAT			| (R)	| 0x9000006	| 8-bit		| Play-Yan Status Register.
+UNKNOWN REGISTER 00	| (w)	| 0xB000000 	| 16-bit	| Unknown. Play-Yan mostly writes zero to this register.
+UNKNOWN REGISTER 02	| (R/W)	| 0xB000002	| 16-bit	| Unknown. Play-Yan mostly writes zero to this register.
+PY_DATA_ADDR		| (R/W)	| 0xB000004	| 16-bit	| Address used to access Play-Yan data.
+PY_DATA_MODE		| (R/W)	| 0xB000006	| 16-bit	| Determines data access mode (e.g. firmware read or firmware write).
+PY_DATA_PARAM		| (R/W)	| 0xB000010	| 16-bit	| Appears to be some kind of parameter for data access.
+PY_FIRM_STAT		| (R/W)	| 0xB000012	| 16-bit	| Play-Yan Firmware Status Register.
+----------------------------------------------------------------------------------------------------------------------</code>
+
+	<p>PY_INIT_DATA is read a number of times during the initial boot sequence. It appears to be a data stream of unknown purpose.</p>
+
+	<p>PY_STAT acts as the overall status register for the Play-Yan. Its primary purpose appears to be checking whether or not firmware is available accessible. Before uploading any portion of firmware during the initial boot sequence, the Play-Yan checks Bit 7 of PY_STAT, which acts as a busy flag for firmware operations. If Bit 7 is set LOW, the firmware is busy, otherwise if Bit 7 is set HIGH, firmware is ready for more data.</p>
+
+	<p>PY_DATA_ADDR determines the address used for data operations for Play-Yan related data. It is used in conjunction with the I/O regions listed below as well as PY_DATA_MODE. Depending on the value of PY_DATA_ADDR, different contexts are used to retrieve data from these regions, e.g. it distinguishes between writing commands for the Play-Yan to execute or writing firmware data. The address is actually 32-bits. The Play-Yan must write to PY_DATA_ADDR twice, with the lower 16-bit first, and the upper 16-bit second.</p>
+
+	<p>PY_DATA_MODE determines what kind of data read or write the Play-Yan will perform. Used in conjection with the IO regions listed below as well as PY_DATA_ADDR.</p>
+
+	<p>PY_DATA_PARAM appears to be a parameter passed along to the Play-Yan that affects data access. Currently unknown exactly how it functions.</p>
+
+	<p>PY_FIRM_STAT appears to be another type of firmware status register. Before reading any portion of firmware, the Play-Yan checks this to make sure Bit 4 is set.</p>
+
+	<p>Several regions of memory on the Play-Yan are dedicated to unique purposes. Some of them overlap, and their function often depends on whether data is being written or read. The Play-Yan typically uses these for accessing large amounts of information, such as pixels representing video data, firmware, or commands.</p> 
+
+<code>----------------------------------------------------------------------------------------------------------------------
+I/O Regions		| I/O Direction	| Description
+----------------------------------------------------------------------------------------------------------------------
+0xB000100 - 0xB0002FF	| Input		| Play-Yan Command
+0xB000100 - 0xB0002FF	| Input		| Firmware In
+0xB000300 - 0xB00031F	| Output	| Game Pak IRQ Data
+0xB000300 - 0xB0004FF	| Output	| Play-Yan SD Card and Internal Data
+0xB000500 - 0xB0006FF	| Output	| Play-Yan Thumbnail and Video Data
+----------------------------------------------------------------------------------------------------------------------</code>
+
+	<a name="pyn_frm"></a>
+	<p class="gray_title">[Play-Yan] : Reading and Writing Firmware</p>
+
+	<p>To write to the Play-Yan&#39;s firmware, the following steps are performed:</p>
+
+<code>-----------------------------------------------------------------------
+PY_DATA_PARAM = 0x0A
+PY_DATA_MODE = 0x68
+PY_DATA_ADDR = LOW 16 BITS OF ADDRESS
+PY_DATA_ADDR = HIGH 16 BITS OF ADDRESS
+UNKNOWN REGISTER 02 = 0x00
+
+WAIT FOR BIT 7 OF PY_STAT TO READ HIGH
+WRITE DATA INTO 0xB000300 THROUGH 0xB0004FF
+-----------------------------------------------------------------------</code>
+
+	<p>The address to write the firmware is internal to the Play-Yan. This is evidently any address from 0x00000 - 0xEFFFF. Only 512 bytes can be written at a time, so writing the entire firmware to the Play-Yan requires multiple iterations of the above steps.</p>
+
+	<p>The Play-Yan provides its own default firmware in its ROM and uploads this accordingly on every boot. This method ensures that the firmware is never corrupted by a bad update. A similar method is used for the WiiSpeak accessory on the Wii. The Play-Yan can update to a newer firmware if such a file is included on the SD card. For the original Play-Yan, the software looks for the file &#34;playan.fup&#34;. Nintendo did release at least one firmware update as well, allowing the original Play-Yan to run MP4 files, something the later Play-Yan Micro version could do out-of-the-box.</p>
+
+	<p>To read from the Play-Yan&#39;s firmware, the following steps are performed:</p>
+
+<code>-----------------------------------------------------------------------
+PY_DATA_PARAM = 0x08
+PY_DATA_MODE = 0x78
+PY_DATA_ADDR = LOW 16 BITS OF ADDRESS
+PY_DATA_ADDR = HIGH 16 BITS OF ADDRESS
+UNKNOWN REGISTER 02 = 0x00
+PY_DATA_PARAM = 0x09
+
+WAIT FOR BIT 4 OF PY_FIRM_STAT TO READ HIGH
+READ DATA FROM 0xB000300 THROUGH 0xB0004FF
+-----------------------------------------------------------------------</code>
+
+	<p>It&#39;s possible to read sequential blocks of firmware without repeating all of the above steps. The Play-Yan&#39;s ROM, for example, reads a total of 0xA00 bytes at a time. After each 0x200 bytes, only PY_FIRM_STAT needs to be checked before reading the next block. Once a total of 0xA00 bytes have been read, however, all the steps mentioned above are repeated before reading sequentially yet again.</p>
+
+	<a name="pyn_sdc"></a>
+	<p class="gray_title">[Play-Yan] : Reading SD Card Data</p>
+
+	<p>The Play-Yan is capable of reading select data from the SD Card. After the software issues a command, the Play-Yan will respond with different kinds of data, for example, a list of all files in a given directory. This means that while the Play-Yan&#39;s software does not have direct access to the card, it has a vastly simpler interface to retrieve information. The memory region used overlaps with where firmware is read from, however, the process for accessing is somewhat different. The following steps are performed:</p>
+
+<code>-----------------------------------------------------------------------
+PY_DATA_PARAM = 0x08
+PY_DATA_MODE = 0x78
+PY_DATA_ADDR = 0x00
+PY_DATA_ADDR = 0x00
+UNKNOWN REGISTER 02 = 0x00
+PY_DATA_PARAM = 0x09
+
+WAIT FOR BIT 4 OF PY_FIRM_STAT TO READ HIGH
+PY_DATA_PARAM = 0x08
+READ DATA FROM 0xB000300 THROUGH 0xB0004FF
+-----------------------------------------------------------------------</code>
+
+	<p>As with reading firmware, sequential 512-byte blocks can be read at a time. This is once again achieved by checking PY_FIRM_STAT. An additional step, setting PY_DATA_PARAM to 0x08, however, is necessary. The Play-Yan&#39;s software does not update the address when sequentially reading SD card data. Typically, the Play-Yan reads around 0x6600 bytes worth of data at a time and later copying that to RAM. Such a large amount of data allows it to process long lists of filenames, video frames, or vast amounts of metadata, depending on the expected response to a command.</p>
+
+	<a name="pyn_cmd"></a>
+	<p class="gray_title">[Play-Yan] : Play-Yan Commands</p>
+
+	<p>A number of commands may be issued to the Play-Yan. These allow the software to access many of the cartridge&#39;s advanced functions surrounding multimedia playback and file handling. Rather than manually processing things, the Play-Yan hands things over to its hardware and firmware through an interface. Each command typically consists of a series of 12 bytes written to the 0xB000100 - 0xB00011F address range. Some commands may contain additional parameter data beyond this, and not every command follows the same pattern of using 32-bit parameters. In general, however, the structure of a command is as follows:</p>
+
+<code>-----------------------------------------------------------------------
+Address			| Data
+-----------------------------------------------------------------------
+0xB000100 - 0xB000103	| Command 
+0xB000104 - 0xB000107	| Parameter 1
+0xB000108 - 0xB00010B	| Parameter 2
+-----------------------------------------------------------------------</code>
+
+	<p>Data for most commands is usually broken into 32-bit chunks, sent LSB first. Essentially, the Play-Yan just sends a command along with 2 parameters, both of which are optional. Below is a list of known or observed commands along with their parameters:</p>
+
+<code>----------------------------------------------------------------------------------------------------------------------------------------------
+Command					| Parameter 1							| Parameter 2
+----------------------------------------------------------------------------------------------------------------------------------------------
+0x200 - Get File Information		| N/A								| N/A
+0x300 - Adjust Video Brightness		| Brightness level, Min = 0x101, Max = 0x2C0, 0x40 increments	| N/A
+0x500 - Grab Video Thumbnail Data*	| Width of thumbnail (60 pixels)				| Height of thumbnail (40 pixels)
+0x600 - Unknown				| N/A								| N/A
+0x700 - Play Video/Grab Video Frame*	| Width of video (240 pixels)					| Height of video (160 pixels)
+0x701 - Stop Video Playback		| N/A								| N/A
+0x600 - Play Music File*		| Music Filename						| N/A
+0x801 - Stop Music Playback		| N/A								| N/A
+0x902 - Pause Music/Video Playback	| N/A								| N/A
+0x904 - Resume Music/Video Playback	| N/A								| N/A
+0xB00 - Adjust Volume			| Volume level, Min = 0x00, Max = 0x38				| N/A
+0xD00 - Adjust Bass Boost		| Bass boost level, Min = 0x00, Max = 0x0F			| N/A
+0xD01 - Enabled/Disable Bass Boost	| ON = 0x800F, OFF = 0x8F0F					| N/A
+0x2000 - Update File Information	| N/A								| N/A
+0x8000 - Get SD Card Status		| N/A								| N/A
+0x10000 - Enter Sleep Mode		| N/A								| N/A
+0x800000 - Unknown			| N/A								| N/A
+----------------------------------------------------------------------------------------------------------------------------------------------</code>
+
+	<p>*These commands send non-standard amounts of data for their parameters. See the end of this sectiond for further details on each. additional data beyond a second parameter. Overall, it sends a total of 0x218 bytes, the latter portion of which has an unknown purpose.</p>
+
+	<p>The following proceedure is used to issue commands:</p>
+
+<code>-----------------------------------------------------------------------
+PY_DATA_MODE = 0x68
+PY_DATA_ADDR = 0xF020
+PY_DATA_ADDR = 0x000F
+UNKNOWN REGISTER 02 = 0x00
+
+WAIT FOR BIT 7 OF PY_STAT TO READ HIGH
+WRITE DATA INTO 0xB000100 THROUGH 0xB00010B
+PY_DATA_PARAM = 0x0C
+PY_DATA_PARAM = 0x08
+-----------------------------------------------------------------------</code>
+
+	<p>Note that the data address specified by PY_DATA_ADDR is 0xFF020. Some commands will trigger a Game Pak IRQ when the Play-Yan responds. See the section below for more details.</p>
+
+	<p>The 0x500 Grab Video Thumbnail Data command sends additional unknown data via Parameter 3. Altogether, 0x218 bytes are sent. Since this amount exceeds the 0xB0002FF boundary for parameter input, the last 0x18 bytes are written at the beginning of the section, starting over at 0xB000100.</p>
+
+	<p>The 0x600 Play Music File command uses Parameter 1 as a null-terminated string representing the filename of specific music file to play. The Play-Yan software internally keeps track of which song the user has currently highlighted, and it passes the filename&#39;s string to the hardware. The string has no fixed length, thus making this an irregular command. The Play-Yan appears to send additional unknown data after the string.</p>
+
+	<p>The 0x700 Play Video command uses Parameter 3 as a null-terminated string representing the filename of a specific video file to play. Like music, the Play-Yan software internally monitors which video the user has highlighted and passes the filename&#39;s string to the hardware. This string likewise has no fixed length. The Play-Yan appears to send additional unknown data after the string.</p>
+
+	<a name="pyn_irq"></a>
+	<p class="gray_title">[Play-Yan] : Game Pak IRQs</p>
+
+	<p>The Play-Yan&#39;s hardware produces a variety of Game Pak IRQs when the software sends certain commands. Not every command will generate an IRQ, however, the ones that do are pivotal to operating the Play-Yan. For example, during the initial boot process, the Play-Yan&#39;s software waits indefinitely until several commands to respond with IRQs, without which the software essentially locks up. Each Game Pak IRQ returns data that can be read at 0xB000300 - 0xB00031F. Some commands may cause multiple IRQs to be generated as well. Use the following process to read the Game Pak IRQ data:</p>
+
+<code>-----------------------------------------------------------------------
+PY_DATA_PARAM = 0x08
+PY_DATA_MODE = 0x78
+PY_DATA_ADDR = 0xF000
+PY_DATA_ADDR = 0x000F
+UNKNOWN REGISTER 02 = 0x00
+PY_DATA_PARAM = 0x09
+
+WAIT FOR BIT 4 OF PY_FIRM_STAT TO READ HIGH
+PY_DATA_PARAM = 0x08
+READ DATA FROM 0xB000300 THROUGH 0xB00031F
+-----------------------------------------------------------------------</code>
+
+	<p>A list of commands and their known IRQs and the IRQ data is shown below:</p>
+
+<code>-----------------------------------------------------------------------
+Command 0x200 - Get File Information - 3 IRQs*
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x80000100 or 0x80001000
+Bytes 0x04 - 0x07	| 0x00
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x40000200
+Bytes 0x04 - 0x07	| Unknown
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x40000201
+-----------------------------------------------------------------------</code>
+
+	<p>This command prompts the Play-Yan to start reading the filesystem on the SD card. It allows the software to grab a list of available files or folders for music, or video files. This apparently needs to be used in conjunction with the 0x2000 command, which is responsible for accessing multimedia files. Prior to executing the 0x2000 command, the 0x200 command seems to be reading some kind of data from the File Allocation Table, e.g. strings like &#34;System Volume Information&#34;.</p>
+
+	<p>The first 32-bit value in the first IRQ differs based on context. During the initial boot section, 0x80000100 is used. It is also used when entering or exiting the video menu. For entering and exiting the music menu, however, the value 0x80001000 is used.</p>
+
+	<p>*The last two IRQs are generated multiple times during the boot process, before the 0x2000 is executed.</p>
+	<p class="spc"></p>
+
+<code>-----------------------------------------------------------------------
+Command 0x500 - Grab Video Thumbnail Data - 1 IRQ
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x40000500
+Bytes 0x04 - 0x07	| Unknown
+Bytes 0x08 - 0x0B	| Unknown
+-----------------------------------------------------------------------</code>
+
+	<p>After the 0x500 command is issued, a corresponding Game Pak IRQ signals that the Play-Yan is ready to provide a 60x40 thumbnail image for a video file. For the specifics regarding reading these thumbnails, refer to the appropiate section below.</p>
+	<p class="spc"></p>
+
+<code>-----------------------------------------------------------------------
+Command 0x600 - Unknown - 1 IRQ
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x40000600
+-----------------------------------------------------------------------</code>
+
+	<p>The purpose of the command remains unknown. It always precedes the 0x800 command when playing music. Note, however, that it does not appear when playing videos.</p>
+	<p class="spc"></p>
+
+<code>-----------------------------------------------------------------------
+Command 0x700 - Play Video/Grab Video Frame - 2 IRQs*
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x40000700
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x80001000
+Bytes 0x04 - 0x07	| Video Length Counter
+Bytes 0x08 - 0x0B	| Frame Size in Bytes
+Bytes 0x14 - 0x18	| Current Video Position
+-----------------------------------------------------------------------</code>
+
+	<p>These interrupts are responsible for alerting the Play-Yan&#39;s software when a new video frame is ready for display, as well as the current position within a video as it is playing. The first IRQ initializes the process, while the second IRQ repeats indefinitely until the end of the video.</p>
+
+	<p>Each time the second IRQ is fired, the Current Video Position is updated. The Play-Yan software uses this to determine the minutes/seconds timestamp. It appears that the value 0x3C0 roughly equates 1 second. This IRQ fires every time a video frame needs to be displayed, therefore it should match the video&#39;s framerate. Each increment of the Current Video Position should thus reflect that. E.g. for a video playing at 30 frames-per-second, the Current Video Position updates at roughly 0x20 intervals.</p>
+
+	<p>The frame itself is read similarly to video thumbnails. Refers to the appropiate section below for more details. The size of the frame is the video&#39;s resolution (typically 240x160) in 15-bit color pixels. Therefore, this value is usually 0x12C00.</p>
+
+	<p>*The second IRQ constantly fires for the duration of the video for as many frames need to be updated each second.</p>
+	<p class="spc"></p>
+
+<code>-----------------------------------------------------------------------
+Command 0x701 - Stop Video Playback - 2 IRQs
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x40000701
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x80001000
+-----------------------------------------------------------------------</code>
+
+	<p>Stops the current video file that is playing.</p>
+	<p class="spc"></p>
+
+<code>-----------------------------------------------------------------------
+Command 0x800 - Play Music File - 2 IRQs*
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x40000800
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x80001000
+Bytes 0x0C - 0x0F	| Unknown
+Bytes 0x10 - 0x13	| Unknown
+-----------------------------------------------------------------------</code>
+
+	<p>After the 0x800 command is issued, a Game Pak IRQ is generated when the Play-Yan hardware begins processing an audio file. This command always follows the 0x600 command.</p>
+
+	<p>*The second IRQ constantly fires for the duration of the music.</p>
+	<p class="spc"></p>
+
+<code>-----------------------------------------------------------------------
+Command 0x801 - Stop Music Playback - 2 IRQs
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x40000801
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x80001000
+-----------------------------------------------------------------------</code>
+
+	<p>Stops the current music file that is playing.</p>
+	<p class="spc"></p>
+
+<code>-----------------------------------------------------------------------
+Command 0x2000 - Update File Information - 1 IRQ
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x80000100
+-----------------------------------------------------------------------</code>
+
+	<p>Only 1 IRQ is fired for this command. It appears to update the current list of available files for videos, and files and folders for music. After executing this command, SD card data will return the appropiate files depending on the category selected.</p>
+	<p class="spc"></p>
+
+<code>-----------------------------------------------------------------------
+Command 0x8000 - Get SD Card Status - 2 IRQs
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x80000100
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x40008000
+Bytes 0x04 - 0x07	| SD Card Status
+-----------------------------------------------------------------------</code>
+
+	<p>A single value is returned for the SD card&#39;s status. This can be used to determine if an appropiate SD card has been inserted. As the SD card is essential for the Play-Yan, this is the first command executed when booting. The status is returned in the second IRQ. If no SD card is detected, this value reads 0x03. If an incompatible card is detected (such as an SDHC card), this value reads 0x02. If a compatible card is detected, this value reads 0x05.</p>
+	<p class="spc"></p>
+
+<code>-----------------------------------------------------------------------
+Command 0x800000 - Unknown - 1 IRQ
+-----------------------------------------------------------------------
+Bytes 0x00 - 0x03	| 0x40800000
+Bytes 0x04 - 0x07	| SD Card Status
+-----------------------------------------------------------------------</code>
+
+	<p>This command is issued shortly after Get SD Card Status. It&#39;s purpose is currently unknown. It generates 1 IRQ, which also returns the card&#39;s status.</p>
+
+	<a name="pyn_vtn"></a>
+	<p class="gray_title">[Play-Yan] : Reading Video Frames and Video Thumbnails</p>
+
+	<p>Use the following process to read thumbnail data after issuing the 0x500 command:</p>
+
+<code>-----------------------------------------------------------------------
+PY_DATA_PARAM = 0x08
+PY_DATA_MODE = 0x78
+PY_DATA_ADDR = 0x0000
+PY_DATA_ADDR = 0x0000
+UNKNOWN REGISTER 02 = 0x00
+PY_DATA_PARAM = 0x09
+
+WAIT FOR BIT 4 OF PY_FIRM_STAT TO READ HIGH
+READ DATA FROM 0xB000500 THROUGH 0xB0006FF
+-----------------------------------------------------------------------</code>
+
+	<p>Data can be read sequentially in 512-byte blocks without the need for writing to other registers. Simply waiting for Bit 4 of PY_FIRM_STAT is sufficient. Each frame or thumbnail will be the size as specified by the 0x500 or the 0x700 command, which ordinarily is 60x40 and 240x160, respectively. Both use 15-bit pixels, and their format is an exact match for the Game Boy Advance&#39;s bitmap mode (BG Mode 3). In total, the Play-Yan will typically provide 0x12C0 bytes of data for each thumbnail and 0x12C00 for each video frame.</p>
+
+	<p>A 0x500 command must be issued for each thumbnail the Play-Yan needs to process. Each page in the Play-Yan&#39;s file browser can only contain 6 videos, therefore, the Play-Yan&#39;s software only issues 6 of these commands at a time. If a page has less than 6 entries, only that many 0x500 commands need to be sent. It seems a 0x2000 command is always issued before the first 0x500 command; this may be the mechanism that tells the Play-Yan which videos need thumbnails generated.</p>
+
+	<p>For video frames, the 0x700 command is only issued once. Subsequent Game Pak IRQs are automatically generated by the video processing hardware for each frame, at which point the Play-Yan can read back this data and display them using BG Mode 3 for fullscreen bitmap display.</p>
+
+	<a name="pyn_gga"></a>
+	<p class="gray_title">[Play-Yan] : Garage Games</p>
+
+	<p>The original Play-Yan allowed users to access 13 minigames called &#34;Garage Games&#34;. After the Play-Yan launched, Nintendo released them on their website in a weekly fashion. Users downloaded a special .ASF file, and when stored on an SD card, the Play-Yan would start the game. The entire game took place in the 60x40 window dedicated to video thumbnails. Contrary to most available information, these Garage Games are technically not &#34;DLC&#34;. Each Garage Game already exists in the Play-Yan ROM and the .ASF files contain no executable code. However, the Garage Games are normally inaccessible without the .ASF files present. The files Nintendo provided act as a sort of key that unlocks the content.</p>
+
+	<p>Each .ASF file is a valid video and will generate a thumbnail preview on the Play-Yan. This thumbnail acts as a fingerprint that the Play-Yan can use to identify an individual file. The 0x12C0 bytes of thumbnail data is quickly hashed into a 32-bit number and compared against a list of expected values. Should the thumbnail&#39;s hash match that internal list, the Play-Yan recognizes it as a Garage Game.</p>
+
+	<p>It should also be noted that the video file&#39;s name has to match as well. If the file name is incorrect, the Play-Yan won&#39;t bother creating a hash and will simply treat it as a regular video file. This behavior can be reproduced by renaming any of the .ASF files from Nintendo. The names of each Garage Game is case-sensitive as well; they all need to be uppercase in order to work. A list of all the Garage Games and their 32-bit hashes is provided below:</p>
+
+<code>AVOID		0xF8CB9008
+BAT		0xD911FE57
+CREDIT		0x02F86041
+FIRE		0x0D78A9FE
+FISH		0x5741DE47
+INSECT		0x4D5E5AEB
+JUMP		0x748C5BAF
+KEEPER		0x3FEBEFE5
+MEMORY		0x90119AE6
+NEKOROID	0xD839D809
+NOSE		0x86D3BA78
+TRIPLE		0xD5C0A40B
+WAVE		0xE7DCD82B</code>
+
+	<p>The hash can be calculated using the following psuedo-code:</p>
+
+<code>-----------------------------------------------------------------------
+HASH = 0
+INDEX = 0
+
+WHILE INDEX NOT EQUAL TO 0x960
+	HASH = HASH + 16-BIT THUMBNAIL PIXEL DATA
+	HASH = HASH ROTATE RIGHT 31
+	INCREMENT INDEX BY 1
+-----------------------------------------------------------------------</code>
+
+	<p>Although this hashing prevents most ordinary videos from randomly generating a thumbnail that triggers the Garage Game to play, the hashing method is prone to collisions. It is possible, therefore, to specifically create a thumbnail that matches any of the above listed hashes, in effect creating &#34;bootleg&#34; Garage Games.</p>
+
+
+
 
 
 	<!-- Ubisoft Thrustmaster Pedometer -->
@@ -4347,9 +5226,9 @@ Byte 2			| Command ID
 
 	<p>The Packet Checksum is simply the 16-bit sum of all previous header bytes and all previous packet data bytes. It does not include the magic bytes. The checksum is transmitted big-endian.</p>
 
-	<p>After the checksum, a simple 2-byte Acknowledgement Signal is sent. The first byte is the Device ID OR'ed with the value 0x80. The second byte is 0x00 for the sender. The receiver transfers the Command ID from the Packet Header XOR&#39;ed by 0x80. This essentially confirms what role the Game Boy is acting in. If it is the receiver, it is expecting to read information from the Packet Data from the Mobile Adapter. If it is the sender, it is pushing information from its own Packet Data to the Mobile Adapter. For example, with Command 0x19, the Game Boy is explicitly requesting data from the adapter, and with Command 0x1A the Game Boy is explicitly sending data to the adapter.</p>
+	<p>After the checksum, a simple 2-byte Acknowledgement Signal is sent. The first byte is the Device ID OR&#39;ed with the value 0x80. The second byte is 0x00 for the sender. The receiver transfers the Command ID from the Packet Header XOR&#39;ed by 0x80. This essentially confirms what role the Game Boy is acting in. If it is the receiver, it is expecting to read information from the Packet Data from the Mobile Adapter. If it is the sender, it is pushing information from its own Packet Data to the Mobile Adapter. For example, with Command 0x19, the Game Boy is explicitly requesting data from the adapter, and with Command 0x1A the Game Boy is explicitly sending data to the adapter.</p>
 
-	<p>The Command ID byte in the Acknowledgement Signal may also be used for the receiver to indicate an error. If the checksum verification fails, the receiving side will send error 0xF1. This causes the sender to immediately re-attempt sending the packet up to 4 times. If the command isn't implemented/supported by the receiving Mobile Adapter, error 0xF0 will be sent. Error 0xF2 indicates an internal error, such as the Mobile Adapter's TCP/telephone transfer buffer being full.</p>
+	<p>The Command ID byte in the Acknowledgement Signal may also be used for the receiver to indicate an error. If the checksum verification fails, the receiving side will send error 0xF1. This causes the sender to immediately re-attempt sending the packet up to 4 times. If the command isn&#39;t implemented/supported by the receiving Mobile Adapter, error 0xF0 will be sent. Error 0xF2 indicates an internal error, such as the Mobile Adapter&#39;s TCP/telephone transfer buffer being full.</p>
 
 	<p>The device ID determines what kind of hardware each side is communicating with. Below are the possible values and their meaning:</p>
 
@@ -4369,7 +5248,7 @@ Device ID	| OR Value	| Device Type
 
 	<p>Even though the protocol effectively enables 2-way communication between the Game Boy and a remote server, the handheld is expected to oversee all transmissions to the adapter itself. That is to say, the typical &#34;master-slave&#34; model often used for Game Boy serial I/O still applies in some sense. Once the server starts responding, the Game Boy has to continually initiate another transfer to the adapter (setting Bit 7 of 0xFF02 high) to keep reading any additional bytes that were sent.</p>
 
-	<p>It is up to the game software itself to handle secondary protocols (such as HTTP, POP3, or SMTP) which involve one side specifically acting as the sender or receiver. For example, after opening a TCP connection to an HTTP server and issuing the 0x15 command (Data Transfer), the software will determine whether the Game Boy is acting as a sender (making an HTTP request) or a receiver (receiving an HTTP response). Generally, this goes back and forth. The Game Boy sends information via its Packet Data, while the Mobile Adapter responds with 0xD2 &#34;wait&#34; bytes until the Game Boy finishes its TCP transfer. When the Game Boy's TCP transfer is done, the adapter sends any information from the server in its Packet Data while the Game Boy responds with 0x4B &#34;wait&#34; bytes. The chart below illustrates this concept and details what bytes are transferred by each side depending on their current role:</p>
+	<p>It is up to the game software itself to handle secondary protocols (such as HTTP, POP3, or SMTP) which involve one side specifically acting as the sender or receiver. For example, after opening a TCP connection to an HTTP server and issuing the 0x15 command (Data Transfer), the software will determine whether the Game Boy is acting as a sender (making an HTTP request) or a receiver (receiving an HTTP response). Generally, this goes back and forth. The Game Boy sends information via its Packet Data, while the Mobile Adapter responds with 0xD2 &#34;wait&#34; bytes until the Game Boy finishes its TCP transfer. When the Game Boy&#39;s TCP transfer is done, the adapter sends any information from the server in its Packet Data while the Game Boy responds with 0x4B &#34;wait&#34; bytes. The chart below illustrates this concept and details what bytes are transferred by each side depending on their current role:</p>
 
 <code>-------------------------------------------------------------------------------------------------------------------------------------------------
 Device		| Role		| Magic Bytes	| Packet Header | Packet Checksum	| Packet Data	| Acknowledgement Signal
@@ -4431,7 +5310,7 @@ Command 0x28		DNS Query
 	<p class="list_item">Data Sent: 1 unknown byte + telephone number</p>
 	<p class="list_item">Data Received: N/A. Empty Packet Data</p>
 
-	<p class="spc">Instructs the adapter to dial a telephone number. The first byte&#39;s purpose is unknown, but seems to vary depending on the adapter type. 0 is sent for the blue/PDC adapter, 1 is sent for the green/PHS or red/DDI adapters, and 2 for the yellow/cdmaOne adapter. For unknown reasons, the blue adapter also accepts 16, the red adapter also accepts 9, and the yellow adapter doesn't actually verify this value. The following data is the telephone number represented in ASCII values, consisting of decimal numbers &#34;0&#34; through &#34;9&#34;, as well as &#34;#&#34; and &#34;*&#34;. Any ASCII values not within this range are ignored. The maximum length of the phone number is 32 bytes.</p>
+	<p class="spc">Instructs the adapter to dial a telephone number. The first byte&#39;s purpose is unknown, but seems to vary depending on the adapter type. 0 is sent for the blue/PDC adapter, 1 is sent for the green/PHS or red/DDI adapters, and 2 for the yellow/cdmaOne adapter. For unknown reasons, the blue adapter also accepts 16, the red adapter also accepts 9, and the yellow adapter doesn&#39;t actually verify this value. The following data is the telephone number represented in ASCII values, consisting of decimal numbers &#34;0&#34; through &#34;9&#34;, as well as &#34;#&#34; and &#34;*&#34;. Any ASCII values not within this range are ignored. The maximum length of the phone number is 32 bytes.</p>
 	
 	<p class="list_item"><strong>Command 0x13 - Hang Up Telephone</strong></p>
 	<p class="list_item">Data Sent: N/A. Empty Packet Data</p>
@@ -4449,9 +5328,9 @@ Command 0x28		DNS Query
 	<p class="list_item">Data Sent: Connection ID + Arbitrary Data (optional)</p>
 	<p class="list_item">Data Received: Connection ID + Arbitrary Data (optional)</p>
 
-	<p>Used to transfer data over TCP after command 0x23 (Open TCP Connection), transfer data over UDP after command 0x25 (Open UDP connection), or transfer data over the phone line after either 0x12 (Dial Telephone) or 0x14 (Wait For Telephone Call) have successfully been called. Only TCP/UDP communication is possible after a 0x21 (ISP Login) command, and the first byte indicates the connection that's being transferred over, as multiple can be opened simultaneously. If it&#39;s a mobile connection, the first byte is ignored, usually being set to 0xFF.</p>
+	<p>Used to transfer data over TCP after command 0x23 (Open TCP Connection), transfer data over UDP after command 0x25 (Open UDP connection), or transfer data over the phone line after either 0x12 (Dial Telephone) or 0x14 (Wait For Telephone Call) have successfully been called. Only TCP/UDP communication is possible after a 0x21 (ISP Login) command, and the first byte indicates the connection that&#39;s being transferred over, as multiple can be opened simultaneously. If it&#39;s a mobile connection, the first byte is ignored, usually being set to 0xFF.</p>
 
-	<p>Generally, additional data is appended, although it is not required, such as when waiting for the server/other phone to send a reply. Large chunks of data greater than 254 bytes must be broken down into separate packets. While a connection is active, the Command ID in the Reply is 0x15 for the sender and 0x95 for the receiver. When a TCP connection is closed by the remote server (e.g. when an HTTP response has finished), and there's no leftover data to be received by the gameboy, the Command ID in the Reply becomes 0x1F for the sender and 0x9F for the receiver, with a packet length of 0. Additionally, for TCP connections, if no data is sent, this command will wait for data to be received up to 1 second, before sending a reply.</p>
+	<p>Generally, additional data is appended, although it is not required, such as when waiting for the server/other phone to send a reply. Large chunks of data greater than 254 bytes must be broken down into separate packets. While a connection is active, the Command ID in the Reply is 0x15 for the sender and 0x95 for the receiver. When a TCP connection is closed by the remote server (e.g. when an HTTP response has finished), and there&#39;s no leftover data to be received by the Game Boy, the Command ID in the Reply becomes 0x1F for the sender and 0x9F for the receiver, with a packet length of 0. Additionally, for TCP connections, if no data is sent, this command will wait for data to be received up to 1 second, before sending a reply.</p>
 
 	<p class="spc">During a phone-to-phone communication, no disconnection is detected, instead being indicated by the 0x17 (Telephone Status) command. However, most games implement this instead through a timeout during which no data has been received.</p>
 
@@ -4467,7 +5346,7 @@ Command 0x28		DNS Query
 
 	<p>Typically sent to the adapter before dialing. Also used to test the telephone status before opening a TCP connection, or to constantly ping the phone to make sure it&#39;s still active.</p>
 
-	<p>The reply is 3 bytes. The first byte indicates the phone's status, where 0xFF is returned if the phone is disconnected. If the phone isn&#39;t disconnected, bit 2 indicates whether the phone line is &#34;busy&#34; (i.e. in a call/picked up), and bit 0 indicates the presence of an incoming call (this remains if the incoming call is picked up). As such, the valid values are 0, 1, 4 and 5. Software may check bit 2 to know if the phone line is still connected. Most software doesn&#39;t seem to care about bit 0, but Net de Get: Mini Game @ 100 refuses to work with bit 0 set (value 5).</p>
+	<p>The reply is 3 bytes. The first byte indicates the phone&#39;s status, where 0xFF is returned if the phone is disconnected. If the phone isn&#39;t disconnected, bit 2 indicates whether the phone line is &#34;busy&#34; (i.e. in a call/picked up), and bit 0 indicates the presence of an incoming call (this remains if the incoming call is picked up). As such, the valid values are 0, 1, 4 and 5. Software may check bit 2 to know if the phone line is still connected. Most software doesn&#39;t seem to care about bit 0, but Net de Get: Mini Game @ 100 refuses to work with bit 0 set (value 5).</p>
 
 	<p class="spc">The second byte is related to the adapter type, where the blue/PDC adapter returns 0x4D, and the red/DDI and yellow/cdmaOne adapters return 0x48, though the actual meaning is unknown. The third byte is unknown, and usually hardcoded to 0. However, Pokemon Crystal reacts to the third byte being 0xF0 by allowing the player to bypass the 10 min/day battle time limit.</p>
 
@@ -4477,7 +5356,7 @@ Command 0x28		DNS Query
 
 	<p>This command is generally sent after Command 0x10. It enables/disables SIO32 Mode, which is useful for GBA games to be able to send more data, faster. The sent byte must be 1 to enable SIO32 mode, and 0 to disable it. SIO32 mode implies that any transmission will happen in chunks of 4 bytes instead of 1, which has implications with respect to the alignment of the communication.</p>
 
-	<p>When SIO32 mode is on, the packet data will be aligned to a multiple of 4 bytes, padding the remaining bytes with 0, and this won't be reflected in the packet length field. Similarly, the Acknowledgement Signal gains 2 padding bytes (hardcoded 0, not verified) at the end. Since the entire transmission (including Magic Bytes) is sent in chunks of 4, this means that the checksum is sent along with either the packet length (if length is 0) or the last 2 bytes of the packet (if length is not 0), and the acknowledgement signal is sent in the next chunk.</p>
+	<p>When SIO32 mode is on, the packet data will be aligned to a multiple of 4 bytes, padding the remaining bytes with 0, and this won&#39;t be reflected in the packet length field. Similarly, the Acknowledgement Signal gains 2 padding bytes (hardcoded 0, not verified) at the end. Since the entire transmission (including Magic Bytes) is sent in chunks of 4, this means that the checksum is sent along with either the packet length (if length is 0) or the last 2 bytes of the packet (if length is not 0), and the acknowledgement signal is sent in the next chunk.</p>
 
 	<p class="spc">SIO32 Mode will only be toggled after the reply to this packet has been sent. The adapter should be allowed at least 100ms to toggle, as it might otherwise start sending garbage.</p>
 
@@ -4497,7 +5376,7 @@ Command 0x28		DNS Query
 	<p class="list_item">Data Sent: 1 byte Login ID Length + Login ID + 1 byte Password Length + Password + 4 bytes DNS Address #1 + 4 bytes DNS Address #2</p>
 	<p class="list_item">Data Received: 4 bytes assigned IP + 4 bytes assigned DNS Address #1 + 4 bytes assigned DNS Address #2 /p>
 
-	<p class="spc">Logs into the DION dial-up service, after calling it with command 0x12 (Dial Telephone), allowing the adapter to connect to the internet. Both the Login ID and Password are prefixed with bytes declaring their lengths, with a maximum length of 0x20. The IPv4 DNS addresses are 4 bytes each, with a single byte representing one octet. The reply contains the assigned IP address and DNS addresses. If the game sets either of the DNS addresses to 0, the adapter may assign the DNS address on its own, and return that in the reply, otherwise, the reply's DNS addresses are 0.0.0.0.</p>
+	<p class="spc">Logs into the DION dial-up service, after calling it with command 0x12 (Dial Telephone), allowing the adapter to connect to the internet. Both the Login ID and Password are prefixed with bytes declaring their lengths, with a maximum length of 0x20. The IPv4 DNS addresses are 4 bytes each, with a single byte representing one octet. The reply contains the assigned IP address and DNS addresses. If the game sets either of the DNS addresses to 0, the adapter may assign the DNS address on its own, and return that in the reply, otherwise, the reply&#39;s DNS addresses are 0.0.0.0.</p>
 
 	<p class="list_item"><strong>Command 0x22 - ISP Logout</strong></p>
 	<p class="list_item">Data Sent: N/A. Empty Packet Data</p>
@@ -4521,7 +5400,7 @@ Command 0x28		DNS Query
 	<p class="list_item">Data Sent: 4 bytes for IP Address + 2 Bytes for Port Number</p>
 	<p class="list_item">Data Received: 1 byte Connection ID</p>
 
-	<p class="spc">Opens a UDP connection at the given IP address on the given port, after logging into the DION dial-up service. It&#39;s an analog of Command 0x23 (Open TCP Connection), but opens a UDP connection instead. This UDP connection is bound to the specified IP address and Port until it's closed. When using Command 0x15 (Transfer Data) with a UDP connection, it&#39;s impossible to know the sender of any received data, as it isn&#39;t verified.</p>
+	<p class="spc">Opens a UDP connection at the given IP address on the given port, after logging into the DION dial-up service. It&#39;s an analog of Command 0x23 (Open TCP Connection), but opens a UDP connection instead. This UDP connection is bound to the specified IP address and Port until it&#39;s closed. When using Command 0x15 (Transfer Data) with a UDP connection, it&#39;s impossible to know the sender of any received data, as it isn&#39;t verified.</p>
 
 	<p class="list_item"><strong>Command 0x26 - Close UDP Connection</strong></p>
 	<p class="list_item">Data Sent: 1 byte Connection ID</p>
@@ -4556,7 +5435,7 @@ Command 0x28		DNS Query
 
 0x12: Error Code 0x00 - Telephone line is busy
 0x12: Error Code 0x01 - Invalid use (already connected)
-0x12: Error Code 0x02 - Invalid contents (first byte isn't correct)
+0x12: Error Code 0x02 - Invalid contents (first byte isn&#39;t correct)
 0x12: Error Code 0x03 - Communication failed/phone not connected
 0x12: Error Code 0x04 - Call not established, redial
 
@@ -4895,7 +5774,7 @@ Unit IDs
 	<a name="gbw_005"></a>
 	<p class="gray_title">[Game Boy Wars 3] : mbox/mbox_**.cgb</p>
 
-	<p>This file contains the message to display from a mailbox. The exact url is determined by mbox_serial.txt. If the first line&#39;s string in mbox_serial.txt is updated, the game downloads mbox_00.cgb. If the second line's string in mbox_serial.txt is updated, the game downloads mbox_01.cgb, and so on. There are only 16 mailboxes available: mbox_00.cgb to mbox_15.cgb.</p>
+	<p>This file contains the message to display from a mailbox. The exact url is determined by mbox_serial.txt. If the first line&#39;s string in mbox_serial.txt is updated, the game downloads mbox_00.cgb. If the second line&#39;s string in mbox_serial.txt is updated, the game downloads mbox_01.cgb, and so on. There are only 16 mailboxes available: mbox_00.cgb to mbox_15.cgb.</p>
 
 	<p>The format appears to be pure text, except that the first 7 characters are ignored. Messages can be displayed in ASCII. Hiragana and katakana are available as well, however, their format is currently unknown. The mbox_**.cgb file MUST end CRLF, otherwise the game does not know to stop parsing data and starts overwriting all kinds of RAM.</p>
 
@@ -4919,6 +5798,7 @@ Unit IDs
 	<p class="list_item"><a href="#hkh_gen">General Information</a></p>
 	<p class="list_item"><a href="#hkh_ser">Server Structure</a></p>
 	<p class="list_item"><a href="#hkh_eml">Email</a></p>
+	<p class="list_item"><a href="#hkh_itm">Item Codes</a></p>
 
 	<a name="hkh_gen"></a>
 	<p class="gray_title">[Hello Kitty no Happy House] : General Information</p>
@@ -4953,6 +5833,134 @@ X-HKH-HOUSE: [3-letter code]</code>
 
 	<p>The codes appear to be simple, e.g. &#34;AAE&#34; for a framed picture and &#34;AIG&#34; for a green rug.</p>
 
+	<a name="hkh_itm"></a>
+	<p class="gray_title">[Hello Kitty no Happy House] : Item Codes</p>
+
+	<p>Below are a list of 3-letter codes and the items they generate when used in the email header. If the game does not recognize the code, a present icon will appear next to the email, but no item is actually received.</p>
+
+<code>---------------------------------------------------
+Codes			| Item
+---------------------------------------------------
+AAB			Heart Clock
+AAC			Pendulum Clock
+AAD			Futuristic Clock
+AAE			Landscape Painting
+AAF			Pop Art Painting
+AAG			Kitty Elastomer
+AAH			Bronze Angel Statue
+AAI 			Bronze Goddess Statue
+AAJ			Bronze Kitty Statue
+AAK	ABA		Hanging Scroll
+AAL	ABB		Dragon Pennant
+AAM	ABC		Noble Pennant
+AAN	ABD		Wide TV
+AAO	ABE		Cute TV
+AAP	ABF		Wall-mounted TV
+AAQ	ABG		Digital Component Stereo
+AAR	ABH		Component Stereo
+AAS	ABI		Gramophone
+AAT	ABJ		Massage Chair
+AAU	ABK	ACA	"Sexy" Massage Chair
+AAV	ABL	ACB	Relaxing Chair
+AAW	ABM	ACC	Globe
+AAX	ABN	ACD	Cosmic Globe
+AAY	ABO	ACE	Miniature House
+AAZ	ABP	ACF	Pink Chest
+ABQ	ACG		Japanese Drawer
+ABR	ACH		Toy Case
+ABS	ACI		Japanese Vase
+ABT	ACJ		Western Vase
+ABU	ACK	ADA	Arabian Vase
+ABV	ACL	ADB	Tetra Aquarium
+ABW	ACM	ADC	Turtle Aquarium
+ABX	ACN	ADD	Arowana Aquarium
+ABY	ACO	ADE	Floor Light
+ABZ	ACP	ADF	Standing Light
+ACQ	ADG		Mood Light
+ACR	ADH		Doggy Doll
+ACS	ADI		Sheep Doll
+ACT	ADJ		Lion Doll
+ACU	ADK	AEA	Puppet Storage Box
+ACV	ADL	AEB	Robot Base
+ACW	ADM	AEC	Doll House
+ACX	ADN	AED	Magazine Rack
+ACY	ADO	AEE	Letter Rack
+ACZ	ADP	AEF	Bookstand
+ADQ	AEG		Hat Stand
+ADR	AEH		Coat Stand
+ADS	AEI		Dear Daniel Doll
+ADT	AEJ		Pink Living Room Furniture
+ADU	AEK	AFA	Blue Living Room Furniture
+ADV	AEL	AFB	White Living Room Furniture
+ADW	AEM	AFC	Thai Living Room Furniture
+ADX	AEN	AFD	Chinese Living Room Furniture
+ADY	AEO	AFE	Asian Living Room Furniture
+ADZ	AEP	AFF	Japanese Living Room Furniture
+AEQ	AFG		Wooden Japanese Chestnut Living Room Furniture
+AER	AFH		Wajima Lacquer Living Room Furniture
+AES	AFI		Cozy Living Room Furniture
+AET	AFJ		Checkered Living Room Furniture
+AEU	AFK	AGA	Pop Living Room Furniture
+AEV	AFL	AGB	Old Living Room Furniture
+AEW	AFM	AGC	Old-fashioned Living Room Furniture
+AEX	AFN	AGD	Antique Living Room Furniture
+AEY	AFO	AGE	Heart-themed Living Room Furniture
+AEZ	AFP	AGF	Apple-themed Living Room Furniture
+AFQ	AGG		Flower-themed Living Room Furniture
+AFR	AGH		Red Kotatsu
+AFS	AGI		Blue Kotatsu
+AFT	AGJ		Yellow Kotatsu
+AFU	AGK	AHA	Extravagant Living Room Furniture
+AFV	AGL	AHB	Elegant Living Room Furniture
+AFW	AGM	AHC	Hello Kitty-themed Living Room Furniture
+AFX	AGN	AHD	Red Art Studio
+AFY	AGO	AHE	Blue Art Studio
+AFZ	AGP	AHF	Elegant Art Studio
+AGQ	AHG		Model Train
+AGR	AHH		Toy Blocks
+AGS	AHI		Playing House Set
+AGT	AHJ		Standing Table
+AGU	AHK	AIA	Flower-pattern Table
+AGV	AHL	AIB	Glass Table
+AGW	AHM	AIC	Japanese Flower Arranged Desk
+AGX	AHN	AID	Flower Arrangement
+AGY	AHO	AIE	Bonsai
+AGZ	AHP	AIF	Red Carpet
+AHQ	AIG		Green Carpet
+AHR	AIH		Blue Carpet (says blue, looks purple)
+AHS	AII		Blue Playground Slide
+AHT	AIJ		Red Playground Slide (says red, looks pink)
+AHU	AIK	AJA	White Playground Slide
+AHV	AIL	AJB	Easy Chair
+AHW	AIM	AJC	Tranquil Chair
+AHX	AIN	AJD	Relaxing Chair
+AHY	AIO	AJE	Gold Tearoom
+AHZ	AIP	AJF	Silver Tearoom
+AIQ	AJG		Play Set
+AIR	AJH		Changing-clothes Box
+AIS	AJI		Changing-clothes Case
+AIT	AJJ		Strange Box
+AIU	AJK	AKA	Somersault Platform
+AIV	AJL	AKB	Jump Sheet
+AIW	AJM	AKC	Trampoline
+AIX	AJN	AKD	Pink Refrigerator
+AIY	AJO	AKE	Wood-grain Refrigerator
+AIZ	AJP	AKF	Play Refrigerator
+AJQ	AKG		White Iron
+AJR	AKH		Green Iron
+AJS	AKI		Purple Iron
+AJT	AKJ		Brown Builder (workout set)
+AJU	AKK	ALA	Purple Builder (workout set)
+AJV	AKL	ALB	Green Builder (workout set)
+AJW	AKM	ALC	Brown Runner (treadmill)
+AJX	AKN	ALD	Red Runner (treadmill, says red, looks pink)
+AJY	AKO	ALE	Blue Runner (treadmill)
+AJZ	AKP	ALF	Flower Piano
+AKQ	ALG		Star Piano
+AKR	ALH		Classic Piano
+AKS	ALI		Crystal Ball Set
+AKT	ALJ		Fortune-Telling Set
+AKU	ALK	AMA	Tarot Card Divination</code>
 
 	<!-- Mobile Trainer -->
 	<a name="mbt"></a>
@@ -5074,7 +6082,7 @@ Content-Type: text&#47;plain; charset=iso-2022-jp
 	<a name="ndg_h00"></a>
 	<p class="gray_title">[Net de Get] : h0000.cgb</p>
 
-	<p>Once some of the default minigames have been played, the &#34;セーバ&#34; or &#34;Server&#34; option in the main menu unlocks. After the user's password is given, this file is then downloaded via HTTP GET. The purpose of h0000.cgb is simply to display the text &#34;ミニゲームリスト&#34; or &#34;Minigame List&#34;. Selecting this downloads RomList.cgb via HTTP GET. The format of h0000.cgb is described below:</p>
+	<p>Once some of the default minigames have been played, the &#34;セーバ&#34; or &#34;Server&#34; option in the main menu unlocks. After the user&#39;s password is given, this file is then downloaded via HTTP GET. The purpose of h0000.cgb is simply to display the text &#34;ミニゲームリスト&#34; or &#34;Minigame List&#34;. Selecting this downloads RomList.cgb via HTTP GET. The format of h0000.cgb is described below:</p>
 
 <code>----------------------------------
 Header - 4 bytes
@@ -5293,6 +6301,285 @@ Secondary Minigame Icon Type
 		<li>The exact way in which the MBC6 handles flash ROM banking is not entirely understood, however, there is some evidence of how it should work. After issuing command 0x30 (sector erase), the current bank is taken from whatever bank ID was written to in 0x2000 (for flash ROM mapped to 0x4000 - 0x5FFF) or 0x3000 (for flash ROM mapped to 0x6000 - 0x7FFF). The flash bank used for all further IO operations is essentially &#34;remembered&#34; after the 0x30 command. Reads and writes to flash ROM will use that &#34;remembered&#34; bank instead of the one specified at 0x2000 or 0x3000 until another command is issued. The other 8KB area of flash memory can use the bank ID in 0x2000 or 0x3000 for reading normally.</li>
 
 	</ul>
+
+	<!-- Zen Nihon GT Senshuken -->
+	<a name="zng"></a>
+	<p class="gray_title">Zen Nihon GT Senshuken</p>
+	<p class="list_item"><a href="#zng_gen">General Information</a></p>
+	<p class="list_item"><a href="#zng_ser">Server Structure</a></p>
+	<p class="list_item"><a href="#zng_cfg">gtconfig.cgb</a></p>
+	<p class="list_item"><a href="#zng_gtc">gtrkconfig.cgb</a></p>
+	<p class="list_item"><a href="#zng_exc">100.gtexcrs***.cgb</a></p>
+	<p class="list_item"><a href="#zng_gst">gtgst00.cgb - gtgst06.cgb</a></p>
+	<p class="list_item"><a href="#zng_dat">Ghost Data</a></p>
+	<p class="list_item"><a href="#zng_grk">gtrk00.cgb - gtrk06.cgb</a></p>
+	<p class="list_item"><a href="#zng_rnk">Rank Entry</a></p>
+
+	<a name="zng_gen"></a>
+	<p class="gray_title">[Zen Nihon GT Senshuken] : General Information</p>
+
+	<p>Zen Nihon GT Senshuken (released as Top Gear GT Championship in the west) is a behind-the-car racing game for the Game Boy Advance. It served as a launch title in Japan and supported the Mobile Adapter GB for several functions including downloading custom racetracks and ghost car data, as well as uploading race result to get ranked.</p>
+
+	<a name="zng_ser"></a>
+	<p class="gray_title">[Zen Nihon GT Senshuken] : Server Structure</p>
+
+	<p>Zen Nihon GT Senshuken is currently known to access the following URLs:</p>
+
+	<ul>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/gtconfig.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/100.gtexcrs***.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/gtgst01.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/gtgst02.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/gtgst03.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/gtgst04.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrkconfig.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk00.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk01.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk02.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk03.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk04.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk05.cgb</li>
+		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk06.cgb</li>
+	</ul>
+
+	<a name="zng_cfg"></a>
+	<p class="gray_title">[Zen Nihon GT Senshuken] : gtconfig.cgb</p>
+
+	<p>This file configures downloads for additional courses, Time Trial Ghosts, and online mobile rankings. gtconfig.cgb is only 200 bytes (0xC8) in size, as the game will not process any data beyond that. The format is as follows:</p>
+
+<code>----------------------------------
+File Structure
+----------------------------------
+0x00	 			::	Unknown data.
+0x01				::	Enables Time Trial Ghost downloads for select race tracks.
+0x02				::	Numerical suffix for downloadable course
+0x03				::	Unknown data.
+0x04 - 0xC3			::	Dynamic URL data for mobile rank files. Uses ASCII characters.
+0xC4 - 0xC7			::	A 32-bit checksum for all bytes from 0x00 - 0xC3. All bytes are added, one-by-one. Checksum stored LSB first.</code>
+
+	<p>When downloading Time Trial Ghosts, the game will display 7 menus, 1 for each race track. For Byte 0x01, each of the bits from Bit 0 through Bit 6 controls whether an individual track is enabled. Setting the bit to &#34;0&#34; enables it, while setting the bit to &#34;1&#34; disables it.</p>
+
+	<p>When downloading extra courses, Byte 0x02 is converted to Base 10 (decimal) and appended to the file name as a 3 digit number. For example, if the value of Byte 0x02 is 0x30, the game will download the file &#34;100.gtexcrs048.cgb&#34; for the course.</p>
+
+	<p>The dynamic URL data is an ASCII string terminated with a null character (0x00). The string points the game to the file gtrkconfig.cgb as well as the gtrk00.cgb through gtrk06.cgb files. Apparently, some portions of the string are ignored when the game makes the actual HTTP GET request. For example, if the string is &#34;gameboy.datacenter.ne.jp/cgb/&#34;, the GET request only appears as &#34;/cgb/&#34;. Any text prior to the first &#34;/&#34; character is effectively removed. This string is exclusively used for files related to mobile ranking.</p>
+
+	<a name="zng_gtc"></a>
+	<p class="gray_title">[Zen Nihon GT Senshuken] : gtrkconfig.cgb</p>
+
+	<p>The purpose of this file is similar to gtconfig.cgb. It controls which menus to display for online mobile rankings. It has a total length of 8 bytes. The last 4 bytes compose a simple additive checksum of the file&#39;s first half. The format is as follows:</p>
+
+<code>----------------------------------
+File Structure
+----------------------------------
+0x00				::	Enables mobile rankings for select race tracks
+0x01 - 0x03 			::	Unknown data.
+0x04 - 0x07			::	A 32-bit checksum for all bytes from 0x00 - 0x03. All bytes are added, one-by-one. Checksum stored LSB first.</code>
+
+	<p>When downloading mobile rankings, the game will display 7 menus, 1 for each race track. For Byte 0x00, each of the bits from Bit 0 through Bit 6 controls whether an individual track is enabled. Setting the bit to &#34;0&#34; enables it, while setting the bit to &#34;1&#34; disables it.</p>
+
+	<a name="zng_exc"></a>
+	<p class="gray_title">[Zen Nihon GT Senshuken] : 100.gtexcrs***.cgb</p>
+
+	<p>This file represents a custom racetrack that can be downloaded from the servers and saved on the player&#39;s game cartridge. It is available through the Mobile Menu and selecting Course Download. A 100 yen service charge is attached to each download. The &#34;***&#34; part of the file name is replaced by Byte 0x02 of gtconfig.cgb when converted into a 3-digit decimal. The file length is 272 bytes total. The format is as follows:</p>
+
+<code>----------------------------------
+Racetrack Download Format
+----------------------------------
+0x0000 - 0x0003 		::	Unknown 32-bit value. Seems to be ignored.
+0x0004 - 0x001B			::	10 character title plus terminating character. Uses a custom 16-bit character encoding.
+0x001C - 0x010B			::	Racetrack data.
+0x010C - 0x010F			::	A 32-bit checksum for all bytes from 0x0000 - 0x010B. All bytes are added, one-by-one. Checksum stored LSB first.</code>
+
+	<p>The format of the racetrack data is identical to the same data saved on the cartridge when a user creates their own custom track. Each racetrack consists of a 10x6 grid wherein blocks of the track are positioned. The binary data for the racetracks allocates 4 bytes for each block. Blocks are arranged left to right, top to bottom. The format is as follows:</p>
+
+<code>----------------------------------
+Racetrack Block Format
+----------------------------------
+0x00				::	Block Type. 0x01 = Straight Track, 0x02 = Turn, 0x03 = Starting Position.
+0x01				::	Turn Type or Starting Position Type.
+0x02				::	Must be 0x01 to signal a valid block.
+0x03				::	Not used, reads 0x00.</code>
+
+	<p>Depending on whether the block is a turn or a starting position, Byte 0x01 has different meanings. They are listed below:</p>
+
+<code>----------------------------------
+Block Turn Types
+----------------------------------
+0x00				::	East-to-South turn.
+0x01				::	South-to-West turn.
+0x02				::	West-to-North turn.
+0x03				::	North-to-East turn.</code>
+
+<p></p>
+
+<code>----------------------------------
+Block Starting Position Types
+----------------------------------
+0x00				::	Start race facing East.
+0x01				::	Start race facing South.
+0x02				::	Start race facing West.
+0x03				::	Start race facing North.</code>
+
+	<a name="zng_gst"></a>
+	<p class="gray_title">[Zen Nihon GT Senshuken] : gtgst00.cgb - gtgst06.cgb</p>
+
+	<p>These 7 files represent menus for different ghost data that can be downloaded. From this menu, the player can choose a specific ghost from a specific track and then proceed to save it to the game cartridge. Each file 0x9E4 bytes long. Together, they give the player access to 210 sets of ghost data for each of the 7 race courses available (30 per track). The file for each .cgb file is as follows</p>
+
+<code>----------------------------------
+Ghost Menu File Structure
+----------------------------------
+0x0000 - 0x0001			::	Year of last update, LSB first.
+0x0002				::	Month of last update.
+0x0003				::	Day of last update.
+0x0004 - 0x0007			::	Unknown data.
+0x000A - 0x09DF			::	Ghost Data Entries.
+0x09E0 - 0x09E3			::	A 32-bit checksum for all bytes from 0x0000 - 0x09DF. All bytes are added, one-by-one. Checksum stored LSB first.</code>
+
+<p></p>
+
+<code>----------------------------------
+Ghost Data Entries
+----------------------------------
+0x00				::	Unknown data.
+0x01				::	Weather condition for ghost data (0 = Sunny, 1 = Rain). 
+0x02				::	Car type used for ghost data.
+0x03				::	Car transmission used for ghost data (0 = Automatic, 1 = Manual).
+0x04 - 0x0B			::	Unknown data.
+0x0C - 0x0D			::	Handicap Weight. 16-bit value stored LSB first. Max value is 990, game displays values as units of 10 (e.g. 10, 20, 30, 40...) May be zero.
+0x0E - 0x23			::	Ghost Name. 10 characters plus terminating character. Uses a custom 16-bit character encoding.
+0x24 - 0x27			::	Ghost Time. 32-bit value stored LSB first. See notes below on format
+0x28 - 0x33			::	Unknown data.
+0x34 - 0x55			::	URL to download the ghost data. Uses ASCII characters.</code>
+
+	<p>Each Ghost Data Entry takes up 84 bytes. Once the player selects an entry, the game goes on to download the file specified by the URL. The URL in the entry is limited to 32 characters. Ultimately, if the URL is something like &#34;myghostfile.cgb&#34;, the game ends up downloading from the following address:</p>
+
+<code>http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/myghostfile.cgb</code>
+
+	<p>The total time used for the ghost is stored in a 32-bit value. The overall time works based on 1/100s of a second. To calculate the total time, start counting at zero and add according to this table:</p>
+
+<code>----------------------------------
+Ghost Entry Time Format
+----------------------------------
+0x00				::	Time = Time + (1/100) * Byte Value
+0x01				::	Time = Time + (256 * (1/100)) * Byte Value
+0x02				::	Time = Time + (65536 * (1/100)) * Byte Value
+0x03				::	Time = Time + (16777216 * (1/100)) * Byte Value</code>
+
+	<p>The maximum time alotted for any Ghost 99 minutes, 99 seconds, and 99 hundreths of a second.</p>
+
+	<a name="zng_dat"></a>
+	<p class="gray_title">[Zen Nihon GT Senshuken] : Ghost Data</p>
+
+	<p>The actual Ghost Data downloaded from the servers is saved to Flash RAM inside the cartridge. A fairly large portion of the 64KB of backup data is reserved just for Time Trial ghosts, and out of all the downloadable content, Ghost Data is potentially the largest. The file format is described below.</p>
+
+<code>----------------------------------
+Ghost Data File Format
+----------------------------------
+0x00				::	Race Track.
+0x01				::	Weather condition for ghost data (0 = Sunny, 1 = Rain). 
+0x02				::	Car type used for ghost data.
+0x03				::	Car transmission used for ghost data (0 = Automatic, 1 = Manual).
+0x04 - 0x0B			::	Unknown data.
+0x0C - 0x0D			::	Handicap Weight. 16-bit value stored LSB first. Max value is 990, game displays values as units of 10 (e.g. 10, 20, 30, 40...) May be zero.
+0x0E - 0x23			::	Ghost Name. 10 characters plus terminating character. Uses a custom 16-bit character encoding.
+0x24 - 0x27			::	Ghost Time. 32-bit value stored LSB first. See notes above on format.
+0x28 - 0x33			::	Unknown data.
+0x34 - EOF			::	Track Movement Data.</code>
+
+	<p>The format for the metadata is largely the same as the ghost menu. Byte 0 is used here, however, to define the specific race track the ghost belongs to. This forces the game to run that exact course, regardless of which menu it was downloaded from online. A list of all possible options follows:</p>
+
+<code>----------------------------------
+Ghost Race Track Values
+----------------------------------
+0x00				::	Twin Ring Motegi
+0x01				::	Fuji Speedway
+0x02				::	Sportsland Sugo
+0x03				::	Ti Circuit Aida
+0x04				::	Central Park Mine Circuit
+0x05				::	Suzuka Circuit
+0x06				::	EDIT - 1st custom course name
+0x07				::	EDIT - 2nd custom course name
+0x08				::	EDIT - 3rd custom course name
+0x09				::	Twin Ring Motegi (Mirror)
+0x0A				::	Fuji Speedway (Mirror)
+0x0B				::	Sportsland Sugo (Mirror)
+0x0C				::	Ti Circuit Aida (Mirror)
+0x0D				::	Central Park Mine Circuit (Mirror)
+0x0E				::	Suzuka Circuit (Mirror)
+0x0F				::	EDIT - (Mirror) 1st custom course name
+0x10				::	EDIT - (Mirror) 2nd custom course name
+0x11				::	EDIT - (Mirror) 3rd custom course name</code>
+
+	<p>Time Trial Ghost Data can apply to custom courses as well, thus allowing players of Zen Nihon GT to both download a unique track from the server as well as a ghost for it as well. Mirrored versions of each course is also available.</p>
+
+	<p>The Track Movement Data is a recording of a car&#39;s movements along the race course. For the downloaded file, it has the exact same format as regular Time Trial ghosts made locally by the player and saved on the cartridge. Zen Nihon GT essentially copy + pastes this section to Flash RAM as is.</p>
+
+	<p>No checksum is need for this file. The Track Movement Data uses 32-bit checksums periodically (approximately once every 4KB) to ensure data integrity, however.</p>
+
+	<a name="zng_grk"></a>
+	<p class="gray_title">[Zen Nihon GT Senshuken] : gtrk00.cgb - gtrk06.cgb</p>
+
+	<p>These files are the online mobile rankings. Players could sumbit their completion times for a certain race track (in the form of a Time Trial Ghost) and the fastest times would be listed for all to see. It was essentially a somewhat static leaderboard, as it required the player to manually send data to the servers. The exact URL is specified by the first string in gtconfig.cgb. Each file is 0xA34 bytes long. The format is as follows:</p>
+
+<code>----------------------------------
+Mobile Ranking File Format
+----------------------------------
+0x0000 - 0x0001			::	Year of last update, LSB first.
+0x0002				::	Month of last update.
+0x0003				::	Day of last update.
+0x0004				::	Hour of last update.
+0x0005				::	Minute of last update.
+0x0006 - 0x0007			::	Unknown Data.
+0x0008 - 0x0A2F			::	Mobile Rank Entries.
+0x0A30 - 0x0A33			::	A 32-bit checksum for all bytes from 0x0000 - 0x0A2F. All bytes are added, one-by-one. Checksum stored LSB first.</code>
+
+	<p>Each file corresponds to a different race track and contains 50 entries. Each entry is 52 bytes long. The format of these entries (nearly identical to Ghost Data Entries) is as specified:</p>
+
+<code>----------------------------------
+Mobile Rank Entry
+----------------------------------
+0x00				::	Unknown Data.
+0x01				::	Weather condition for ghost data (0 = Sunny, 1 = Rain).
+0x02				::	Car type used for the race.
+0x03				::	Car transmission used for the race (0 = Automatic, 1 = Manual).
+0x04 - 0x0B			::	Unknown Data.
+0x0C - 0x0D			::	Handicap Weight. 16-bit value stored LSB first. Max value is 990, game displays values as units of 10 (e.g. 10, 20, 30, 40...) May be zero.
+0x0E - 0x23			::	Player Name
+0x24 - 0x27			::	Course Completion Time. 32-bit value stored LSB first. Same format as Ghost Time, see notes above.
+0x28 - 0x33			::	Unknown Data. Appears to be three 32-bit values that must be non-zero.</code>
+
+	<a name="zng_rnk"></a>
+	<p class="gray_title">[Zen Nihon GT Senshuken] : Rank Entry</p>
+
+	<p>Players could enter their Time Trial Ghosts to participate in online mobile rankings. Zen Nihon GT transfers to Ghost Data to the server and the leaderboard would be updated. It is unknown if the process was manually handled by server administrators or if server-side software automatically parsed and sorted the fastest times. The game transmits the data as part of an email attachment via SMTP. The format of the sent email is as follows:</p>
+
+<code>From: xxxxxxxx@yyyy.dion.ne.jp
+To: 
+Subject: GT-CHAMP-ENTRY
+X-Game-code: AGB-AGTJ-00
+X-Game-title: GT-CHAMP
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary=&#34;--AGB-AGTJ&#34;
+----AGB-AGTJ
+Content-Type: text/plain; charset=iso-2022-jp
+Context-Transfer-Encoding: 7bit
+-----------------------
+【全日本ＧＴ選手権】でランキング登録が失敗している可能性があります。
+-----------------------
+----AGB-AGTJ
+Content-Type: application/octec-stream; name=&#34;gtent**.cgb&#34;
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=&#34;gtent**.cgb&#34;
+DATA
+DATA
+DATA
+----AGB-AGTJ--</code>
+
+	<p>The attached file varies depending on which race track was recorded in the Time Trial Ghost. The server will receive files from gtent00.cgb through gtent06.cgb.</p>
+
+	<p>The message, encoded as ISO-2022 JP translates to: &#34;There is a possibility that ranking registration has failed in the [All Japan GT Championship].&#34;</p>
+
+
 
 	</body>
 </html>					
