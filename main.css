@@ -33,6 +33,19 @@ code
 	margin-bottom: 0px;
 }
 
+.img_box
+{
+	max-width: 95%;
+	height: auto;
+}
+
+.img_box_border
+{
+	border: 2px solid #000000;
+	max-width: 95%;
+	height: auto;
+}
+
 .center_code
 {
 	text-align: center;
