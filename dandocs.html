@@ -159,8 +159,10 @@
 			<p class="list_item"><a href="#magb">Mobile Adapter GB</a></p>
 
 			<p class="list_head"><strong>Game and Server Documentation</strong></p>
+			<p class="list_item"><a href="#exm">EX Monopoly</a></p>
 			<p class="list_item"><a href="#gbw">Game Boy Wars 3</a></p>
 			<p class="list_item"><a href="#hkh">Hello Kitty no Happy House</a></p>
+			<p class="list_item"><a href="#mka">Mario Kart Advance</a></p>
 			<p class="list_item"><a href="#mbt">Mobile Trainer</a></p>
 			<p class="list_item"><a href="#ndg">Net de Get: Minigame @ 100</a></p>
 			<p class="list_item"><a href="#zng">Zen Nihon GT Senshuken</a></p>
@@ -179,11 +181,13 @@
 	<p class="list_head"><strong>Credits</strong></p>
 	<p class="list_item">Billy - Mobile Adapter GB documentation</p>
 	<p class="list_item">ClawGrip - Scans of all known Barcode Boy cards</p>
+	<p class="list_item">EchelonPrime - Scans of all Card de Asobu cards + misc info</p>
 	<p class="list_item">endrift - MBC6 documentation. Collaboration on Battle Chip Gate documentation (especially Progress Chip Gate) + testing + verification of results.</p>
 	<p class="list_item">Háčky - Mobile Adapter GB documentation</p>
 	<p class="list_item">mid-kid - Mobile Adapter GB documentation</p>
 	<p class="list_item">pfero - Mobile Adapter GB documentation</p>
 	<p class="list_item">Robert Abel (Tauwasser) - Net de Get translation help</p>
+	<p class="list_item">Winter1760 - EX Monopoly and Mario Kart Advance documentation</p>
 	
 
 	<!-- Barcode Boy -->
@@ -569,6 +573,7 @@ Barcode		| Bardigun :: Attack Name (English)	| Bardigun :: Attack Name (Japanese
 		<li class="list_item">Jinsei Game Densetsu</li>
 		<li class="list_item">Nakajima Satoru F-1 Hero GB World Championship &#39;91</li>
 		<li class="list_item">Nekketsu Koukou Dodge Ball-Bu</li>
+		<li class="list_item">Super Momotarou Dentetsu</li>
 		<li class="list_item">Super R.C. Pro-Am</li>
 		<li class="list_item">Top Rank Tennis</li>
 		<li class="list_item">Trax</li>
@@ -1036,6 +1041,7 @@ ID	| Cosmic Character Movements (S* = Short Move)	| Translated Name	| (Character
 		<li class="list_tab"><div class="x">Dogz</div><div class="y">Trade Petz and Toyz</div></li>
 		<li class="list_tab"><div class="x">Doki Doki Densetsu: Mahoujin Guru Guru</div><div class="y">Fight card battles using magic circles from the game</div></li>
 		<li class="list_tab"><div class="x">Donkey Kong Country</div><div class="y">Transfer pictures to stickerbook</div></li>
+		<li class="list_tab"><div class="x">Doraemon Memories - Nobita no Omoide Daibouken</div><div class="y">Unlocks secret levels via TV remote input</div></li>
 		<li class="list_tab"><div class="x">Dr. Rin Ni Kiitemite!</div><div class="y">Do fortune-telling with a friend and exchange stickers</div></li>
 		<li class="list_tab"><div class="x">Dungeon Savior</div><div class="y">Transfer a Guardian from one game to another</div></li>
 		<li class="list_tab"><div class="x">Flipper &#38; Lopaka</div><div class="y">Ubi Key -> Unlocks a bonus &#34;Ubi Key Level&#34;</div></li>
@@ -4863,38 +4869,56 @@ PLAY_YAN_VideoBright=0
 	<a name="glu_dat"></a>
 	<p class="gray_title">[Glucoboy] : Accessing Glucose Data</p>
 
-	<p>For the most part, the GBA does not directly deal with any of the glucose checking or blood testing. Instead, other components within the Glucoboy handle that and merely present the results, which the GBA can read back like any other value in memory. To that end, the Glucoboy offers only a single, multipurpose 1-byte register mapped to the address 0xE000000, named here as GLUCO_CNT. By reading and writing to GLUCO_CNT, data can be extracted regarding the current GRPs earned from testing.</p>
+	<p>For the most part, the GBA does not directly deal with any of the glucose checking or blood testing. Instead, other components within the Glucoboy handle that and merely present the results, which the GBA can read back like any other value in memory. To that end, the Glucoboy offers a single, multipurpose 1-byte register mapped to the address 0xE000000. Internally, the Glucoboy&#39;s ROM refers to this as the &#34;MAGIC PORT&#34;. In this document, it is more aptly renamed as GLUCO_CNT. By reading and writing to GLUCO_CNT, data can be extracted regarding the current GRPs earned from testing. Other miscellaneous hardware info about the Glucoboy can also be retrieved.</p>
 
-	<p>To access glucose data, an index must first be written to GLUCO_CNT. Different data, such as normal GRPs earned today versus bonus GRPs earned that day as well, are stored at different indices. Once an index has been received by the hardware, the Glucoboy triggers a Game Pak IRQ. Following this, 8-bit or 32-bit data will be returned via GLUCO_CNT, depending on the index. In the case that an index returns 32-bit data, GLUCO_CNT must be read a total of 4 times, once per byte. 32-bit data is stored LSB-first but is always read MSB-first (and adjusted in software to be LSB-first again). Additional Game Pak IRQs will indicate when the next byte is ready to read. Currently, it is unknown if reading one byte of the 32-bit value directly triggers subsequent Game Pak IRQs or if Game Pak IRQs are automatically and periodically generated after writing an index.</p>
+	<p>To access data on the Glucoboy, an index must first be written to GLUCO_CNT. Different data — such as normal GRPs earned today or bonus GRPs earned that day — are stored at different indices. Once an index is set, the Glucoboy triggers a Game Pak IRQ. Following this, 1-byte, 4-bytes, or 6-bytes must be read from/written to GLUCO_CNT, depending on the index. For example, in the case that an index returns 4-bytes of data, GLUCO_CNT must be read a total of 4 times, once per byte. All data is read/written MSB-first, therefore, software must also manually adjust LSB-first values on the GBA. Additional Game Pak IRQs indicate when the next byte is ready to read/write. Evidently, Game Pak IRQs are generated after a brief delay when accessing GLUCO_CNT.</p>
 
 	<p>Below is the typical proceedure used by the Glucoboy&#39;s software:</p>
 
 <pre>-----------------------------------------------------------
-32-bit Index
+6-byte Index Access
 -----------------------------------------------------------
 WRITE INDEX TO GLUCO_CNT
 	WAIT FOR GAMEPAK IRQ
 
-READ BYTE 3 AT GLUCO_CNT
+READ OR WRITE BYTE 5 AT GLUCO_CNT
 	WAIT FOR GAMEPAK IRQ
-READ BYTE 2 AT GLUCO_CNT
+READ OR WRITE BYTE 4 AT GLUCO_CNT
 	WAIT FOR GAMEPAK IRQ
-READ BYTE 1 AT GLUCO_CNT
+READ OR WRITE BYTE 3 AT GLUCO_CNT
 	WAIT FOR GAMEPAK IRQ
-READ BYTE 0 AT GLUCO_CNT
+READ OR WRITE BYTE 2 AT GLUCO_CNT
+	WAIT FOR GAMEPAK IRQ
+READ OR WRITE BYTE 1 AT GLUCO_CNT
+	WAIT FOR GAMEPAK IRQ
+READ OR WRITE BYTE 0 AT GLUCO_CNT
 -----------------------------------------------------------
 
 
 -----------------------------------------------------------
-8-bit Index
+4-byte Index Access
 -----------------------------------------------------------
 WRITE INDEX TO GLUCO_CNT
 	WAIT FOR GAMEPAK IRQ
 
-READ BYTE 0 AT GLUCO_CNT
+READ OR WRITE BYTE 3 AT GLUCO_CNT
+	WAIT FOR GAMEPAK IRQ
+READ OR WRITE BYTE 2 AT GLUCO_CNT
+	WAIT FOR GAMEPAK IRQ
+READ OR WRITE BYTE 1 AT GLUCO_CNT
+	WAIT FOR GAMEPAK IRQ
+READ OR WRITE BYTE 0 AT GLUCO_CNT
+-----------------------------------------------------------
+
+
+-----------------------------------------------------------
+1-byte Index
+-----------------------------------------------------------
+WRITE INDEX TO GLUCO_CNT
+	WAIT FOR GAMEPAK IRQ
+
+READ OR WRITE BYTE 0 AT GLUCO_CNT
 -----------------------------------------------------------</pre>
-
-	<p>Some indices appear to accept multiple input bytes. They appear to be parameters of some sort, although their purpose is not yet known. The Glucoboy only reads glucose data shortly after booting up. Once in-game, it keeps an internal copy of total GRPs accumulated and uses that for unlocking additional content.</p>
 
 	<a name="glu_dex"></a>
 	<p class="gray_title">[Glucoboy] : Index Overview</p>
@@ -4902,59 +4926,170 @@ READ BYTE 0 AT GLUCO_CNT
 	<p>Below is a brief list of all known indices and their currently understood functions:</p>
 
 <pre>-----------------------------------------------------------
-Index	| Bits	| Description
+Index	| Size 	| Description
 -----------------------------------------------------------
-0x20	| 32	| Unknown
-0x21	| 32	| Daily GRPs Earned
-0x22	| 32	| Bonus GRPs Earned
-0x23	| 32	| Current Number of Good Days
-0x24	| 32	| Number of Good Days Until Bonus Rewarded
-0x25	| 32	| Unknown
-0x26	| 32	| Unknown
-0x27	| 32	| Unknown
-0x31	| 8	| Unknown
-0x32	| 8	| Unknown
-0xE0	| 8	| Unknown
-0xE1	| 8	| Unknown
-0xE2	| 8	| Unknown
+0x20	| 4	| Read System Date
+0x21	| 4	| Read Daily GRPs Earned
+0x22	| 4	| Read Bonus GRPs Earned
+0x23	| 4	| Read Current Number of Good Days
+0x24	| 4	| Read Number of Good Days Until Bonus Rewarded
+0x25	| 4	| Read Hardware Flags
+0x26	| 4	| Read LD Threshold
+0x27	| 4	| Read Serial Number
+0x31	| 1	| Read Unknown Flag
+0x32	| 1	| Read Unknown Flag
+0x60	| 4	| Write System Date
+0x61	| 4	| Write Daily GRPs Earned
+0x62	| 4	| Write Bonus GRPs Earned
+0x63	| 4	| Write Current Number of Good Days
+0x64	| 4	| Write Number of Good Days Until Bonus Rewarded
+0x65	| 4	| Write Hardware Flags
+0x66	| 4	| Write LD Threshold
+0x67	| 4	| Write Serial Number
+0xE0	| 1	| Read Unknown Flag
+0xE1	| 1/6*	| Write Game Stats (*Write 6 bytes, Read 1 byte)
+0xE2	| 1	| Read Unknown Flag
 -----------------------------------------------------------</pre>
 
-	<p>A more detailed explanation of known indices follows:</p>
+	<p>A number of these indices do not appear to be used except for debugging. During normal operation, data for the System Date, Hardware Flags, LD Threshold, and Device Serial Number are read but ultimately unused. A hidden test menu inside the Glucoboy ROM can read and write to all of them, however. While these indices provide useful information about the Glucoboy, they are technically not required for the games, which focus on GRPs.</p>
+
+	<p>The size of each index indicates how many bytes are read or written when accessing them. A more detailed explanation of known indices follows:</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Index 0x21 - Daily GRPs Earned</strong></p>
+	<p class="list_item"><strong>Index 0x20 - Read System Date</strong></p>
+	<p class="list_item">This index returns the current system date according to the Glucoboy&#39;s RTC. The clock is used internally to decide if glucose testing has been performed on a consistent schedule in order to give out GRPs. The Glucoboy software does not take advantage of this outside of debugging. 4 bytes are returned representing a date. The complete 32-bit value uses these fields for time:</p>
+
+<pre>-----------------------------------------------------------
+Bits	| Description
+-----------------------------------------------------------
+0  - 5	| Minutes (0 - 59)	
+6  - 11	| Hours (0 - 23)
+12 - 16	| Days (1 - 31)
+20 - 23	| Months (1 - 12)
+24 - 30	| Years (2001 - 2100)
+-----------------------------------------------------------</pre>
+
+	<p>Days and Months always start counting at 1. That is to say, a binary value of 0 will translate to 1, so the maximum value for each category should be 11 and 30 respectively.</p>
+
+	<p>Years starts counting at 2100. That is to say, a binary value of 0 will translate to the year 2100. A binary value of 1 will translate to the year 2001, and so on. Essentially, this value can be added to 2000 to get the current date, with 0 being a special case.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x21 - Read Daily GRPs Earned</strong></p>
 	<p class="list_item">This represents the amount of GRPs earned on any specific day. It is added to the Total GRPs earned. This value is checked each and every time the Glucoboy boots up, so a constant value of 10, for example, would continually add 10 GRPs every time the game is loaded. In practice, this value was updated after a blood test was performed. The exact amount would be determined by factors such as whether the levels were healthy and whether the test was done in accordance to a regular schedule. The GBA does not seem to have access to the components that calculated GRPs, so it only reads whatever the hardware reports.</p>
 
-	<p class="spc"></p>
-	<p class="list_item"><strong>Index 0x22 - Bonus GRPs Earned</strong></p>
-	<p class="list_item">This apparently represents the amount of bonus GRPs earned by maintaining healthy glucose levels over a specific number of days. The Glucoboy would likely update this when Index 0x23 was greater than or equal to Index 0x24. These bonus GRPs are added to the Total GRPs once read. The exact amount of bonus GRPs granted is not known.</p>
+	<p>The 4 bytes returned by this index form an signed 32-bit integer. Only positive numbers are valid, so the maximum allowed value is therefore 2147483647.</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Index 0x23 - Current Number of Good Days</strong></p>
+	<p class="list_item"><strong>Index 0x22 - Read Bonus GRPs Earned</strong></p>
+	<p class="list_item">This represents the amount of bonus GRPs earned by maintaining healthy glucose levels over a specific number of days. The Glucoboy would likely update this when the &#34;Current Number of Good Days&#34; value was greater than or equal to the &#34;Number of Good Days Until Bonus Rewarded&#34; value. These bonus GRPs are added to the Total GRPs once read. The exact amount of bonus GRPs granted as part of the Glucoboy&#39;s internal algorithms is not known.</p>
+
+	<p>The 4 bytes returned by this index form an signed 32-bit integer. Only positive numbers are valid, so the maximum allowed value is therefore 2147483647.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x23 - Read Current Number of Good Days</strong></p>
 	<p class="list_item">This index represents the number of continuous &#34;good days&#34;, i.e. days were the player consistently checked their glucose levels and those same levels were within an acceptable range. Failing to meet those requirements would presumably reset the this value.</p>
 
-	<p class="spc"></p>
-	<p class="list_item"><strong>Index 0x24 - Number of Good Days Until Bonus Rewarded</strong></p>
-	<p class="list_item">This index represents the number of remaining &#34;good days&#34; needed until the bonus GRPs would be granted. Logically, this value would decrease by one every 24-hours, so long as the players glucose levels were kept in check regularly.</p>
+	<p>The 4 bytes returned by this index form an signed 32-bit integer. Only positive numbers are valid, so the maximum allowed value is therefore 2147483647.</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Index 0x31 - Unknown</strong></p>
+	<p class="list_item"><strong>Index 0x24 - Read Number of Good Days Until Bonus Rewarded</strong></p>
+	<p class="list_item">This index represents the number of remaining &#34;good days&#34; needed until the bonus GRPs would be granted. Logically, this value would decrease by one every 24-hours, so long as the players glucose levels were kept in check regularly. The exact amount of days until players can get bonus GRPs was part of the Glucoboy&#39;s internal algorithms and as such is not currently known.</p>
+
+	<p>The 4 bytes returned by this index form an signed 32-bit integer. Only positive numbers are valid, so the maximum allowed value is therefore 2147483647.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x25 - Read Hardware Flags</strong></p>
+	<p class="list_item">This index represents a set of hardware status flags for the Glucoboy. Only 7-bits of the 32-bit index value is used as such:</p>
+
+<pre>-----------------------------------------------------------
+Bit	| Description
+-----------------------------------------------------------
+0	| GMEM FAULT
+1	| PMEM FAULT
+2 	| INCENTIVE
+3	| PNEW STATS
+4	| MEASUREMENT
+5	| GMETER FAULT
+6	| PMETER FAULT
+-----------------------------------------------------------</pre>
+
+	<p>The following descriptions are estimates of each bit&#39;s likely meaning. Keep in mind these are guesses for the time being.</p>
+
+	<p><strong>&#34;GMEM FAULT&#34;</strong> and <strong>&#34;PMEM FAULT&#34;</strong> refer to errors in the memory allocated for blood testing result. The Glucoboy may separate memories for general glucose test result and postprandial glucose test results. If those areas of memory have issues, they would probably be reported here.</p>
+
+	<p><strong>&#34;INCENTIVE&#34;</strong> refers to the Glucoboy&#39;s proprietary method of determining how it gave out GRPs. This was dicated by factors such as timeliness in testing, frequency in testing, and whether or not glucose levels were healthy. This flag probably indicates that the player had met these conditions.</p>
+
+	<p><strong>&#34;PNEW STATS&#34;</strong> possibly refers to new data tracking postprandial glucose levels, conceivably an update to some kind of statistic used to measure the player&#39;s performance in relation to <strong>INCENTIVE</strong>.</p>
+
+	<p><strong>&#34;MEASUREMENT&#34;</strong> possibly indicates a new glucose reading has been done.</p>
+
+	<p><strong>&#34;GMETER FAULT&#34;</strong> and <strong>&#34;PMETER FAULT&#34;</strong> refer to failures with the actual glucose and postprandial meters.</p>
+
+	<p>Despite &#34;GMEM/GMETER FAULT&#34; and &#34;PMEM/PMETER FAULT&#34; being potentially serious hardware issues, the Glucoboy software does not take any specific actions on them outside of debugging. For example, the player is not warned if any of these components stops working, although, it may affect retrieving GRPs, which does display an error message.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x26 - Read LD Threshold</strong></p>
+	<p class="list_item">This index holds the value of the &#34;LD Threshold&#34;, which possibly refers to a &#34;Low-Data Threshold&#34;. This would represent the minimum number of samples from glucose testing needed to get an accurate test.</p>
+
+	<p>The 4 bytes returned by this index form an unsigned 27-bit integer. It is used to represent values ranging from 00000000 - 99999999.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x27 - Read Serial Number</strong></p>
+	<p class="list_item">This index holds the value of some kind of serial number for the Glucoboy. It is currently unknown if this would have been a per-device serial number or something broader to distinguish versions and revisions.</p>
+
+
+	<p>The 4 bytes returned by this index form an unsigned 27-bit integer. It is used to represent values ranging from 00000000 - 99999999.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x31 - Read Unknown Flag</strong></p>
 	<p class="list_item">The exact purpose of this index is unknown, however, it seems to act as a flag. Reading any non-zero value causes the Glucoboy to register an error when retrieving GRPs.</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Index 0x32 - Unknown</strong></p>
+	<p class="list_item"><strong>Index 0x32 - Read Unknown Flag</strong></p>
 	<p class="list_item">The exact purpose of this index is unknown, however, it seems to act as a flag. Reading any non-zero value causes the Glucoboy to register an error when retrieving GRPs.</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Index 0xE0 - Unknown</strong></p>
+	<p class="list_item"><strong>Index 0x60 - Write System Date</strong></p>
+	<p class="list_item">This index is used to set the current system date for the Glucoboy&#39;s built-in RTC. This index only appears in the debugging menu. It receives 4 bytes representing a date. See Index 0x20 above for the format.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x61 - Write Daily GRPs Earned</strong></p>
+	<p class="list_item">This index sets the amount of GRPs earned on any specific day. It receives 4 bytes representing a signed 32-bit integer. This index is not used by the Glucoboy ROM except for debugging, as setting Daily GRPs is a task left for other components of the Glucoboy&#39;s hardware during blood testing.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x62 - Write Bonus GRPs Earned</strong></p>
+	<p class="list_item">This index sets the amount of bonus GRPs earned by maintaining healthy glucose levels over a specific number of days. It receives 4 bytes representing a signed 32-bit integer. This index is not used by the Glucoboy ROM except for debugging, as setting Bonus GRPs is a task left for other components of the Glucoboy&#39;s hardware during blood testing.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x63 - Write Current Number of Good Days</strong></p>
+	<p class="list_item">This index sets the number of continuous &#34;good days&#34;, i.e. days were the player consistently checked their glucose levels and those same levels were within an acceptable range. It receives 4 bytes representing a signed 32-bit integer. This index is not used by the Glucoboy ROM except for debugging, as setting number of &#34;good days&#34; is a task left for other components of the Glucoboy&#39;s hardware during blood testing.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x64 - Write Number of Good Days Until Bonus Rewarded</strong></p>
+	<p class="list_item">This index sets the number of remaining &#34;good days&#34; needed until the bonus GRPs would be granted. It receives 4 bytes representing a signed 32-bit integer. This index is not used by the Glucoboy ROM except for debugging, as setting number of &#34;good days&#34; needed to unlock a bonus is a task left for other components of the Glucoboy&#39;s hardware during blood testing.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x65 - Write Hardware Flags</strong></p>
+	<p class="list_item">This index sets the hardware status flags for the Glucoboy. It receives a 32-bit integer, but only the first 7-bits actually represent the flags. This index is only See Index 0x25 above for the format.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x66 - Write LD Threshold</strong></p>
+	<p class="list_item">This index sets the value of the &#34;LD Threshold&#34;. It only appears in the debugging menu. The index receives 4 bytes that form an unsigned 27-bit integer, which must have valid values of 00000000 - 99999999.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x67 - Write Serial Number</strong></p>
+	<p class="list_item">This index sets the value of some kind of serial number for the Glucoboy. It only appears in the debugging menu. The index receives 4 bytes that form an unsigned 27-bit integer, which must have valid values of 00000000 - 99999999.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0xE0 - Read Unknown Flag</strong></p>
 	<p class="list_item">The exact purpose of this index is unknown, however, it seems to act as a flag. Reading any non-zero value causes the Glucoboy to register an error when retrieving GRPs.</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Index 0xE1 - Unknown</strong></p>
-	<p class="list_item">This index receives 6 additional bytes as parameters, however, its exact purpose is unknown.</p>
+	<p class="list_item"><strong>Index 0xE1 - Write Game Stats</strong></p>
+	<p class="list_item"></p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Index 0xE2 - Unknown</strong></p>
+	<p class="list_item"><strong>Index 0xE2 - Read Unknown Flag</strong></p>
 	<p class="list_item">The exact purpose of this index is unknown, however, it seems to act as a flag. Reading any non-zero value causes the Glucoboy to register an error when retrieving GRPs.</p>
 
 
@@ -4974,7 +5109,8 @@ Index	| Bits	| Description
 	<p class="list_item"><a href="#cam_gfx">Graphics ROM</a></p>
 	<p class="list_item"><a href="#cam_cap">Camera Capture</a></p>
 	<p class="list_item"><a href="#cam_cfg">Configuration and Contact Data</a></p>
-	<p class="list_item"><a href="#cam_num">Dialing Phone Numbers</a></p>
+	<p class="list_item"><a href="#cam_tel">Telephony</a></p>
+	<p class="list_item"><a href="#cam_tst">Modem Test Mode</a></p>
 	<p class="list_item"><a href="#cam_com">System Compatibility</a></p>
 
 	<a name="cam_gen"></a>
@@ -4992,6 +5128,7 @@ Index	| Bits	| Description
 		<li class="list_item">Not compatible with any model of Nintendo DS; system will fail to boot.</li>
 		<li class="list_item">Contains some memory used to save contact information.</li>
 		<li class="list_item">Uses a unique method of mapping ROM data.</li>
+		<li class="list_item">Modem is capable of handling several AT commands.</li>
 	</ul>
 
 	<a name="cam_ior"></a>
@@ -5052,7 +5189,7 @@ OUTPUT_16 = ((INPUT_16 LSL 3) OR (INPUT_16 LSR 13))</pre>
 	<a name="cam_cmd"></a>
 	<p class="gray_title">[Campho Advance] : Commands</p>
 
-	<p>The Campho Advance can issue a small number of commands to control various bits of hardware outside memory management. Once again, all I/O registers use their Wait State 1 mirrors (0xA000000). Each command follows this general format:</p>
+	<p>The Campho Advance can issue a number of commands to control various bits of hardware outside memory management. Once again, all I/O registers use their Wait State 1 mirrors (0xA000000). Each command follows this general format:</p>
 
 <pre>------------------------------------------------------------------------
 //All writes to ROM_DATA_2 are 16-bit
@@ -5075,21 +5212,25 @@ ROM_CNT = 0x4015
 Unwarped	| Warped 	| Description
 ------------------------------------------------------------------------
 0xBA01		| 0x3740	| Dial a phone number
-0xBA04		| 0x9740	| Unknown
+0xBA02		| 0x5740	| Answer a phone call
+0xBA04		| 0x9740	| Cancel a phone call (before connecting)
 0xBA05		| 0xB740	| Starts input data from the camera (small 58x48 frame)
 0xBA06		| 0xD740	| Starts input data from the camera (large 176x144 frame)
 0xBA07		| 0xF740	| Halts input data from the camera
+0xBA08		| 0x1741	| End a phone call
 0xBA10		| 0x1742	| Set microphone volume
 0xBA11		| 0x3742	| Set speaker volume
 0xBA12		| 0x5742	| Set video brightness
 0xBA13		| 0x7742	| Set video contrast
+0xBA14		| 0x9742	| Set camera image flip
 0xBA15		| 0xB742	| Read Graphics ROM data
 0xBA21		| 0x3744	| Unknown (used when pulse dialing is enabled)
 0xBBC1		| 0x3778	| Write full configuration settings or contact data
 0xBBC5		| 0xB778	| Read full configuration settings or contact data
 0xBBC6		| 0xD778	| Read the total number of contact data entries
 0xBBC8		| 0x1779	| Erase contact data
-0xCFFF		| 0xF9FF	| Finishes input frame from camera (and requests another?)
+0xCFFF		| 0xFF9F	| Finishes input frame from camera (and requests another?)
+0xFF84		| 0x9FF0	| Sends an AT command to the modem
 ------------------------------------------------------------------------</pre>
 
 	<p>For a full explanation of how each command works, see the following sections.</p>
@@ -5181,7 +5322,7 @@ ROM_STAT = 0x4015
 ROM_CNT = 0x4015
 ------------------------------------------------------------------------</pre>
 
-	<p>G_ROM_BANK refers to the specific 32-bit internal address the Campho Advance assigns portions of Graphics ROM. It is broken down into 2 16-bit components (LO and HI) and written LSB first. G_ROM_BANK is *not* warped. G_ROM_OFFSET refers to a 32-bit offset typically used when reading sections of Graphics ROM larger than 4000 bytes. G_ROM_OFFSET *is* warped using the 32-bit method described earlier.</p>
+	<p>G_ROM_BANK refers to the specific 32-bit internal address the Campho Advance assigns portions of Graphics ROM. It is broken down into 2 16-bit components (LO and HI) and written LSB first. G_ROM_BANK *is* warped using the 16-bit method (the upper 16-bits is unused). G_ROM_OFFSET refers to a 32-bit offset typically used when reading sections of Graphics ROM larger than 4000 bytes. G_ROM_OFFSET *is* warped using the 32-bit method described earlier.</p>
 
 	<p>As with other commands, the GBA&#39;s CPU needs to first wait for the I/O delay signal from ROM_STAT. Once that is done, the data can be read at ROM_DATA_2 in 16-bit units. Although Graphics ROM is normally read in 4000 bytes block at maximum, other smaller sizes are frequently read as well. The first two 16-bit reads will typically return an unknown parameter, possibly a Block ID or some kind of status, followed by the overall length of the block (written as a 32-bit warped value). Afterwards, the rest of the graphics data in that block is streamed. The graphics data itself are 16-bit RGB555 values used by the GBA&#39;s bitmap graphics mode that have been warped.</p>
 
@@ -5189,17 +5330,17 @@ ROM_CNT = 0x4015
 
 	<p>When changing from one bank to another, data from the previous bank can still be read. For example, when switching to the offset 0xFFFFFFFF and reading more than 16-bytes, the Campho Advance will then respond with the next data from the old bank as if nothing had changed. Afterwards, when using a different offset for the new bank, new data will appear as expected. In effect, it takes a bit for the hardware to fully switch Graphics ROM banks, therefore it is important to check the length of data being read at this stage. This does not appear to be an issue if it is the first bank the Campho Advance is reading since boot.</p>
 
-	<p>There are a total of 314 different banks in Graphics ROM. Typically, there are 40 banks which can be addressed in increments of 0x2000, i.e. valid bank IDs range from 0x0000 - 0x0027, then 0x2000 - 0x2027, then 0x4000 - 0x4027, and etc, with the final addressable bank at 0xE027. However, some banks are either not addressable/non-existent (in the case of an I/O error) or have a length of zero bytes when trying to read them. The invalid banks are listed below:</p>
+	<p>There are a total of 314 different banks in Graphics ROM. Valid bank IDs range from 0 - 319 inclusive. However, some banks are either not addressable/non-existent (in the case of an I/O error) or have a length of zero bytes when trying to read them. The invalid banks are listed below:</p>
 
 <pre>------------------------------------------------------------------------
 Bank ID	| Error Type
 ------------------------------------------------------------------------
-0x0000	| Zero Length
-0x2000	| I/O Error
-0x4000	| I/O Error
-0x6026	| I/O Error
-0x8026	| I/O Error
-0xA00B	| Zero Length
+0	| Zero Length
+1	| I/O Error
+2	| I/O Error
+93	| Zero Length
+315	| I/O Error
+316	| I/O Error
 ------------------------------------------------------------------------</pre>
 
 	<p>To check for these I/O errors, the Campho Advance&#39;s software runs a fairly tight loop for a few thousand iterations tring to verify that the I/O delay from ROM_STAT has ended. If ROM_STAT has not changed after a certain number of checks, it drops any attempts at reading that bank completely.</p>
@@ -5265,6 +5406,7 @@ Slice	| Lines Drawn
 
 	<p>Note that the smaller framebuffer does not use anything like this at all. Although it uses 2 separate slices of 35 lines and 13 lines, they don&#39;t overlap. All pixels for both framebuffers (once reformatted) are 16-bit RGB555 values, meaning they can be plugged into the GBA&#39;s VRAM to draw a bitmap images. Once all pixel data for the camera has been pulled from each slice the Framebuffer Transfer Type changes to 0xCFFF. This signifies the end of readable camera input for a given frame. The Campho Advance then issues the 0xF9FF command to finish camera input and possibly request the next frame. It also writes 0x4015 to ROM_STAT before beginning the entire process all over again. When a new frame is ready, ROM_STAT will automatically read 0xA00A again.</p>
 
+
 	<a name="cam_cfg"></a>
 	<p class="gray_title">[Campho Advance] : Configuration and Contact Data</p>
 
@@ -5286,7 +5428,7 @@ ROM_CNT = 0x4015
 
 	<p>The DATA_TYPE value determines what data the Campho Advance will return. To read configuration data, use the value 0x1FFE4000. To read contact data, use the value 0x----4000. The upper 16-bits must be warped for contact data. Depending on this 16-bit value, different entires in the contact data list can be chosen, if multiple entries are present. The Campho Advance typically uses this to navigate up and down the list one entry at a time.</p>
 
-	<p>This 16-bit value, when unwarped contains 2 8-bit components that control what contact data is being looked up. The upper 8-bits is the index used for the contact data list. The lower 8-bits is the operating mode. This operating mode determines what happens to the index after the command is issued. There are 3 valid values:</p>
+	<p>This 16-bit value, when unwarped, contains 2 separate 8-bit components that control what contact data is being looked up. The upper 8-bits is the index used for the contact data list. The lower 8-bits is the operating mode. This operating mode determines what happens to the index after the command is issued. There are 3 valid values:</p>
 
 <pre>------------------------------------------------------------------------
 Operating Mode	| Effect
@@ -5337,7 +5479,7 @@ ROM_STAT = 0x4015
 ROM_CNT = 0x4015
 ------------------------------------------------------------------------</pre>
 
-	<p>Here, only 6 bytes are written: 16-bits for the settings commands and 32-bits for the actual data. The settings command determines which setting will change. This chart details the known IDs for their settings:<p>
+	<p>Here, only 6 bytes are written: 16-bits for the settings commands and 32-bits for the actual data. The settings command determines which setting will change. This chart details the known IDs for their settings:</p>
 
 <pre>------------------------------------------------------------------------
 Command	| Setting
@@ -5346,9 +5488,10 @@ Command	| Setting
 0x3742	| Speaker Volume
 0x5742	| Video Brightness
 0x7742	| Video Contrast
+0x9742	| Camera Image Flip
 ------------------------------------------------------------------------</pre>
 
-	<p>The upper half of settings data uses values of 0 - 100 in increments of 10, then that value is warped. The lower 16-bits are always 0x4000.</p>
+	<p>The upper half of settings data uses values of 0 - 100 in increments of 10, then that value is warped. The lower 16-bits are always 0x4000. Note that Camera Image Flip is an exception. It only writes 16-bits of data instead of 32-bits (so a total of 4 bytes are written to ROM_DATA_2 in the process shown above). Additionally, the 16-bits of data for Camera Image Flip is always 0x0000. The user&#39;s camera will invert vertically every time the command is called.</p>
 
 	<p>Once this settings data has been written to the Campho Advance&#39;s configuration, the current value can be read back from ROM_DATA_2. Note that the first 32-bits are metadata for the Campho Advance. Below is a layout of the Campho&#39;s 24-byte configuration data:</p>
 
@@ -5392,7 +5535,7 @@ Address		| Description
 0xD0	| ョ	ァ	ィ	ッ	ン	ゥ	ェ	ォ	ﾞ	ﾟ
 ------------------------------------------------------------------------------------------------------------------------------------</pre>
 
-	<p>Note that 0xDA is used as the SPACE character instead the ASCII value 0x20. All characters use the same transformation at the even digits used for the phone number. Characters are grouped into 16-bit pairs; the first character occupies the LSB and the next character occupies the MSB. That 16-bit value is then warped.</p>
+	<p>Note that 0xDA is used as the SPACE character instead the ASCII value 0x20. Characters are grouped into 16-bit pairs; the first character occupies the LSB and the next character occupies the MSB. That 16-bit value is then warped.</p>
 
 	<p>The contact&#39;s phone number uses the same encoding format as dialing phone numbers. See the next section (Dialing Phone Numbers) for more details.</p>
 
@@ -5439,10 +5582,12 @@ Address		| Description
 
 	<p>Note that both the Data Length and Contact List Size are warped values.</p>
 
-	<a name="cam_num"></a>
-	<p class="gray_title">[Campho Advance] : Dialing Phone Numbers</p>
+	<a name="cam_tel"></a>
+	<p class="gray_title">[Campho Advance] : Telephony</p>
 
-	<p>The Campho Advance has a specific command that will dial a phone number entered by the user. Unlike several other commands, this one takes parameters of variable lengths. The process of sending commands, with the parameters appended. All I/O registers use their Wait State 1 mirrors (0xA000000).</p>
+	<p>As the Campho Advance is capable of video phone calls over landlines, it offers a few commands related to dialing phone numbers, answering phone calls, ending active phone calls, and initializing the camera for simultaneous input from the user and the Campho Advance being called. From the perspective of the GBA, the software does not deal with many low-level details of telephony. The Campho Advance provides an abstracted interface so the handheld can easily deal with this task.</p>
+
+	<p>For one Campho Advance to connect to another, one of the users must first dial a phone number via the following command. Unlike several other commands, this one takes parameters of variable lengths, as described below. All I/O registers use their Wait State 1 mirrors (0xA000000).</p>
 
 <pre>------------------------------------------------------------------------
 //All writes to ROM_DATA_2 are 16-bit
@@ -5466,12 +5611,87 @@ ROM_CNT = 0x4015
 
 	<p>Note that the &#34;*&#34; / &#34;#&#34; key appears to be just &#34;.&#34; on the Campho Advance.</p>
 
-	<a name="cam_com"></a>
+	<p>The Campho Advance software constantly checks for incoming data that signals the start of a phone call. At any given  moment, the software may be interrupted by this call, at which point the user is prompted to answer or reject it. If accepted, the connection is established and the call begins with audio and video transmissions. Checking the status of the telephone alerts the Campho Advance whenever any sort of change occurs and respond appropiately.</p>
+
+	<p>The process of reading the Modem Status is very similar to how the Campho Advance updates the camera. Typically, ROM_STAT will read 0x4015 when the cartridge receives no external input (either via the camera or the telephone). When new input data becomes available, ROM_STAT will change to 0xA00A. Afterwards, the GBA will read 32-bits from ROM_DATA_1. This value contains 2 16-bit components: a Transfer Type and the length of incoming data. For telephony, only one Transfer Type exists, 0xAB00. For updating the status of the telephone line, the Campho Advance receives an additional 32-bits of data via ROM_STAT, thus the length is always 4. All data read from ROM_DATA_1 at this time is warped.</p>
+
+	<p>The additional 32-bits of data is again 2 distinct 16-bit values, labeled here as Internal Phone Function and Modem Status. Internal Phone Function represents a value of 0 - 5 where that forces the Campho Advance to execute certain telephony-related commands, such as answering and ending calls. The below chart demonstrates the structure of the data sent to the Campho Advance:</p>
+
+<pre>------------------------------------------------------------------------
+Address		| Description
+------------------------------------------------------------------------
+0x00 - 0x01	| Transfer Type. Always 0xAB00 (0x1560 when warped)
+0x02		| Internal Phone Function
+0x03		| Modem Status 
+------------------------------------------------------------------------</pre>
+
+	<p>The Modem Status byte uses 6-bits to represent various changes in the modem during calls. Each bit seems to represent a distinct state for the Campho Advance. Currently the only definitely known function of these is Bit 5, which indicates that a call is incoming and has triggered the receiver&#39;s ringer. Based on string data and code from the ROM, the rest of the bits likely correspond to states for idle, dialing, ringing, connecting, and answering. The following needs hardware verification, but Modem Status may look like this:</p>
+
+<pre>------------------------------------------------------------------------
+Bit	| Modem State
+------------------------------------------------------------------------
+0	| Idle
+1	| Dialing
+2	| Call Connecting
+3	| Call Connected
+4	| Answering
+5	| Ringing
+------------------------------------------------------------------------</pre>
+
+	<p>To connect two Campho Advances, the caller initiates dialing and eventually starts ringing the receiver&#39;s end. The modem will transfer a Modem Status of 0x20, causing the receiver&#39;s software to switch to a screen with a ringing phone. Once the receiver accepts the incoming call, both the caller&#39;s and receiver&#39;s Modem Status should read 0x00 temporarily, with relevant value (0x05) stored in the Internal Phone Function. That value for the Internal Phone Function signals a connection being established and alerts the software to show the menu for an active call. The Internal Phone Function&#39;s values have the following effects:</p>
+
+<pre>------------------------------------------------------------------------
+Value	| Function
+------------------------------------------------------------------------
+0	| Return to main menu (used when disconnecting)
+1	| N/A
+2	| N/A
+3	| N/A
+4	| Pauses all menus and animations 
+5	| Display active call menu
+------------------------------------------------------------------------</pre>
+
+	<p>Note that the Internal Phone Function only affects how the Campho Advance&#39;s software switches between menus and contexts. It&#39;s a value returned by the modem, which the ROM&#39;s code processes accordingly. Theoretically, a value of 0x04 may be sent briefly by the modem before sending a value of 0x05, causing the Campho Advance to appear to pause shortly during the connection phase. This has not been tested on real hardware yet, however.</p>
+
+	<p>Once the caller and receiver are connected, the Campho Advance presumably activates each user&#39;s camera automatically. The Campho Advance will display the user&#39;s own camera input in the top-left smaller frame (58x48) while the other side&#39;s camera input will appear on the larger frame (176x144). The software will prep the Campho Advance to read pixel data by writing to ROM_STAT and ROM_DATA_1 (see the Camera Capture section above) and receive data for each frame in slices. While the user&#39;s own camera input should update at a constant 5FPS, the incoming data from the other side will be dependent on any latency from the landline. It appears the Campho Advance&#39;s hardware will transfer video data on its own during a call, so there is no need for software to handle that task.</p>
+
+	<p>To cancel an active call, either Campho Advance may select the large &#34;X&#34; from the menu to &#34;kill&#34; the connection. This triggers a command to end the call (0xBA08 unwarped, 0x1741 warped). Once the Campho Advance hardware terminates the connection, the modem will send data where both the Internal Phone Function and Modem Status fields are set to 0x00. As a result, the software will return to the main menu.</p>
+
+	<a name="cam_tst"></a>
+	<p class="gray_title">[Campho Advance] : Modem Test Mode</p>
+
+	<p>The Campho Advance has a hidden debugger that allows users to directly send commands to the modem for testing purposes. To access it, the L, R, and B buttons must be simultaneously pressed on the same frame and held for a least one additional frame. Once successful, the software enters Modem Test Mode and displays a virtual keyboard, which can be used to enter AT commands. The D-Pad changes the cursor and selected key, the A button enters a key as input, the B button erases a character from input, the L button exits Modem Test Mode, and START initiates the AT command transfer. Any text-based output from the modem as a result of the command is also displayed on-screen.</p>
+
+	<p>To send the AT command, the Campho Advance software issues the 0xFF84 (0x9FF0 warped) command in the following format:</p>
+
+<pre>------------------------------------------------------------------------
+//All writes are 16-bit
+ROM_STAT = 0x4015
+
+//Write AT send command
+[ROM_DATA_2] = 0x9FF0
+
+[ROM_DATA_2] = COMMAND_LENGTH
+[ROM_DATA_2] = AT_CMD_01_AND_02
+[ROM_DATA_2] = AT_CMD_02_AND_03
+[ROM_DATA_2] = AT_CMD_04_AND_05
+...
+
+ROM_CNT = 0x4015
+------------------------------------------------------------------------</pre>
+
+	<p>The input will be variable in length depending on the AT command, which is an ASCII string (with no null termination) encoded in much the same fashion as names for contact data. That is to say, each ASCII character is grouped into 16-bit LSB-first pairs and then warped. COMMAND_LENGTH is the total of characters in the string, not the total number of bytes written to ROM_DATA_2.</p>
+
+	<p>Eventually, the modem will respond with data in much the same way it sends camera and telephony input. ROM_STAT will change to 0xA00A. Afterwards, the GBA will read 32-bits from ROM_DATA_1, which will contain 2 16-bit components: a Transfer Type and the length of incoming data. For AT command responses, the Transfer Type will be 0x41A0. The length here, however, does refer to the total number of bytes received from the modem. The response data is another ASCII string with the same encoding as previously described. Once the Campho Advance parses the string, it will be displayed.</p>
+
+	<p>As a somewhat unrelated side note, for whatever reason, pressing L and R (and ignoring the B button) causes the Campho Advance to rotate its entire screen 180 degrees. This can be done at any time outside of Modem Test Mode, although users can enter User Test Mode with a rotated screen. Curiously, the controls flip accordingly as well, so pressing Up on the D-Pad acts as it should when manipulating menus. This screen rotation seems deliberate and intentional, but its purpose is currently unknown. The Campho Advance&#39;s manual makes no mention of this at all.</p>
+
+	<a name="cam_cfg"></a>
 	<p class="gray_title">[Campho Advance] : System Compatibility</p>
 
-	<p>The Campho Advance is incompatible with any model from the Nintendo DS family. Attempting to boot the original DS or a DS Lite with the Campho Advance in Slot-2 while providing external power generally causes the system to halt with a blank white screen. Whether due to the unique power requirements of the cartridge or the novel way it streams ROM data, the cause of this failure remains unknown.</p>
+	<p>The Campho Advance is incompatible with any model from the Nintendo DS family. Attempting to boot the original DS or a DS Lite with the Campho Advance in Slot-2 while providing external power generally causes the system to halt with a blank white screen. Whether due to the unique power requirements of the cartridge or the novel way it streams ROM data, the cause of this failure remains unknown. Nevertheless, the likely culprit is the way in which DS firmware tries to read Slot-2 when turning on the system, which differs significantly from the GBA BIOS.</p>
 
-	<p>In theory, however, the Campho Advance should work with the following Game Boy Advance models: AGB-001 (original GBA), AGS-001 (GBA SP), AGS-101 (GBA SP), OXY-001 (Game Boy Micro). According to official documentation, the Campho Advance is not compatible with the DOL-017 (Game Boy Player). This may be due to the fact that the Game Boy Player&#39;s BIOS is slightly different from the handheld models, and the Campho Advance was designed rather precisely around the most common version of the BIOS. It must be noted that the Campho Advance was developed and released before the DS launched, so Digital Act likely had no idea it would become incompatible when the next handheld generation came around. A similar situation happened with the Pocket Sonar when the Game Boy Color launched.</p>
+	<p>In theory, however, the Campho Advance should work with the following Game Boy Advance models: AGB-001 (original GBA), AGS-001 (GBA SP), AGS-101 (GBA SP), OXY-001 (Game Boy Micro). According to official documentation, the Campho Advance is not compatible with the DOL-017 (Game Boy Player). It must be noted that the Campho Advance was developed and released before the DS launched, so Digital Act likely had no idea it would become incompatible when the next handheld generation came around. A similar situation happened with the Pocket Sonar when the Game Boy Color launched.</p>
 
 
 
@@ -5533,6 +5753,7 @@ else
 	<p class="list_item"><a href="#hcv_dev">Device Detection</a></p>
 	<p class="list_item"><a href="#hcv_ior">I/O Registers</a></p>
 	<p class="list_item"><a href="#hcv_opr">Operation</a></p>
+	<p class="list_item"><a href="#hcv_bar">Barcodes</a></p>
 
 
 	<a name="hcv_gen"></a>
@@ -5629,6 +5850,78 @@ HCV_DATA (R)	0xA000010 - 0xA00001F
 		<li class="list_item">Set HCV_CNT to 0x00 (turn off camera + clear flags).</li>
 		<li class="list_item">Repeat as necessary.</li>
 	</ol>
+
+	<a name="hcv_bar"></a>
+	<p class="gray_title">[HCV-1000] : Barcodes</p>
+
+	<p>Below is a list of known and verified barcodes used in the games. Note that with the exception of Card de Asobu, this section is not yet complete.</p>
+
+<pre>---------------------------------------------------
+Card de Asobu! Hajimete no DS
+---------------------------------------------------
+Barcode 	| Name
+---------------------------------------------------
+*AA01C0RD00V01*	| あひる
+*AA02D0NC00V01*	| いぬ 
+*AA0380GC00V01*	| うさぎ
+*AA04F0T000V01*	| えんぴつ
+*AA05A0RB00V01*	| おにぎり
+*AA47CKRC00V01*	| かえる
+*AA07DK0E00V01*	| ききゅう
+*AA082KRC00V01*	| くじら
+*AA099KSG00V01*	| けむし
+*AA104KRC00V01*	| こあら
+*AA110SRF00V01*	| さくら
+*AA121SYE00V01*	| しょうばうしゃ
+*AA132SKB00V01*	| すいか
+*AA149SMG00V01*	| せみ
+*AA15MSMB00V01*	| そらまめ
+*AA16OTKA00V01*	| たいこ
+*AA17DTPF00V01*	| ちゅーりっぷ
+*AA18KTMD00V01*	| つばめ
+*AA199TSG00V01*	| てんとうむし
+*AA20GTRA00V01*	| とらいあんぐる
+*AA21CNSB00V01*	| なす
+*AA227NRD00V01*	| にわとり
+*AA238NM000V01*	| めいぐるみ
+*AA24RNKC00V01*	| ねこ
+*AA25ANR000V01*	| のこぎり
+*AA26OHTD00V01*	| はと
+*AA277HRF00V01*	| ひまわり
+*AA28KHNE00V01*	| ふね
+*AA293HTE00V01*	| へりこぷたー
+*AA30GHRG00V01*	| ほたる
+*AA310MR000V01*	| まくら
+*AA327MTG00V01*	| みつばち
+*AA338MS000V01*	| むぎわらばうし
+*AA34LMN000V01*	| めがね
+*AA35YM0A00V01*	| もっきん
+*AA366YGC00V01*	| やぎ
+*AA378YRF00V01*	| ゆり
+*AA38SYTE00V01*	| よっと
+*AA390RPA00V01*	| らっぽ
+*AA40PRGB00V01*	| りんご
+*AA418RB000V01*	| るびー
+*AA42XR0B00V01*	| れもん
+*AA43SRTE00V01*	| ろけっと
+*AA446WNC00V01*	| わに
+*AA45SWW000V01*	| カードをさがす
+*AA46Z00000V01*	| ん
+---------------------------------------------------
+
+
+---------------------------------------------------
+Oshare Majo Love and Berry: DS Collection
+---------------------------------------------------
+Barcode 	| Name
+---------------------------------------------------
+*OUQV-9AU5JD*	| TD-01
+*O3OH4749GJG*	| TD-02
+*OUSGC3RO6KD*	| TF-01
+*OUMQ9CDKT4D*	| TF-02
+*OUSPY5Q69GD*	| TH-01
+*OUMPDRQ69VD*	| TH-02
+---------------------------------------------------</pre>
 
 	<!-- Magic Reader -->
 	<a name="kmr"></a>
@@ -6347,6 +6640,134 @@ Command 0x28		DNS Query
 	<p>If any compatible software attempts to read or write configuration data outside the allotted 256 bytes via commands 0x19 and 0x1A, the entire I/O operation is cancelled. No data is written even if the initial offset is within the 256 bytes. No data is returned either, as both commands respond with Error Status packets.</p>
 
 
+
+
+	<!-- EX Monopoly -->
+	<a name="exm"></a>
+	<p class="gray_title">EX Monopoly</p>
+	<p class="list_item"><a href="#exm_gen">General Information</a></p>
+	<p class="list_item"><a href="#exm_ser">Server Structure</a></p>
+	<p class="list_item"><a href="#exm_inf">information.cgb</a></p>
+	<p class="list_item"><a href="#exm_que">query_T.cgb, query_M.cgb</a></p>
+	<p class="list_item"><a href="#exm_reg">0.regist.cgb</a></p>
+	<p class="list_item"><a href="#exm_tmp">10.temporary.cgb</a></p>
+	<p class="list_item"><a href="#exm_str">String Format</a></p>
+
+	<a name="exm_gen"></a>
+	<p class="gray_title">[EX Monopoly] : General Information</p>
+
+	<p>EX Monopoly is a Game Boy Advance game published by Takara and released on July 13, 2001. Using the Mobile Adapter, players were able to download news as well as participate in the Mobile Cup, a monthly competition in which players would play three COM games and upload the sum of their scores.</p>
+
+	<a name="exm_ser"></a>
+	<p class="gray_title">[EX Monopoly] : Server Structure</p>
+
+	<p>EX Monopoly is currently known to access the following URLs:</p>
+
+	<ul>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;A7&#47;AGB-AMOJ&#47;information.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;ranking?name=&#47;A7&#47;AGB-AMOJ&#47;query_T.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;ranking?name=&#47;A7&#47;AGB-AMOJ&#47;query_M.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;upload?name=&#47;A7&#47;AGB-AMOJ&#47;0.regist.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;ranking?name=&#47;A7&#47;AGB-AMOJ&#47;10.temporary.cgb</li>
+	</ul>
+
+	<a name="exm_inf"></a>
+	<p class="gray_title">[EX Monopoly] : information.cgb</p>
+
+	<p>This file should be exactly 2,560 (0xA00) bytes in size. If not, the rest will be filled in with whatever was last downloaded. This is then divided into 64 lines, and each line is divided into 20 pairs of bytes. The last pair of each line must begin with 0xFE, except the last line, which must be 0xFF. Otherwise, the file is marked as corrupt. Additionally, any line where all but the last pair begin with 0xA3 is marked as empty. If all lines in the file are empty, the file is marked as corrupt. If the file is not corrupt, the game scans each pair of bytes and does the following:</p>
+
+	<ul>
+		<li class="list_item">If the first byte is in the range 0x00-0xF0 (inclusive), the pair is written as a tile and the cursor moves one tile to the right.</li>
+		<li class="list_item">If the first byte is in the range 0xF1-0xFD (inclusive), nothing happens.</li>
+		<li class="list_item">If the first byte is 0xFE, the cursor moves to the next line's leftmost tile.</li>
+		<li class="list_item">If the first byte is 0xFF, the game stops reading the file immediately.</li>
+	</ul>
+
+	<p>These tiles are then drawn to the main scrolling text window.</p>
+
+	<a name="exm_que"></a>
+	<p class="gray_title">[EX Monopoly] : query_T.cgb, query_M.cgb</p>
+
+	<p>These two files have the same format, but query_T.cgb is given a &#34;today&#34; value of 00 and gives data for all time while query_M.cgb is given a &#34;today&#34; value corresponding to the current or previous month and gives data only for that month. Both files are retreived via a POST request in the format &#34;myname=<80 hex digits>&today=<2 hex digits>&#34;, and have the following format:</p>
+
+<pre>----------------------------------
+File format
+----------------------------------
+0x00				::  High byte of ranking count (N). Should always be zero.
+0x01				::  Low byte of ranking count (N). Should be 10 or less.
+0x02 - ...			::  Ranking entries.
+0x02 + 56*N			::  Two bytes. If both are 0x00, the player's ranking is not present.
+0x04 + 56*N			::  Player's ranking entry, optional.
+
+----------------------------------
+Ranking entries - 56 bytes each
+----------------------------------
+0x00 - 0x03			::  Rank number in big endian.
+0x04 - 0x2B			::  &#34;myname&#34; data, see below.
+0x2C - 0x33			::  &#34;myscore&#34; data, see below.
+0x34				::  Player's gender: 0x00 = male, 0x01 = female.
+0x35				::  Player's age.
+0x36				::  Player's state/prefecture.
+0x37				::  &#34;today&#34; value: high 4 bits are a year number (mod 16), low 4 bits are a month number.
+
+----------------------------------
+myname - 40 bytes
+----------------------------------
+0x00 - 0x03			::  Player's name, right-padded with 0xFF.
+0x04 - 0x23			::  Player's email, right-padded with 0x00.
+0x24				::  &#34;today&#34; value, see above.
+0x25 - 0x27			::  Always 0x00, but not checked on download.
+
+----------------------------------
+myscore - 8 bytes
+----------------------------------
+0x00 - 0x03			::  Total score. Always divisible by 5, and never more than 60.
+0x04 - 0x07			::  Total cash in dollars.</pre>
+
+	<a name="exm_reg"></a>
+	<p class="gray_title">[EX Monopoly] : 0.regist.cgb</p>
+
+	<p>When the player uploads their total score, the game sends two POST requests to this file in the same format: myname, myscore, gender, age, state, today. These values are sent as raw bytes. The difference between the two requests is that the first has both of its &#34;today&#34; values set to 00, while the second has both values correct. The server MUST NOT send a response body (i.e. file data), as the game will not close its connections and will fail to request 10.temporary.cgb.</p>
+
+	<a name="exm_tmp"></a>
+	<p class="gray_title">[EX Monopoly] : 10.temporary.cgb</p>
+
+	<p>After both requests to 0.regist.cgb, the game sends a final POST request to this file in the format &#34;myscore=<8 hex digits>&#34;. The server responds in the following format:</p>
+
+<pre>0x00 - 0x01			::  If both are 0x00, no rank number is present.
+0x02 - 0x05			::  Rank number in big endian, optional.</pre>
+
+	<p>If the rank number is greater than 10, the player will be told that they are unranked.</p>
+
+	<a name="exm_str"></a>
+	<p class="gray_title">[EX Monopoly] : String Format</p>
+
+	<p>Characters 0xF1-0xFD (inclusive) are ignored by most text processing code, including the code used for all downloaded files. Character 0xFE is a line break, and character 0xFF terminates a string. Characters 0x200-0x25E (inclusive), which can only be used in information.cgb, correspond to ASCII 0x20-0x7E (inclusive), except that character 0x23C (ASCII 0x5C) is a yen symbol (¥).</p>
+
+<pre>	0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
+0x00	あ	い	う	え	お	か	き	く	け	こ	さ	し	す	せ	そ	た
+0x10	ち	つ	て	と	な	に	ぬ	ね	の	は	ひ	ふ	へ	ほ	ま	み
+0x20	む	め	も	や	ゆ	よ	ら	り	る	れ	ろ	わ	を	ん	ゃ	ゅ
+0x30	ょ	。	、	が	ぎ	ぐ	げ	ご	ざ	じ	ず	ぜ	ぞ	だ	ぢ	づ
+0x40	で	ど	ば	び	ぶ	べ	ぼ	ぱ	ぴ	ぷ	ぺ	ぽ	ア	イ	ウ	エ
+0x50	オ	カ	キ	ク	ケ	コ	サ	シ	ス	セ	ソ	タ	チ	ツ	テ	ト
+0x60	ナ	ニ	ヌ	ネ	ノ	ハ	ヒ	フ	ヘ	ホ	マ	ミ	ム	メ	モ	ヤ
+0x70	ユ	ヨ	ラ	リ	ル	レ	ロ	ワ	ヲ	ン	ャ	ュ	ョ	ー	！	ガ
+0x80	ギ	グ	ゲ	ゴ	ザ	ジ	ズ	ゼ	ゾ	ダ	ヂ	ヅ	デ	ド	バ	ビ
+0x90	ブ	ベ	ボ	パ	ピ	プ	ペ	ポ	＄	０	１	２	３	４	５	６
+0xA0	７	８	９	　	ァ	ィ	ゥ	ェ	ォ	ッ	？	ヴ	っ	家	軒	抵
+0xB0	当	価	格	建	設	水	道	費	抖	鉄	会	社	電	力	地	中
+0xC0	海	公	井	通	ぁ	ぃ	ぅ	ぇ	ぉ	゛	゜	枚	倍	Ａ	Ｂ	Ｃ
+0xD0	Ｄ	Ｅ	Ｆ	Ｇ	Ｈ	Ｉ	Ｊ	Ｋ	Ｌ	Ｍ	Ｎ	Ｏ	Ｐ	Ｑ	Ｒ	Ｓ
+0xE0	Ｔ	Ｕ	Ｖ	Ｗ	Ｘ	Ｙ	Ｚ	％	：	⋯	♪	♥︎	～	男	女	位
+0xF0	才	入	口	交	渉</pre>
+
+
+
+
+
+
+
 	<!-- Game Boy Wars 3 -->
 	<a name="gbw"></a>
 	<p class="gray_title">Game Boy Wars 3</p>
@@ -6621,6 +7042,12 @@ Unit IDs
 	<p>This file specifies that no service charge should apply, as the filename is prefixed with &#34;0&#34;.</p>
 
 
+
+
+
+
+
+
 	<!-- Hello Kitty no Happy House -->
 	<a name="hkh"></a>
 	<p class="gray_title">Hello Kitty no Happy House</p>
@@ -6790,6 +7217,249 @@ AKR	ALH		Classic Piano
 AKS	ALI		Crystal Ball Set
 AKT	ALJ		Fortune-Telling Set
 AKU	ALK	AMA	Tarot Card Divination</pre>
+
+
+
+
+
+
+	<!-- Mario Kart Advance -->
+	<a name="mka"></a>
+	<p class="gray_title">Mario Kart Advance</p>
+	<p class="list_item"><a href="#mka_gen">General Information</a></p>
+	<p class="list_item"><a href="#mka_ser">Server Structure</a></p>
+	<p class="list_item"><a href="#mka_ind">index.cgb</a></p>
+	<p class="list_item"><a href="#mka_rul">rule.cgb</a></p>
+	<p class="list_item"><a href="#mka_tot">total.cgb</a></p>
+	<p class="list_item"><a href="#mka_que">query.cgb</a></p>
+	<p class="list_item"><a href="#mka_gha">0.dlghost.cgb, 0.dlghost2.cgb, 0.dlghost3.cgb</a></p>
+	<p class="list_item"><a href="#mka_ghb">0.dlghostdr.cgb, 0.dlghostst.cgb, 0.dlghostid.cgb</a></p>
+	<p class="list_item"><a href="#mka_ent">0.entry.cgb</a></p>
+	<p class="list_item"><a href="#mka_str">String Format</a></p>
+
+	<a name="mka_gen"></a>
+	<p class="gray_title">[Mario Kart Advance] : General Information</p>
+
+	<p>Mario Kart Advance is the 3rd entry in the famed Mario Kart series. Its debut on the Game Boy Advance supported the Mobile Adapter GB for online connectivity. The game features options such as a Mobile GP where users could compete against others based on their completion times. Players could also download ghost data for specific race tracks.</p>
+
+
+	<a name="mka_ser"></a>
+	<p class="gray_title">[Mario Kart Advance] : Server Structure</p>
+
+	<p>Mario Kart Advance is currently known to access the following URLs:</p>
+
+	<ul>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;01&#47;AGB-AMKJ&#47;index.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;01&#47;AGB-AMKJ&#47;rule.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;ranking?name=&#47;01&#47;AGB-AMKJ&#47;*total.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;ranking?name=&#47;01&#47;AGB-AMKJ&#47;*query.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;ranking?name=&#47;01&#47;AGB-AMKJ&#47;*0.dlghost.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;ranking?name=&#47;01&#47;AGB-AMKJ&#47;*0.dlghost2.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;ranking?name=&#47;01&#47;AGB-AMKJ&#47;*0.dlghost3.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;ranking?name=&#47;01&#47;AGB-AMKJ&#47;*0.dlghostdr.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;ranking?name=&#47;01&#47;AGB-AMKJ&#47;*0.dlghostst.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;upload?name=&#47;01&#47;AGB-AMKJ&#47;*0.entry.cgb</li>
+	</ul>
+
+	<p>Asterisks in the above URLs are filled with a relevant string from index.cgb.</p>
+
+	<a name="mka_ind"></a>
+	<p class="gray_title">[Mario Kart Advance] : index.cgb</p>
+
+	<p>This is a text file with 21 lines, each containing 255 bytes or less, and a 22nd empty line. The first 20 lines correspond to the 20 Super Circuit tracks in the game (the 16 initial tracks and the first 4 unlockable tracks), while the final line corresponds to the current Mobile GP. These lines are used to fill ranking and upload URLs.</p>
+
+	<a name="mka_rul"></a>
+	<p class="gray_title">[Mario Kart Advance] : rule.cgb</p>
+
+	<p>This is a text file describing the current Mobile GP rules. It has 13-45 lines, using CR&#47;LF line endings, in the following format:</p>
+
+<pre>Line 1				::  File name to join (http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;01&#47;AGB-AMKJ&#47;*), 20 bytes or less.
+Line 2				::  First day to download and view these rules (YYYYMMDD).
+Line 3				::  Last day to download these rules (YYYYMMDD).
+Line 4				::  First day to download and view the next set of rules (YYYYMMDD).
+Line 5				::  Last day to download the next set of rules (YYYYMMDD).
+Line 6				::  First day to join and upload rankings (YYYYMMDD).
+Line 7				::  Last day to join and upload rankings (YYYYMMDD).
+Line 8				::  First day to download and view rankings (YYYYMMDD).
+Line 9				::  Last day to download and view rankings (YYYYMMDD).
+Line 10				::  Special rules (8 hex digits, see below).
+Line 11				::  Track number (2 digits).
+Line 12				::  Number of tries when joining (2 digits).
+Line 13				::  Number of lines in description (2 digits).
+Lines 14+			::  Description.</pre>
+
+	<p>Each digit of the special rules (line 10) specifies a different rule as follows:</p>
+
+	<ul>
+		<li class="list_item">Enable coins on track.</li>
+		<li class="list_item">Enable item boxes.</li>
+		<li class="list_item">Enable triple mushroom at start.</li>
+		<li class="list_item">Enable mushrooms-only mode.</li>
+		<li class="list_item">Enable COM opponents.</li>
+		<li class="list_item">Forced character (driver number plus one, 0 = any).</li>
+		<li class="list_item">Starting coin count divided by 5.</li>
+		<li class="list_item">Enable five-lap race.</li>
+	</ul>
+
+	<p>Rules with &#34;enable&#34; are enabled when their digit is not zero.</p>
+
+	<a name="mka_tot"></a>
+	<p class="gray_title">[Mario Kart Advance] : total.cgb</p>
+
+	<p>This file is downloaded when downloading rankings. It simply contains a four-byte integer in big endian representing the number of ranked ghosts, used to inform which rank numbers the game requests for its overall ranking category.</p>
+
+	<a name="mka_que"></a>
+	<p class="gray_title">[Mario Kart Advance] : query.cgb</p>
+
+	<p>This file is downloaded after total.cgb via a POST request in the format &#34;myid=<32 hex digits>&myrecord=<4 hex digits>&pickuprecord=<4 hex digits>&state=<2 hex digits>&driver=<2 hex digits>&rk_1=<8 hex digits>&rk_2=<8 hex digits>&rk_3=<8 hex digits>&rk_4=<8 hex digits>&rk_5=<8 hex digits>&rk_6=<8 hex digits>&rk_7=<8 hex digits>&rk_8=<8 hex digits>&rk_9=<8 hex digits>&rk_10=<8 hex digits>&rk_11=<8 hex digits>&#34;, where the &#34;pickuprecord&#34; value is the player's actual record while the &#34;myrecord&#34; value is 1/100 second slower, and the &#34;rk_*&#34; values are the rank numbers to be displayed in the overall rankings category. The file itself has the following format:</p>
+
+<pre>----------------------------------
+File format
+----------------------------------
+* Global ranking set.
+* High byte of rival count.
+* Low byte of rival count.
+* Up to eleven rival ranking entries.
+* Global player rank.
+* Eleven overall ranking entries.
+-- The file ends here for Mobile GP. --
+* State ranking set.
+* State player rank.
+* Driver ranking set.
+* Driver player rank.
+* 4 bytes: Global number of ranked players in big endian.
+
+----------------------------------
+Ranking set
+----------------------------------
+0x00				::  High byte of year number.
+0x01				::  Low byte of year number.
+0x02				::  Month number.
+0x03				::  Day number.
+0x04				::  Hour number.
+0x05				::  Minute number.
+0x06 - 0x09			::  Number of ranked players in big endian.
+0x0A - 0x0D			::  Number of total players in big endian.
+0x0E				::  High byte of top 10 count (N <= 11).
+0x0F				::  Low byte of top 10 count (N <= 11).
+0x10 - ...			::  Up to eleven top 10 ranking entries.
+
+----------------------------------
+Ranking entry
+----------------------------------
+0x00 - 0x03			::  Rank number in big endian.
+0x04				::  Driver number.
+0x05 - 0x09			::  Nickname.
+0x0A				::  High byte of race time.
+0x0B				::  Low byte of race time.
+0x0C - 0x1B			::  Kart ID.
+
+----------------------------------
+Player rank
+----------------------------------
+0x00 - 0x01			::  If both are 0x00, rank number is not present.
+0x02 - 0x05			::  Rank number in big endian, optional.
+(0x06 - 0x07)			::  If both are 0x00, extended info is not present.
+(0x08 - 0x0B)			::  Extended rank number in big endian, optional. Seems to overrule the prior rank number.
+(0x0C)				::  Extended driver number, optional.
+(0x0D)				::  High byte of extended race time, optional.
+(0x0E)				::  Low byte of extended race time, optional.
+
+----------------------------------
+Overall ranking entry
+----------------------------------
+0x00 - 0x01			::  If both are 0x00, ranking entry is not present.
+0x02 - 0x1D			::  Ranking entry, optional.</pre>
+
+	<a name="mka_gha"></a>
+	<p class="gray_title">[Mario Kart Advance] : 0.dlghost.cgb, 0.dlghost2.cgb, 0.dlghost3.cgb</p>
+
+	<p>These files are downloaded via POST requests in varying formats: 0.dlghost.cgb, used when downloading by global rank, receives &#34;ghostrank=<8 hex digits>&state=00&driver=00&#34;; 0.dlghost2.cgb, used when downloading by race time, receives &#34;ghostscore=<4 hex digits>&state=00&driver=00&#34;, where the &#34;ghostscore&#34; value is 1/100 second slower than the requested time; and 0.dlghost3.cgb, used when downloading by kart ID, receives &#34;myid=<32 hex digits>&state=00&driver=00&#34;. They all share the following format:</p>
+
+<pre>0x0000				::  High byte of year number, not used.
+0x0001				::  Low byte of year number, not used.
+0x0002				::  Month number, not used.
+0x0003				::  Day number, not used.
+0x0004				::  Hour number, not used.
+0x0005				::  Minute number, not used.
+0x0006 - 0x0009			::  Global number of ranked players in big endian.
+0x000A - 0x000B			::  If both are 0x00, the file ends here.
+0x000C				::  Driver number.
+0x000D - 0x0011			::  Nickname.
+0x0012				::  High byte of race time.
+0x0013				::  Low byte of race time.
+0x0014 - 0x1013			::  Ghost data.
+0x1014 - 0x1023			::  Kart ID.
+0x1024 - 0x1027			::  Global number of ranked players in big endian.
+0x1028 - 0x102B			::  Unknown, not used.
+0x102C - 0x102F			::  State number of ranked players in big endian.
+0x1030 - 0x1033			::  Driver number of ranked players in big endian.</pre>
+
+	<a name="mka_ghb"></a>
+	<p class="gray_title">[Mario Kart Advance] : 0.dlghostdr.cgb, 0.dlghostst.cgb, 0.dlghostid.cgb</p>
+
+	<p>These files are downloaded via POST requests in the same format as 0.dlghost.cgb. 0.dlghostdr.cgb is used for downloading by driver, 0.dlghostst.cgb is used for downloading by state, and 0.dlghostid.cgb would be used for downloading globally, but is replaced by 0.dlghost.cgb. All three share the following format:</p>
+
+<pre>0x0000				::  High byte of year number, not used.
+0x0001				::  Low byte of year number, not used.
+0x0002				::  Month number, not used.
+0x0003				::  Day number, not used.
+0x0004				::  Hour number, not used.
+0x0005				::  Minute number, not used.
+0x0006 - 0x0009			::  Global number of ranked players in big endian.
+0x000A - 0x000B			::  If both are 0x00, the file ends here.
+0x000C - 0x001C			::  Kart ID, optional.</pre>
+
+	<a name="mka_ent"></a>
+	<p class="gray_title">[Mario Kart Advance] : entry.cgb</p>
+
+	<p>This file is uploaded to via a POST request. The downloaded data is irrelevant. The uploaded data is in the following format:</p>
+
+<pre>0x0000 - 0x000F			::  Kart ID.
+0x0010				::  Track number.
+0x0011				::  Driver number.
+0x0012 - 0x0016			::  Nickname.
+0x0017				::  State number.
+0x0018 - 0x0019			::  Unknown.
+0x001A				::  High byte of race time.
+0x001B				::  Low byte of race time.
+0x001C - 0x101B			::  Ghost data.
+0x101C - 0x102B			::  Player's name.
+0x102C - 0x1037			::  Player's phone number.
+0x1038 - 0x103F			::  Player's postal code.
+0x1040 - 0x10BF			::  Player's home address.</pre>
+
+	<p>Outside of Mobile GP, personal info is not uploaded: the two numbers are filled with forward slashes, and the other two text fields are filled with asterisks. Otherwise, on an unmodified game, the postal code is always seven digits followed by a lowercase letter &#34;p&#34;.</p>
+
+	<a name="mka_str"></a>
+	<p class="gray_title">[Mario Kart Advance] : String Format</p>
+
+	<p>These characters are taken directly from the game&#39;s Shift-JIS decoding function. 0x00 is used as a terminator, and is usually invoked using two or four consecutive null bytes in ROM strings, or using a CR&#47;LF line terminator in downloaded strings, rather than actually using 危.</p>
+
+<pre>	0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
+0x00	危	！	”	＃	＄	％	’	＆	（	）	＊	＋	，	ー	．	／
+0x10	０	１	２	３	４	５	６	７	８	９	：	；	＜	＝	＞	？
+0x20	＠	Ａ	Ｂ	Ｃ	Ｄ	Ｅ	Ｆ	Ｇ	Ｈ	Ｉ	Ｊ	Ｋ	Ｌ	Ｍ	Ｎ	Ｏ
+0x30	Ｐ	Ｑ	Ｒ	Ｓ	Ｔ	Ｕ	Ｖ	Ｗ	Ｘ	Ｙ	Ｚ	［	￥	］	＾	＿
+0x40	‘	ａ	ｂ	ｃ	ｄ	ｅ	ｆ	ｇ	ｈ	ｉ	ｊ	ｋ	ｌ	ｍ	ｎ	ｏ
+0x50	ｐ	ｑ	ｒ	ｓ	ｔ	ｕ	ｖ	ｗ	ｘ	ｙ	ｚ	｛	｜	｝	〜	　
+0x60	ぁ	あ	ぃ	い	ぅ	う	ぇ	え	ぉ	お	か	が	き	ぎ	く	ぐ
+0x70	け	げ	こ	ご	さ	ざ	し	じ	す	ず	せ	ぜ	そ	ぞ	た	だ
+0x80	ち	ぢ	っ	つ	づ	て	で	と	ど	な	に	ぬ	ね	の	は	ば
+0x90	ぱ	ひ	び	ぴ	ふ	ぶ	ぷ	へ	べ	ぺ	ほ	ぼ	ぽ	ま	み	む
+0xA0	め	も	ゃ	や	ゅ	ゆ	ょ	よ	ら	り	る	れ	ろ	わ	を	ん
+0xB0	ァ	ア	ィ	イ	ゥ	ウ	ェ	エ	ォ	オ	カ	ガ	キ	ギ	ク	グ
+0xC0	ケ	ゲ	コ	ゴ	サ	ザ	シ	ジ	ス	ズ	セ	ゼ	ソ	ゾ	タ	ダ
+0xD0	チ	ヂ	ッ	ツ	ヅ	テ	デ	ト	ド	ナ	ニ	ヌ	ネ	ノ	ハ	バ
+0xE0	パ	ヒ	ビ	ピ	フ	ブ	プ	ヘ	ベ	ペ	ホ	ボ	ポ	マ	ミ	ム
+0xF0	メ	モ	ャ	ヤ	ュ	ユ	ョ	ヨ	ラ	リ	ル	レ	ロ	ワ	ヲ	ン</pre>
+
+
+
+
+
+
+
 
 	<!-- Mobile Trainer -->
 	<a name="mbt"></a>
