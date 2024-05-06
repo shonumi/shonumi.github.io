@@ -1,0 +1,523 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>The State of Emulation - 2024</title>
+		<link rel="stylesheet" type="text/css" href="./../main.css" />
+
+		<meta property="og:title" content="The State of Emulation - 2024" />
+		<meta property="og:image" content="https://shonumi.github.io/articles/GBE_2017_1.png" />
+		<meta property="og:description" content="The current state of emulating everything" />
+		<meta property="og:type" content="article" />
+ 		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1" name="viewport" />
+
+		<style type="text/css">
+			.green
+			{
+				background-color: #73E77B;
+				margin-top: 0px;
+				margin-bottom: 10px;
+				margin-left: 3%;
+				margin-right: 3%;
+				overflow-wrap: break-word;
+				border: 2px #000 solid;
+				padding: 5px;
+				font-size: 1.5em;
+			}
+
+			.g
+			{
+				background-color: #73E77B;
+				border: 2px #000 solid;
+				padding: 5px;
+			}
+
+			.yellow
+			{
+				background-color: #FFFB7D;
+				margin-top: 0px;
+				margin-bottom: 10px;
+				margin-left: 3%;
+				margin-right: 3%;
+				overflow-wrap: break-word;
+				border: 2px #000 solid;
+				padding: 5px;
+				font-size: 1.5em;
+			}
+
+			.y
+			{
+				background-color: #FFFB7D;
+				border: 2px #000 solid;
+				padding: 5px;
+			}
+
+			.red
+			{
+				background-color: #FA8275;
+				margin-top: 0px;
+				margin-bottom: 10px;
+				margin-left: 3%;
+				margin-right: 3%;
+				overflow-wrap: break-word;
+				border: 2px #000 solid;
+				padding: 5px;
+				font-size: 1.5em;
+			}
+
+			.r
+			{
+				background-color: #FA8275;
+				border: 2px #000 solid;
+				padding: 5px;
+			}
+
+			.con
+			{
+				font-family: monospace;
+			}
+
+			.ln
+			{
+				margin-top: 0px;
+				margin-bottom: 10px;
+			}
+
+			hr
+			{
+				width: 80%;
+				height: 0.25em;
+				margin-bottom: 2em;
+				background-color: #D0D0D0;
+			}
+
+		</style>
+
+	</head>
+
+	<body>
+
+		<!-- Main Header -->
+		<div class="header">
+
+			<!-- Left Header -->
+			<div class="header_left">
+				<div class="header_text"><strong><a class="header_link_current" href="index.html">Shonumi</a></strong></div>
+			</div>
+		
+			<!-- Right Header -->
+			<div class="header_right">
+				<a class="header_link_current" href="../articles.html">Articles</a>
+				<a class="header_link" href="../books.html">My<span class="no">_</span>Books</a>
+				<a class="header_link" href="../blog.html">Blog</a>
+				<a class="header_link" href="../downloads.html">Downloads</a>
+				<a class="header_link" href="../dandocs.html">Dan<span class="no">_</span>Docs</a>
+			</div>
+
+		</div>
+
+		<!-- Main Page Outer Box -->
+		<div class="box_outer">
+			
+			<!-- Main Page Inner Box -->
+			<div class="box_inner">
+
+				<div class="center_headline">The State of Emulation - 2024</div>
+				<div class="headline_underline">. . . . . . . . . . .</div>
+
+				<p class="center_img"><img src="soe_24_00.png" alt="Fun Fact: Everything here on my desk can be emulated!" /></p>
+
+				<p class="inner_text_large"><strong>Current State of Affairs</strong></p>
+
+				<p class="inner_text">Every April 1st, I release a new version of GBE+. It's really nothing special, just whatever code happens to be the latest, although I do try to make sure things are stable enough. Anyway, I stopped doing &#34;Progress Reports&#34; a long time ago. They just felt too annoying and time-consuming to write, especially when any important changes or additions could be summarized in a short list rather than a lengthy article. So, this year, I'm trying something different. Rather than focus on what's happened with GBE+ over the past year, I want to talk about what's happened with <em>multiple</em> Game Boy emulators over the past few years. I want to discuss the overall state of Game Boy, specifically when it comes peripherals, accessories, add-ons, and other special features.</p>
+
+				<p class="inner_text">A number of people these days assume that Game Boy emulation has been more or less stagnant for nearly a generation. For your average user that simply wants to play Pokemon, Mario, and Zelda games, nothing much has changed over 20+ years. Practically any emulator out there will adequately handle most games, and it's been that way for decades. Every so often, rare corner cases like <a href="https://www.reddit.com/r/EmuDev/comments/7206vh/sameboy_now_correctly_emulates_pinball_deluxe/">Pinball Deluxe</a> or <a href="https://mgba.io/2020/01/25/infinite-loop-holy-grail/">Hello Kitty Collection: Miracle Fashion Maker</a> are finally emulated properly due to increases in accuracy, but for everything else, 2024 doesn't feel all that different from 2004. Recently, however, a bunch of activity has been going on in the background, particularly in regards to esoteric hardware utilized by some Game Boy software. Admittedly, most of this work has been for games that few have heard of, let alone played. So, why should anyone care about extra hardware that only a handful of relatively unknown titles used?</p>
+
+				<p class="inner_text">The Game Boy platform was more than just the handheld itself; it relied on cartridges for games as well as a host of secondary products such as the Link Cable and Game Boy Printer. Emulating the console itself only preserves <em>one portion</em> of its history. Without recreating all of the hardware that formed its ecosystem, we risk losing many important experiences. Imagine a world, for example, where no emulator supported the Link Cable. There would be no head-to-head Tetris matches, no trading Pokemon, and no friendship-ending Mario Kart races. It is therefore crucial that we pay attention to the world of the Game Boy's accessories, especially if we are concerned about preserving <em>everything</em> the system had to offer. If the goal is one day get both <em>complete and accurate</em> Game Boy emulation, we can leave no stone unturned. Emulating these devices provides a richer, fuller understanding of what the Game Boy was and what it achieved. Even the strangest peripherals provide valuable insights on the past, and occassionally some of them are really fun to play around with.</p>
+
+				<p class="inner_text">For over 18 years, Game Boys continually received new, additional hardware that changed how the handheld and its software interacted. There are literally dozens of products that fall into this category, and that's just the officially licensed stuff. This has presented a unique challenge for Game Boy emulation, as each piece needed to be researched and implemented. Historically, few emulators tackled all but the most popular items, leaving the rest to obscurity. However, in recent years, the situation has completely changed. Whereas before only a short list of accessories were emulated, today the vast majority are in some playable or useable state. For the purposes of this article, I will be exclusively talking about officially licensed hardware (sorry GameShark), and hardware that altered how the software/code actually operated (sorry Booster Boy), and hardware that was actually released (sorry WorkBoy).</p>
+
+				<p class="inner_text">The above limitations represent the most relevant and pressing items in need of preservation. They were commercially sold to the public and given Nintendo's approval, in a sense becoming part of the Game Boy's identity. The lists below indicate the current status of emulating each and every one of these. For reference, here are what each of the colors mean:</p>
+
+				<p class="inner_text"><span class="g">Green = Full Emulation.</span></p>
+				<p class="inner_text"><span class="y">Yellow = Partial Emulation or Work in Progress.</span></p>
+				<p class="inner_text"><span class="r">Red = No Emulation.</span></p>
+ 
+				<p class="inner_text">Note that Partial Emulation is often very playable and nearly fully functional, just that some last missing bits keep it from perfection (or at least completeness). The lists also include a few emulators that are known to emulate these products. That section is not meant to be exhaustive; rather it merely provides a glimpse at how widely supported these features may be.</p>
+
+				<p class="inner_text_large"><strong>Game Boy and Game Boy Color</strong><p class="inner_text"><p>
+
+				<div class="con">
+					<div class="green">
+						<p class="ln"><strong>Barcode Boy</strong></p>
+						<p class="ln">Emulated By: GBE+, KiGB (partial)</p>
+						<p class="ln">Notes: All cards have been scanned and preserved.</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Barcode Taisen Bardigun Reader</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>DMG-07 (4-Player Adapter)</strong></p>
+						<p class="ln">Emulated By: DoubleCherryGB, GBE+</p>
+						<p class="ln">Notes: DoubleCherryGB has higher compatibility.</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Full Changer</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>		
+				
+					<div class="green">
+						<p class="ln"><strong>Game Boy Camera</strong></p>
+						<p class="ln">Emulated By: BGB, GBCC, GBE+, GiiBiiAdvance, mGBA, SameBoy, and others</p>
+						<p class="ln">Notes: Some support webcam input or static images</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Game Boy Printer</strong></p>
+						<p class="ln">Emulated By: GBCC, GBE+, mGBA, SameBoy, VBA-M, and others</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="red">
+						<p class="ln"><strong>GBKISS LINK</strong></p>
+						<p class="ln">Emulated By: NONE</p>
+						<p class="ln">Notes: No support or documentation yet</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>GB Memory Cartridge</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>GBC Infrared Port</strong></p>
+						<p class="ln">Emulated By: GBE+, SameBoy</p>
+						<p class="ln">Notes: Mostly works, but some games/devices need better support</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>HuC-1 (Infrared)</strong></p>
+						<p class="ln">Emulated By: SameBoy</p>
+						<p class="ln">Notes: IR emulated but unknown compatibility?, no GBKISS LINK support</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>HuC-3 (Infrared + RTC + Alarm)</strong></p>
+						<p class="ln">Emulated By: SameBoy</p>
+						<p class="ln">Notes: IR emulated but unknown compatibility?, no GBKISS LINK support, RTC + alarm <strong>ARE</strong> emulated</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Jaguar JN-100</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Jaguar JN-2000</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Link Cable</strong></p>
+						<p class="ln">Emulated By: BGB, GBE+, KiGB, mGBA, SameBoy, TGB-Dual, VBA-M, and others</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>MBC3 (Real Time Clock)</strong></p>
+						<p class="ln">Emulated By: BGB, GBCC, GBE+, KiGB, mGBA, SameBoy, VBA-M, and others</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>MBC5 (Rumble Cartridge)</strong></p>
+						<p class="ln">Emulated By: GBCC, GBE+, mGBA, SameBoy, VBA-M, and others</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>MBC6 (Flash Memory)</strong></p>
+						<p class="ln">Emulated By: GBE+, KiGB (partially), mGBA</p>
+						<p class="ln">Notes: Proper support typically depends on emulating the Mobile Adapter GB as well</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>MBC7 (Accelerometer)</strong></p>
+						<p class="ln">Emulated By: BGB, GBCC, GBE+, mGBA, SameBoy, VBA-M, and others</p>
+						<p class="ln">Notes: Some use gyro controls, other map buttons/keys</p>
+					</div>
+				
+					<div class="yellow">
+						<p class="ln"><strong>Mobile Adapter GB</strong></p>
+						<p class="ln">Emulated By: BGB (with Python scripts), GBE+</p>
+						<p class="ln">Notes: Some game servers not yet emulated</p>
+					</div>
+				
+					<div class="green">
+						<p class="ln"><strong>Pocket Sonar</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes: Uses static image as sonar input</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Power Antenna/Bug Sensor</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes: Flashes on-screen icon to indicate device lighting up</p>
+					</div>
+				
+					<div class="green">
+						<p class="ln"><strong>Singer IZEK 1500</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>TAMA5 (RTC + Alarm)</strong></p>
+						<p class="ln">Emulated By: mGBA, GBE+, VBA-M</p>
+						<p class="ln">Notes: Alarm function not emulated</p>
+					</div>
+				
+					<div class="green">
+						<p class="ln"><strong>Turbo File GB</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+				</div>
+
+				<p class="inner_text">As the list demonstrates, most of the Game Boy's exotic hardware is currently emulated in some capacity. The vast majority is fully preserved with only a few sticking points here and there. With regard to the yellow category, many of these games are fully playable and their hardware is sufficiently implemented in various emulators, however, there is room for improvement.</p>
+				<hr/>
+
+				<p class="inner_text">For the <strong>Game Boy Color's IR port</strong>, many games will just work given the proper settings. Unfortunately, some games are particularly tricky to handle. Take for example, Pokemon Trading Card Game (non-Japanese versions) and its Card Pop functionality. It requires both participants to press the A Button at roughly the same time, something that can be difficult for a single person to recreate by themselves in an emulator. Other games, such as Bomberman Max and Pokemon Pinball, operate similarly. Another challenge with GBC IR communications involves emulating external devices. These range from handheld virtual pets like the Pokemon Pikachu 2 or Pocket Sakura, to T.V. remotes, lamps, and even Furby dolls. Thankfully, both the Pokemon Pikachu 2 and Pocket Sakura IR protocols have been documented, so emulating their communication directly is a possibility. Some games that require IR bursts (such as Chee Chai Alien or Bomberman Max) can simulate random IR transmisisions. At least one game - Doraemon Memories - requires emulating a T.V. remote with the NEC protocol. Even with all these caveats, the GBC IR port is decently supported, especially for popular features like Pokemon G/S/C's Mystery Gift.</p>
+
+				<p class="center_img">
+					<img src="soe_24_01.png" alt="Card Pop" /> 
+				</p>
+				<hr/>
+
+				<p class="inner_text">The <strong>HuC-1</strong> and <strong>HuC-3</strong> mappers themselves are widely supported in various Game Boy emulators to get the game's ROM and backup RAM working. However, both of these cartridges used IR diodes for wireless data transmission, and the HuC-3 had a built-in real-time clock with a programmable alarm. SameBoy has led the way here, implementing all of that. The last piece of the puzzle lies with the <strong>GBKISS LINK</strong>, a late-90s modem that used IR to transmit data between PCs and various HuC cartridges. Given that the GBKISS LINK is extremely rare and has yet to be documented or reverse-engineered at all, HuC-1/HuC-3 emulation remains somewhat incomplete. Just about everything related to the GBKISS LINK is in dire need of preservation, from the Windows 95 software and drivers to the actual content games transferred via the modem. Hudson would actually release files online that players could download and transfer from their PC to their Game Boys. Only a few examples have been recovered to date. Realistically however, for most users and their needs, these cartridges are basically as good as covered.</p>
+
+				<p class="center_img">
+					<img src="soe_24_02.png" alt="GBKISS LINK" /> 
+				</p>
+				<hr/>
+
+				<p class="inner_text">The <strong>Mobile Adapter GB</strong> itself is properly emulated in either GBE+ or BGB (using Python scripts). The main difficulty lies with emulating the actual servers that compatible games relied on. It's been over 20 years since those servers were last up and running, so each games has be individually reverse-engineered to figure out what how the online portion should have worked. As one might imagine, this is a slow process. A total of 22 games for the GBC and GBA supported the Mobile Adapter GB, each with unique servers that need to be recreated indiviudally. Thankfully, the Reverse Engineering Open Network (REON) team has been working on this very task for years. Test servers for software like Game Boy Wars 3, Mario Kart Advance, Pokemon Crystal, and Mobile Trainer are currently under development. This area is definitely a long work-in-progress. Even so, a great deal of online content has been resurrected at this time.</p>
+
+				<p class="center_img">
+					<img src="soe_24_03.png" alt="Mobile Adapter Game" /> 
+					<img src="soe_24_04.png" alt="Mobile Adapter Game" /> 
+					<img src="soe_24_05.png" alt="Mobile Adapter Game" />
+				</p>
+				<hr/>
+
+				<p class="inner_text">Lastly, the <strong>TAMA5</strong> was a cartridge that sported a real-time clock and a programmable alarm. Like the HuC-3, a number of emulators support the mapper to handle ROM data, backup memory, and the real-time clock. However, to my knowledge, none yet support the alarm. Although the game is perfectly playable without the alarm, that feature serves an important role by alerting the player at set intervals. Overall, however, this isn't a difficult task to complete. The emulator just needs some way of sleeping or waiting in the background until the right time. This could be achieved through scheduling events with a given OS (a <strong>cron</strong> job perhaps, or even a dedicated daemon for the emulator). Coming up with a cross-platform solution that doesn't involve gluing together a bunch of shell scripts may prove a bit hard but still doable.</p>
+
+				<p class="center_img">
+					<img src="soe_24_06.png" alt="Tamagotchi 3 on the GB" /> 
+				</p>
+				<hr/>
+
+				<p class="inner_text">Today, players can largely experience everything the Game Boy and Game Boy Color officially offered. Almost everything is emulated to some degree, with but a few areas left to work on. Only the elusive GBKISS LINK stands as the last true holdout. Overall, the situation has vastly improved over the past 10 years. Circa 2014, at least 14 of these items would have been sitting in the red!</p>
+
+				<p class="inner_text_large"><strong>Game Boy Advance</strong><p class="inner_text"><p>
+
+				<div class="con">
+					<div class="green">
+						<p class="ln"><strong>Advance Movie Adapter</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Agatsuma TV Tuner</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes: WIP support, research is ongoing</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Battle Chip Gate</strong></p>
+						<p class="ln">Emulated By: GBE+, mGBA</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Campho Advance</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes: Basic telephony and video transmission emulated, audio transmission missing</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong><em>Drill Dozer</em> Rumble</strong></p>
+						<p class="ln">Emulated By: GBE+, mGBA, Pizza Boy</p>
+						<p class="ln">Notes: Hardware and commands emulated, needs audio/video output</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>e-Reader</strong></p>
+						<p class="ln">Emulated By: no$gba, mGBA, VBA-M</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>GBA Infrared Adapter (AGB-006)</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>GBA Music Recorder</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>GBA Real-Time Clock Cartridge</strong></p>
+						<p class="ln">Emulated By: GBE+, mGBA, no$gba, NanoBoyAdvance, SkyEmu, VBA-M, and others</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>GBA Tilt Cartridge</strong></p>
+						<p class="ln">Emulated By: GBE+, mGBA, My Boy!, VBA-M</p>
+						<p class="ln">Notes: Some use gyro controls, other map buttons/keys</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>GlucoBoy</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Joy Carry Cartridge</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Link Cable</strong></p>
+						<p class="ln">Emulated By: BizHawk, mGBA, no$gba, VBA-M</p>
+						<p class="ln">Notes: Some support Single Pak and Multi Pak modes</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Magical Watch</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Multi Plust On System</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Nintendo MP3 Player</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes: Hardware and commands emulated, needs audio output</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Play-Yan and Play-Yan Micro</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes: Hardware and commands emulated, needs audio/video output</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Solar Sensor</strong></p>
+						<p class="ln">Emulated By: GBE+, mGBA, no$gba, NanoBoyAdvance, SkyEmu, VBA-M, and others</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Soul Doll Adapter</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Turbo File Advance</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Virtureal Racing System</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong><em>WarioWare Twisted!</em> Gyroscope + Rumble</strong></p>
+						<p class="ln">Emulated By: GBE+, mGBA, Pizza Boy, VBA-M</p>
+						<p class="ln">Notes: Some use gyro controls, other map buttons/keys</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Wireless Adapter</strong></p>
+						<p class="ln">Emulated By: GBE+ (partial), gpSP, PizzaBoy, VBA-M (partial), </p>
+						<p class="ln">Notes:</p>
+					</div>
+				</div>
+
+				<p class="inner_text">The Game Boy Advance is also on very solid ground in terms of preserving many of its peripherals. Much of the system's additional hardware is handled quite readily. Technically, every single one can be emulated today in some form. However, a few areas remain that prevent users from fully recreating the original experience of these products.</p>
+				<hr/>
+
+				<p class="inner_text">Emulation of the <strong>Campho Advance</strong> is very, very close to being feature-complete. Currently GBE+ has a framework for connecting two instances of the emulator over a network and establishing virtual calls. One user can ring up another to start a call, and either side can end it remotely. Video can be transmitted, however, currently it only takes the form of a static image. What's missing here is tapping into an active audio-video stream (such as a webcam), but there are plans to address that soon. Much of the work involved dumping the cartridge and reverse-engineering the hardware, so once audio-video transmission is up and running, the Campho Advance will be fully taken care of.</p>
+
+				<p class="center_img">
+					<img src="soe_24_07.gif" width="480px" alt="Campho Advance Phone Call" /> 
+					<img src="soe_24_08.gif" width="480px" alt="Campho Advance Phone Call" /> 
+				</p>
+				<hr/>
+
+				<p class="inner_text">In that same regard, the <strong>Play-Yan</strong> models and the <strong>Nintendo MP3 Player</strong> are very nearly feature-complete. The bulk of emulation revolves around dealing with the cartridge's unique hardware and its various commands for file management and playing media files. With all of the research mostly finished, the only thing left to do is output audio samples and video frames. GBE+ needs to convert user media files into data it easily read and output through the emulator, Once that's setup, these cartridges will qualify as fully emulated.</p>
+
+				<p class="center_img">
+					<img src="soe_24_09.png" alt="Nintendo MP3 Player" /> 
+					<img src="soe_24_10.png" alt="Nintendo MP3 Player" /> 
+				</p>
+				<hr/>
+
+				<p class="inner_text">The last item that needs to be looked at is the <strong>Agatsuma TV Tuner</strong>. It was the first and only TV tuner officially licensed by Nintendo for the GBA. Despite being advertised as a Nintendo DS product, it is functionally a giant GBA cartridge. As much as I talked about the Play-Yan, GlucoBoy, and Campho Advance being the last holdouts for the GBA (the <strong>Triforce of Terror</strong> as I called them), this one kinda blindsided me. I only discovered it some time last year. At any rate, the Agatsuma TV Tuner has recently moved from the red category to yellow, as I have begun reverse-engineering the hardware. At this time, it's difficult to say what's needed for feature-complete emulation, but as I see it, that would involve converting several video streams (local files or live feeds from the internet) into &#34;TV channels&#34; that GBE+ can access and present. I'm confident it won't be all that difficult, especially once audio/video conversions are properly handled with the Play-Yan. Currently GBE+ can only get the cartridge to boot and display static noise on every channel, so there's lots of work to be done.</p>
+
+				<p class="center_img">
+					<img src="soe_24_11.png" alt="Agatsuma TV Tuner" /> 
+					<img src="soe_24_12.png" alt="Agatsuma TV Tuner" /> 
+				</p>
+				<hr/>
+
+				<p class="inner_text">With the exception of some of the most complicated and exotic cartridges, many gamers can play almost anything the GBA has to offer. In the past, the GBA was particularly troubled by gaps in emulation. 10 years ago, for example, at least 15 of the above items would have been in the red category! Thankfully, we've recovered a lot of history that would have otherwise been ignored or lost.</p>
+
+				<p class="inner_text_large"><strong>2025 and Beyond</strong></p>
+
+				<p class="inner_text">Honestly, I really feel like all of the remaining yellow categories for the GBA will be dealt with very soon. Most of it is just handling audio/video streams for cartridges that deal with multimedia. The extensive groundwork for the Play-Yan and the Campho Advance is already complete, so it's just a matter of getting that last bit of code done. After that, I don't suspect the Agatsuma TV Tuner will be far behind.</p>
+
+				<p class="inner_text">Getting everything for the Game Boy and Game Boy Color into the green category is going to be a long-term effort, thanks to the Mobile Adapter GB. However, if we can get the GB KISS LINK emulated, we'd elminate the red category completely. At that point, at least every single officially licensed piece of hardware for any Game Boy console would have some basic emulation. That's the goal I'd like to hit this year.</p>
+
+				<p class="inner_text">While there have been many positive developments for the Game Boy emulation scene in terms of peripherals, accessories, add-ons, other systems are not so fortunate. Although this article was exclusively about the Game Boy, I think it's important to draw attention to the fact that more work needs to be done elsewhere. Consoles like the NES, SNES, Genesis/Mega Drive, N64, and PS1 all had their fair share of wild and crazy hardware that to this day remains unemulated. I'd like to see the success we've had with the Game Boy replicated across more systems. I'm serious when I say it keeps me up at night that no one knows how the Tsuricon 64 actually works, or that we haven't studied and recreated the Lasabirdie's motion controls. If you look at all the extra hardware for game consoles that just isn't emulated (or even researched/documented at all!), you'll see that we have some pretty serious gaps in video game preservation. While a single fishing rod and laser-based golf putter are small by themselves, <em>it adds up</em> when multiplied by dozens of examples across multiple consoles. If I'd made this article specifically about the PS1, for example, there would have been a lot red entries...</p>
+
+				<p class="inner_text">Even so, I'm hopeful that the Game Boy would serve as a model to follow for every home console and handheld out there. We're so close to having complete emulation of all things Game Boy (officially licensed, at least) that it's actually kinda crazy. There's a mountain of work that needs to be done outside of that, however. With any luck, we'll get there soon enough. I personally won't rest until we've conquered everything there was to play and see. Saving video game history depends on all of us making whatever efforts we can. We'll see what the next <strong>State of Emulation</strong> looks like down the road. Until then, remember the motto: Never give up. Never surrender. Emulate everything.</p>
+
+
+			</div>
+		</div>
+
+		<p> </p> 
+
+	</body>
+</html>
+
+
+
+

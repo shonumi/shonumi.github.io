@@ -1,7 +1,7 @@
 body 
 {
 	font-family: "times new roman", serif, verdana;
-	font-size: 18px;
+	font-size: 1.125em;
 	margin: 0px;
 	background-color: #FFF;
 } 
@@ -18,13 +18,40 @@ code
 
 .header 
 {
-	width: 100%;
-	height: 40px;
+	display: block;
+	min-height: 40px;
+	width: auto;
+	height: auto;
 	border-bottom: 1px solid #B2B2B2;
 	margin-bottom: 10px;
 	margin-top: 0px;
 	background-color: #4C4C4C;
-} 
+	text-align: center;
+	margin: auto;
+}
+
+img
+{
+	max-width: 95%;
+	height: auto;
+}
+
+video
+{
+	max-width: 95%;
+	height: auto;
+}
+
+iframe
+{
+	max-width: 95%;
+}
+
+img.cap
+{
+	height: 300px;
+	width: auto;
+}
 
 .center_img
 {
@@ -108,7 +135,7 @@ code
 {
 	margin-top: 0px;
 	margin-bottom: 30px;
-	font-size: 16px;
+	font-size: 1em;
 	text-align: center;
 }
 
@@ -116,27 +143,24 @@ code
 {
 	margin-top: 0px;
 	margin-bottom: 0px;
-	font-size: 16px;
+	font-size: 1em;
 	text-align: center;
-}
-
-.header_left
-{
-	width: 40%;
-	float: left;
 }
 
 .header_right
 {
-	width: 40%;
-	float: right;
 	margin-right: 5%;
 	margin-top: 12px;
+	display: inline;
+	margin: auto;
+	min-width: 10%;
+	text-align: center;
+	word-spacing: 40px;
 }
 
 .header_text
 {
-	font-size: 22px;
+	font-size: 1.375em;
 	color: #0FACEF;
 	padding-top: 10px;
 	letter-spacing: 5px;
@@ -145,35 +169,29 @@ code
 
 .header_link
 {
-	font-size: 18px;
+	font-size: 1.125em;
 	font-weight: bold;
 	color: #FFF;
 	text-decoration: none;
-	margin-right: 40px;
 	display: inline;
-	float: right;
 }
 
 .header_link:hover
 {
-	font-size: 18px;
+	font-size: 1.125em;
 	font-weight: bold;
 	color: #0FACEF;
 	text-decoration: none;
-	margin-right: 40px;
 	display: inline;
-	float: right;
 }
 
 .header_link_current
 {
-	font-size: 18px;
+	font-size: 1.125em;
 	font-weight: bold;
 	color: #0FACEF;
 	text-decoration: none;
-	margin-right: 40px;
 	display: inline;
-	float: right;
 }
 
 .box_inner
@@ -212,6 +230,15 @@ code
 	margin-bottom: 30px;
 	margin-left: 10px;
 	margin-right: 10px;
+}
+
+.inner_no_gap
+{
+	text-indent: 50px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-left: 20px;
+	margin-right: 20px;
 }
 
 .list_text
@@ -256,8 +283,9 @@ code
 	margin-bottom: 0px;
 	margin-right: 10px;
 	margin-left: 10px;
-	font-size: 18px;
+	font-size: 1.125em;
 	padding: 4px;
+	padding-left: 1em; 
 	display: block;
 	background-color: #D0D0D0;
 	color: #0996E7;
@@ -268,14 +296,14 @@ code
 	margin-top: 0px;
 	margin-left: 10px;
 	margin-right: 10px;
-	margin-bottom: 20px;
+	margin-bottom: 40px;
 }
 
 .center_headline
 {
-	height: 32px;
+	height: 1.25;
 	text-align: center;
-	font-size: 30px;
+	font-size: 1.5em;
 	letter-spacing: 5px;
 	margin: auto;
 	margin-top: 3px;
@@ -287,7 +315,7 @@ code
 {
 	width: 250px;
 	text-align: center;
-	font-size: 20px;
+	font-size: 1.25em;
 	letter-spacing: 3px;
 	margin: auto;
 	margin-top: 0px;
@@ -304,6 +332,7 @@ code
 	border-width: 2px;
 	background-color: #D0D0D0;
 	padding: 3px;
+	font-size: 1.5em;
 }
 
 .highlight_med_gray
@@ -313,6 +342,7 @@ code
 	border-width: 2px;
 	background-color: #D0D0D0;
 	padding: 3px;
+	font-size: 1.5em;
 }
 
 .highlight_hor_gray
@@ -320,6 +350,7 @@ code
 	background-color: #D0D0D0;
 	padding-left: 3px;
 	padding-right: 3px;
+	font-size: 1.5em;
 }
 
 .code
@@ -331,6 +362,7 @@ code
 	border: 1px #808080 solid;
 	background-color: #D0D0D0;
 	padding: 5px;
+	font-size: 1.5em;
 }
 
 blockquote
@@ -350,3 +382,7 @@ blockquote
 	text-decoration: line-through;
 }
 
+.no
+{
+	color: #4C4C4C;	
+}

@@ -4,6 +4,9 @@
 		<title>NDS Stuff</title>
 		<link rel="stylesheet" type="text/css" href="./../main.css" />
 
+ 		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1" name="viewport" />
+
 		<style type="text/css">
 
 			.center_code
@@ -32,10 +35,11 @@
 		
 			<!-- Right Header -->
 			<div class="header_right">
-				<a class="header_link" href="../downloads.html">Downloads</a>
-				<a class="header_link" href="../articles.html">Articles</a>
-				<a class="header_link_current" href="../blog.html">Blog</a>
 				<a class="header_link" href="../index.html">Main</a>
+				<a class="header_link_current" href="../blog.html">Blog</a>
+				<a class="header_link" href="../articles.html">Articles</a>
+				<a class="header_link" href="../downloads.html">Downloads</a>
+				<a class="header_link" href="../dandocs.html">Dan<span class="no">_</span>Docs</a>
 			</div>
 
 		</div>
@@ -48,6 +52,70 @@
 
 				<div class="center_headline">NDS Stuff</div>
 				<div class="headline_underline">. . . . . . . . . . .</div>
+
+				<p class="inner_text_large"><strong>October 10, 2020</strong></p>
+
+				<p class="inner_text">I thought I promised myself I wouldn&#39;t ignore this blog for 6 months at a time, and here it is October already. I guess I got caught up in a bunch of other stuff. Emulating sewing machines for the Game Boy and two card readers for the NDS. GBE+ is finally running DS software well enough where I can begin reverse-engineering and emulating a bunch of fancy Slot-2 hardware. That would have been unthinkable just last year, when maybe one or two games would actually boot and run. Anyway, as I said before, the long gap between these entries doesn&#39;t mean a lack of progress. If anything, quite it&#39;s the opposite.</p>
+
+				<p class="inner_text">Last time I wrote about getting Z-buffering fixed for the 3D engine of the DS, as well as preliminary texture support. I&#39;ve since implemented many of the various texture formats. The results were most immediate for games that use the 3D engine with orthogonal projection. Essentially a game will use the 3D engine to display 2D graphics via &#34;flat&#34; textured polygons. It&#39;s a pretty common method of drawing among DS titles. It offers far more &#34;sprites&#34; than the 2D engine of the DS can handle, and it&#39;s comparable to how modern 2D graphics are drawn today. Once textures were implemented, a whole new world of DS emulation opened up.</p>
+
+				<p class="center_img">
+					<img class="space_img" src="ndsr_34.png" alt="A Witchs Tale" />
+					<img class="space_img" src="ndsr_35.png" alt="Castlevania" />
+					<img class="space_img" src="ndsr_36.png" alt="Puyo Puyo" />
+				</p>
+
+				<p class="inner_text">Initially, I wasn&#39;t handling some transparencies correctly. Most textures use palettes, and the first color in the palette is essentially ignored when drawing. This isn&#39;t all that different from how OBJ transparencies work on the DMG, GBC, GBA, and NDS 2D engine. There was still a nasty issue with all textures having an outline. As it turns out, the method I described back in March for drawing 3D polygons was to blame. I was always drawing the outline first, then filling in each polygon. The color of the outline was supposed to be the vertex color, but that&#39;s not applicable to textured polygons like these ones. Additionally, even when I stopped drawing the vertex color as the outline, I still mistakenly signaled to my 3D renderer that the outline was already drawn, so for a while textures were missing a 1 pixel border! After that, textures are generally looking pretty good now.</p>
+
+				<p class="center_img">
+					<img class="space_img" src="ndsr_37.png" alt="A Witchs Tale again" />
+					<img class="space_img" src="ndsr_38.png" alt="Castlevania again" />
+					<img class="space_img" src="ndsr_39.png" alt="Pokemon Trozei" />
+				</p>
+
+
+				<p class="inner_text">Not all texture issues are solved just yet in GBE+. I still have to implement some of the trickier texture coordinate transformations, or even more basic things like flipping, clamping, and repeating. As a start, however, I was pretty thrilled to see graphics popping up where previously there had been nothing.</p>
+
+				<p class="inner_text">I started dabbling with display capture on the NDS as well. The NDS has the ability to capture output from Engine A and write that data to VRAM. It&#39;s almost like taking a screenshot. A lot of games use this to show 3D graphics on both screens at the same time. Only Engine A can use the 3D engine for rendering things. However, a game can capture a particular 3D scene from Engine A, then pass that VRAM over to Engine B while Engine A generates a different scene. The trick is to have continually swap Engine A between the top and the bottom screen every other frame, switching the scene it renders. Engine B acts as Engine A&#39;s &#34;shadow&#34; by showing the last 3D image that was generated. It sounds pretty elaborate, but it works nicely on real hardware, although I suppose animations are technically limited to 30 FPS for dual-screen 3D. At any rate, I tried my hand at some basic display capture emulation. A number of games still flicker like crazy, but at least they&#39;re showing something now.</p>
+
+				<p class="center_img"><img class="space_img" src="ndsr_40.png" alt="3D on both screens" />
+
+				<p class="inner_text">After emulating the Magic Reader Slot-2 accessory, I figured I should take the time and really commit myself to making improvements on 3D rendering in GBE+. While getting a bunch of games that use 3D engine for 2D graphics was great, I wanted to see 3D polygons working more than anything else. Simple homebrew stuff made with libnds worked just fine. I could look dozens of spinning cubes without issue. 3D graphics for commercial games, however, is a different story. So for September through the start of October, my goal was the get 3D models looking correct for at least one title.</p>
+
+				<p class="inner_text">Would you believe that Cory in the House was exceptionally easy to debug? This game became a meme years ago, but it&#39;s surprisingly simple when it comes to rendering. The first 3D model that appears in the game is Cory himself, right before the player selects a few options from a menu. The bulk of his shirt is made up of quads and the rest of his body is triangles. None of the matrix stacks are used for this part, just <strong>MTX_STORE</strong> and <strong>MTX_RESTORE</strong>, so that made keeping track of the current matrix very straightforward. Additionally, the game doesn&#39;t rely of GX FIFO interrupts. no$gba has an excellent debugger for all data sent to the NDS&#39; GPU, including commands issued, textures used, and vertex screen coordinates, all of which proved extremely useful.</p>
+
+				<p class="inner_text">I was quite pleased to see GBE+ trying to render something at first, even if it was just a bunch of exploding polygons. I focused on at least getting the first quad of his shirt to render correctly. As it turns out, the game doesn&#39;t use the dedicated GX FIFO DMA available to the ARM9 CPU. Instead, it just uses a regular 32-bit fixed destination DMA to the GX FIFO. GBE+ wasn&#39;t detecting the writes properly for those DMAs. That fixed a lot of the polygons, but others remained broken. After some further investigation, I realized that the game was changing the position matrix on a per-vertex basis. Unfortunately, GBE+ would only use the position matrix of the last vertex for the entire polygon. Simply keeping a list of the position matrix for each vertex fixed that problem, and Cory soon appeared flawlessly in GBE+!</p>
+
+				<p class="center_img">
+					<img class="space_img" src="ndsr_41.png" alt="Cory is messed up" />
+					<img class="space_img" src="ndsr_42.png" alt="Cory is looking good" />
+				</p>
+
+				<p class="inner_text">After this success, I was determined to get more 3D graphics showing in commercial games. My next step was to finally fix the GX FIFO interrupt in GBE+. It had been hacked somewhat to get a few games to kinda acknowledge it (such as Card de Asobu) but many games needed a true implementation. I sat down and figured out what was wrong with GBE+. Turns out when the GX FIFO interrupt is raised, it sets Bit 21 of the ARM9 interrupt flags (IF) to &#34;1&#34; for as long as the initial interrupt conditions are true, or until the interrupt is disabled by writing to GXSTAT. When games process interrupt handling, they clear the ARM9 interrupt flags, but under certain conditions, the GX FIFO flag cannot be cleared. Emulating this behavior seems to do the trick. A bunch of games that froze now continue in-game.</p>
+
+				<p class="inner_text">So, with more games booting, I started tackling various problems. Basically, if I saw something wrong, I&#39;d try and debug it, and if it proved too much at the moment, I moved onto a different game and a different problem. Over the past few weeks, I&#39;ve improved rendering for quad-strips and tri-strips, fixed a few matrix stack issues, eliminated a few more troubles with GX FIFO entry parsing, and others. Of particular note, I emulated the Clip Matrix Results. Most games don&#39;t read the Clip Matrix Results, but some do in order to get the most recent position or projection matrix if they don&#39;t happen to keep track of that themselves. Oshare Majo is a good example. Without allowing the ARM9 CPU to read the Clip Matrix Results, the 3D models are faceless, as well as mostly headless. Yikes!</p>
+
+				<p class="center_img">
+					<img class="space_img" src="ndsr_43.png" alt="Girl, you need some makeup" />
+					<img class="space_img" src="ndsr_44.png" alt="Uh..." />
+					<img class="space_img" src="ndsr_45.png" alt="Much better" />
+				</p>
+
+				<p class="inner_text">I messed up the first implementation for reading the Clip Matrix Results, so one of the girls has her legs just floating up in the air. It&#39;s rather interesting that they made a full 3D models of Love and Berry wearing dresses. In the screenshot, they just spin around for a second and only the upper-body is visible, yet Sega took the time to texture and animate the legs and shoes. It may have been a holdover from when the game&#39;s origins in the arcade, copy+paste? Anyway, Oshare Majo is far from perfect, still some missing polygons here and there, but it&#39;s a vast improvement when last month nothing worked at all. A lot of other games still need much more work, but a few titles are showing lots of promise. A couple (like Rune Factor and Sonic Rush) are even playable now.</p>
+
+				<p class="center_img">
+					<img class="space_img" src="ndsr_46.png" alt="SONIC!" />
+					<img class="space_img" src="ndsr_47.png" alt="Rune Factory" />
+					<img class="space_img" src="ndsr_48.png" alt="Tales of the Tempest" />
+				</p>
+
+				<p class="inner_text">Tales of the Tempest is showing a lot of polygonal graphics as well, most of which look correct. Some error messes the game up when one character walks on-screen, so it&#39;s not playable just yet. Still, this is the farthest I&#39;ve ever gone in-game. At any rate, I&#39;m absolutely thrilled by the amount of progress I&#39;ve made recently. I honestly thought I wouldn&#39;t be able to see this kinda stuff happen in GBE+ happen until maybe late next year. Debugging 3D stuff is not easy, but I think I&#39;ve found a set of methods that works well for me.</p>
+
+				<p class="inner_text">Tales of the Tempest holds special meaning for me. It was the first DS game I really wanted to emulate. Back in 2011, I was just getting back into emulation after losing interest through my college years. After I finished school, I had a lot of downtime before finding a job, so I picked up my old hobby again. The emulation scene had advanced quite a bit while I was gone, and HD rendering for 3D games was the main attraction for many people interested in Dolphin or PCSX2. I dabbled with 720p for N64 and PS1 games (the most my old laptop for school could handle) but I really wanted to see how DS games handled. To my dismay, at that time it wasn&#39;t possible to render DS games in higher resolutions. I hacked up Desmume to force it to render at 2x, but only got a small section of the screen to show. Being a huge Tales fan, I wanted to see what this game had to offer. At 1x, it&#39;s honestly a bit of a blurry mess, and heaven forbid you use a bilinear filter to smudge it all up. At 2x and above, though, it looks pretty decent.</p>
+
+				<p class="inner_text">That was the catalyst that propelled me into emudev. I wanted to make my own DS emulator that would one day feature high resolution 3D graphics. Although both melonDS and Desmume do that now, it&#39;s still my dream to see it happen in GBE+. Seeing Tales of the Tempest display even okay-ish graphics like this means my journey is nearing a full circle. At the very least, I&#39;m closer than ever. I can taste it.</p>
+
+				<p class="center_img">
 
 				<p class="inner_text_large"><strong>March 2, 2020</strong></p>
 
