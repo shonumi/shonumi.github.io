@@ -7,6 +7,8 @@
 		<meta property="og:title" content="True Internal Resolution in Nintendo DS Emulators" />
 		<meta property="og:description" content="Archived from 6bit.net circa 2013" />
 		<meta property="og:type" content="article" />
+ 		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1" name="viewport" />
 
 	</head>
 
@@ -17,15 +19,16 @@
 
 			<!-- Left Header -->
 			<div class="header_left">
-				<div class="header_text"><strong>Shonumi</strong></div>
+				<div class="header_text"><strong><a class="header_link_current" href="../index.html">Shonumi</a></strong></div>
 			</div>
 		
 			<!-- Right Header -->
 			<div class="header_right">
-				<a class="header_link" href="../downloads.html">Downloads</a>
 				<a class="header_link_current" href="../articles.html">Articles</a>
+				<a class="header_link" href="../books.html">My<span class="no">_</span>Books</a>
 				<a class="header_link" href="../blog.html">Blog</a>
-				<a class="header_link" href="../index.html">Main</a>
+				<a class="header_link" href="../downloads.html">Downloads</a>
+				<a class="header_link" href="../dandocs.html">Dan<span class="no">_</span>Docs</a>
 			</div>
 
 		</div>
@@ -39,13 +42,13 @@
 				<div class="center_headline">True &#34;Internal Resolution&#34; in Nintendo DS Emulators</div>
 				<div class="headline_underline">. . . . . . . . . . .</div>
 
-				<div class="code"><strong>Author&#39;s Note:</strong> This is an archived article from my old blog, copied verbatim. Keep in mind, this was written a long time ago before I had much experience programming emulators. Additionally at the start of 2013, no DS emulator supported rendering at resolutions greater than 1x, so this article is largely outdated. However, it could be considered a detailed look at one of the earlier (or earliest?) documented attempts at achieving &#34;HD&#34; rendering for the NDS.</div>
+				<div class="code"><strong>Author&#39;s Note:</strong> This is an archived article from my old blog, copied verbatim. <a href="https://web.archive.org/web/20131105010225/http://6bit.net/shonumi/2013/02/25/true-internal-resolution-in-nintendo-ds-emulators/">The original article is here.</a> Keep in mind, this was written a long time ago before I had much experience programming emulators. Additionally at the start of 2013, no DS emulator supported rendering at resolutions greater than 1x, so this article is largely outdated. However, it could be considered a detailed look at one of the earlier (or earliest?) documented attempts at achieving &#34;HD&#34; rendering for the NDS.</div>
 
 				<p class="inner_text">For quite a while now, we&#39;ve had emulators capable of increasing the rendering resolution for 3D games. Most gamers in the emulation scene are probably familiar with this concept in emulators for 5th generation consoles such as the Sony&#39;s Playstation and the Nintendo 64. The 5th generation really saw the advent of what many consider &#34;true&#34; 3D gaming, or at least when consoles were sufficiently capable of handling all of those polygons. Emulators for those systems have long had the ability to increase the resolution at which they render those polygons, often beyond the native resolution of the console itself. As opposed to upscaling via interpolation such as bilinear or nearest neighbor, increasing the rendering resolution makes it possible to play these games in real HD. I prefer to call the rendering resolution the &#34;internal resolution&#34; as per the terminology from the Dolphin emulator. This makes sense to me as the internal resolution reflects the hardware&#39;s idea of what the resolution should be, an internalized view of the graphical output.</p>
 
 				<p class="inner_text">Increasing the internal resolution has obvious benefits over simply scaling the image or even applying a filter such as HQ2X, chiefly image quality. The difference between increasing the actual size of the rendered models and taking an image at native resolution and mathematically stretching it are quite vast actually. In the case of some N64 games, it&#39;s the equivalent of taking a picture at 320x240 and stretching it to 1080p instead of taking the picture at 1080p initially. Now, most emulators for consoles and handhelds in the 5th generation and above have the ability to increase their internal resolution, assuming of course the hardware was capable of manipulating 3D graphics. The only sticking point remains the Nintendo DS. There are a handful of emulator available, some even on the Android platform. However, none of them seem capable of raising the interal resolution of the DS&#39; two 256 x 192 displays. Granted, Desmume and No$GBA both have methods to magnify the screen (Desmume uses scaling filters, No$GBA needs a secondary program called No$Zoomer) but all either do is scale pixels taken from the system&#39;s native resolution. Neither actually increases that native resolution.</p>
 
-				<p class="inner_text_large">Detractions, challenges</p>
+				<p class="inner_text_large"><strong>Detractions, challenges</strong></p>
 
 				<p class="inner_text">Before continuing, I will address a few points about increasing the DS&#39; internal resolution. Some may question the need for higher image quality. One of the arguments I&#39;ve heard is that doing this kind of enhancement isn&#39;t how the game is &#34;supposed&#34; to be played. Another view generally states that such low-poly models aren&#39;t worth rendering in higher resolutions. For the former then, taken to its fullest extent, justifying *any* sort of enhancement whatsoever - even something as innocent as 2x nearest neighbor scaling - becomes quite difficult. It&#39;s the ploy of &#34;purists&#34; who want an experience as close to the original hardware as possible. There&#39;s nothing wrong with that; it&#39;s mere personal preference and nothing more than that. I happen to prefer some enhancements over 1:1 graphical output.</p>
 
@@ -53,7 +56,7 @@
 
 				<p class="inner_text">Now, a few technical issues do prevent most DS emulators from easily adjusting the internal resolution. I am not yet overly familiar with the DS&#39; graphics system, but I am aware that it essentially treats polygons and sprites as two different entities. Accordingly, they&#39;re rendered differently. This situation seems quite unlike other hardware, such as the Playstation, wherein sprites are merely textures drawn on &#34;flat&#34; quadrangles. Most DS games aren&#39;t strictly 3D games; they have 2D elements within them for the UI, HUD, menus, etc. If you scale the internal resolution, you only affect the polygons, so sprites need to be scaled somehow as well. A DS emulator needs to take this into account, and the framework behind most DS emulators currently aren&#39;t setup to handle that. Zeromus from Desmume has said it would be possible to do something like that in the project, but it&#39;s some degrees more difficult than straight-up implementing a software renderer for the DS&#39; native resolution, and it&#39;d involve quite a bit of restructuring. That&#39;s also quite a bit of work to do for some folks who might not have all the time in the world to dabble such features. Nevertheless, increasing the internal resolution isn&#39;t entirely out of the question, and in fact it can be partially achieved right now.</p>
 
-				<p class="inner_text_large">Going big...</p>
+				<p class="inner_text_large"><strong>Going big...</strong></p>
 
 				<p class="inner_text">About a year or so ago, I experimented with Desmume&#39;s source to see if it were possible to increase the internal resolution. Going about it through software renderer didn&#39;t seem nearly as ideal as hacking around the OpenGL parts. Now I&#39;m running Linux, Slackware 13.37 x64 to be exact. There are two ways to possibly utilize OpenGL as a rendering engine in Desmume when building it. The first is to use OSMesa for offscreen rendering. By default, Slackware doesn&#39;t provide a Mesa package that compiles with the library Desmume needs. In fact, building the library itself was a complete hassle, requiring me to builds OSMesa twice - once with a certain option enabled and once with that option disabled - and then merge the resulting Slackware packages. Absolute mess, and it doesn&#39;t even render some things correctly. The other easier method is build the gtk-glade version of Desmume and set the 3D engine to use gtkglext. This is much simpler for my situation, and remained free of graphical issues as of 0.9.8. So I used the gtk-glade as my test build and got to work on checking out the OpenGL parts of Desmume.</p>
 
@@ -69,7 +72,7 @@
 
 				<p class="center_img"><img src="arch_1_2.gif" alt="arch_1_2"/></p>
 
-				<p class="inner_text_large">...going home</p>
+				<p class="inner_text_large"><strong>...going home</strong></p>
 
 				<p class="inner_text">Obviously there remains much more to pursue. From what I can tell, Desmume puts all of the 512 x 384 pixel data into an array called GPU_screen3D by reading pixels from glReadPixels(), then converting those pixels to a more convinient format. The key to half the battle, in addition to changing the GUI to handle 2x internal resolutions, would be to modify the GL_ReadFramebuffer() to accomodate the larger scene size. This is still fairly beyond me, and it doesn&#39;t even begin to address the issue of scaling the sprites as well. These steps would be useful for &#34;proof-of-concept&#34; purposes, however.</p>
 
