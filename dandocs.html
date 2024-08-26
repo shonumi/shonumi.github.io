@@ -165,6 +165,7 @@
 			<p class="list_item"><a href="#gbw">Game Boy Wars 3</a></p>
 			<p class="list_item"><a href="#hkh">Hello Kitty no Happy House</a></p>
 			<p class="list_item"><a href="#mka">Mario Kart Advance</a></p>
+			<p class="list_item"><a href="#mpy">Mobile Pro Yakyuu</a></p>
 			<p class="list_item"><a href="#mbt">Mobile Trainer</a></p>
 			<p class="list_item"><a href="#ndg">Net de Get: Minigame @ 100</a></p>
 			<p class="list_item"><a href="#zng">Zen Nihon GT Senshuken</a></p>
@@ -779,7 +780,7 @@ LABEL CHECK_ON_LOOP:
 	&#47;&#47;Load A from 16-bit immediate address for RP register
 	A = [0xFF56]
 
-	&#47;&#47;Wait for IR light to come on (Bit 1 of 0xFF46 goes to zero)
+	&#47;&#47;Wait for IR light to come on (Bit 1 of 0xFF56 goes to zero)
 	IF(A AND 0x1)
 	{
 		GOTO CHECK_ON_LOOP
@@ -795,7 +796,7 @@ LABEL CHECK_ON_LOOP:
 LABEL GRAB_IR_BYTES:
 ==================================
 
-	&#47;&#47;Wait for IR light to go off (Bit 1 of 0xFF46 goes to one)
+	&#47;&#47;Wait for IR light to go off (Bit 1 of 0xFF56 goes to one)
 	&#47;&#47;Set an 8-bit CPU register to act as an IR pulse length counter, initialized to 0x00
 	PULSE_LENGTH = 0x00
 
@@ -831,7 +832,7 @@ FUNCTION WAIT_FOR_OFF:
 	&#47;&#47;Load A from 16-bit immediate address for RP register
 	A = [0xFF56]
 
-	&#47;&#47;Wait for IR light to come on (Bit 1 of 0xFF46 goes to one)
+	&#47;&#47;Wait for IR light to come on (Bit 1 of 0xFF56 goes to one)
 	IF((A AND 0x1) == 0x00)
 	{
 		GOTO WAIT_FOR_OFF
@@ -853,7 +854,7 @@ FUNCTION WAIT_FOR_ON:
 	&#47;&#47;Load A from 16-bit immediate address for RP register
 	A = [0xFF56]
 
-	&#47;&#47;Wait for IR light to come on (Bit 1 of 0xFF46 goes to zero)
+	&#47;&#47;Wait for IR light to come on (Bit 1 of 0xFF56 goes to zero)
 	IF(A AND 0x1)
 	{
 		GOTO WAIT_FOR_ON
@@ -4338,7 +4339,7 @@ PY_FIRM_STAT		| (R/W)	| 0xB000012	| 16-bit	| Play-Yan Firmware Status Register.
 
 	<p>PY_DATA_ADDR determines the address used for data operations for Play-Yan related data. It is used in conjunction with the I/O regions listed below as well as PY_DATA_MODE. Depending on the value of PY_DATA_ADDR, different contexts are used to retrieve data from these regions, e.g. it distinguishes between writing commands for the Play-Yan to execute or writing firmware data. The address is actually 32-bits. The Play-Yan must write to PY_DATA_ADDR twice, with the lower 16-bit first, and the upper 16-bit second.</p>
 
-	<p>PY_DATA_MODE determines what kind of data read or write the Play-Yan will perform. Used in conjection with the IO regions listed below as well as PY_DATA_ADDR.</p>
+	<p>PY_DATA_MODE determines what kind of data read or write the Play-Yan will perform. Used in conjection with the I/O regions listed below as well as PY_DATA_ADDR.</p>
 
 	<p>PY_DATA_PARAM appears to be a parameter passed along to the Play-Yan that affects data access. Currently unknown exactly how it functions.</p>
 
@@ -4548,12 +4549,12 @@ Bytes 0x0008 - 0x67FF	| File/Folder metadata
 	<p>The format for each 268-byte metadata entry for files/folders is as follows:</p>
 
 <pre>-----------------------------------------------------------------------
-Bytes 0x0000 - 0x00FF	| Name (ASCII or some other encoding for kana)
+Bytes 0x0000 - 0x00FF	| Name (ASCII or UTF-8 for kana and kanji)
 Bytes 0x0100 - 0x0107	| Some kinda hash or checksum
 Bytes 0x0108 - 0x010B	| Entry Type
 -----------------------------------------------------------------------</pre>
 
-	<p>The name of the file/folder should be null-terminated, otherwise the Play-Yan will consider the entry invalid.</p>
+	<p>The name of the file/folder should be null-terminated, otherwise the Play-Yan will consider the entry invalid. The string encoding can be plain ASCII for Latin script, or UTF-8 when using Japanese characters.</p>
 
 	<p>The Entry Type describes what kind of item was found within the filesystem. If Bit 0 is set, the Play-Yan will register the item as a Video File. If Bit 1 is set, the Play-Yan will register the item as a Music File. If neither Bit 0 nor Bit 1 is set, the Play-Yan will register the item as a Folder. This behavior is only applicable when reading Music Files, however. When reading Video Files, all videos present on the SD card are returned and folders are ignored. That is to say, the Get Filesystem Information automatically acts recursively for Video Files. When used for Music Files, it acts exclusively on the current directory.</p>
 
@@ -4600,7 +4601,7 @@ Bytes 0x0004 - 0x0044	| Song Title
 Bytes 0x0045 - 0x008B	| Artist Name
 -----------------------------------------------------------------------</pre>
 
-	<p>Each entry (for title and artist name) is a null-terminated string encoded as ASCII or some other encoding for kana.</p>
+	<p>Each entry (for title and artist name) is a null-terminated string encoded as ASCII for Latin script or Shift-JIS for kana and kanji. While the Play-Yan supports parsing ID3v2 tags, it does not support several text encodings. Unicode strings are not recognized for this command. As such, the text encoding flag for a tag inside the actual MP3 should be 0x00 (for ISO-8859-1). Additionally, while this implies it should technically support extended ASCII characters, the Play-Yan does not have the font to render them.</p>
 	<p class="spc"></p>
 
 <pre>-----------------------------------------------------------------------
@@ -5808,8 +5809,8 @@ Index	| Description
 0x0101	| Access ID3 Data
 0x010F	| Send Command / Get Ticks
 0x0110	| Check Cartridge I/O Busy Flag
-0x----	| Audio Buffer 1
-0x----	| Audio Buffer 2
+0x----	| Left Audio Buffer
+0x----	| Right Audio Buffer
 ------------------------------------------------------------------------</pre>
 
 	<p class="spc"></p>
@@ -5837,12 +5838,12 @@ Index	| Description
 	<p class="list_item">This index is accessed immediately following the last access to 0x0100. It&#39;s used to get the cartridge&#39;s I/O busy status. After accessing this index, a single 16-bit value from NMP_DATA_OUT is read. Any non-zero values indicate that the cartridge is still busy, presumbly with data from a previous Game Pak IRQ. This index can be accessed indefinitely until NMP_DATA_OUT returns zero, at which point additional commands can be issued.</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Index 0x---- : Audio Buffer 1</strong></p>
-	<p class="list_item">This index is access after issuing the 0x0050 command and the NMP generates internal Game Pak IRQs with a Command ID that reads 0x8100. The status data for those internal IRQs will have 16-bit values that determine the exact index the NMP will assign for its audio buffers. This value appears arbitrary, so the index may not have a fixed position. The data is available at NMP_DATA_OUT and represents 8-bit samples compatible with the GBA&#39;s DMA sound channels. The buffer is split in half, with the first portion requiring access to this index.</p>
+	<p class="list_item"><strong>Index 0x---- : Left Audio Buffer</strong></p>
+	<p class="list_item">This index is accessed after issuing the 0x0050 command and the NMP generates internal Game Pak IRQs with a Command ID that reads 0x8100. The status data for those internal IRQs will have 16-bit values that determine the exact index the NMP will assign for its audio buffers. This value appears arbitrary, so the index may not have a fixed position. The data is available at NMP_DATA_OUT and represents 8-bit samples compatible with the GBA&#39;s DMA sound channels. These samples, must be read in 16-bit units, however. When reading these samples with the GBA CPU, the MSB represents the first sample, while the LSB represents the second sample.</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Index 0x---- : Audio Buffer 2</strong></p>
-	<p class="list_item">This index is much the same as Audio Buffer 1. Accessing this will pull up the second portion of the audio buffer, which contains 8-bit samples. The only thing different about this index is its location. When the NMP generates internal Game Pak IRQs with 0x8100 as the Command ID, the 16-bit index representing Audio Buffer 1 is incremented by the number of audio samples divided by 4 to get the index of Audio Buffer 2.</p>
+	<p class="list_item"><strong>Index 0x---- : Right Audio Buffer</strong></p>
+	<p class="list_item">This index is much the same as the Left Audio Buffer. Accessing this will pull up the second portion of the overall audio buffer, which contains 8-bit samples packed in 16-bit units. The only thing different about this index is its location. See further notes below regarding how the exact index is calculated.</p>
 
 	<a name="nmp_sdc"></a>
 	<p class="gray_title">[Nintendo MP3 Player] : Reading SD Card Data</p>
@@ -5905,7 +5906,7 @@ Command	ID				| Parameters				| SD Card Data
 0x0051 - Stop Music Playback		|					|
 0x0052 - Pause Music Playback		|					|
 0x0053 - Resume Music Playback		|					|
-0x0060 - Seek Forwards/Backwards	|					|
+0x0060 - Seek Forwards/Backwards	| Stream Position, Seek Direction	|
 0x0070 - Unknown Command		|					|
 0x0080 - Adjust Volume			| New Volume				|
 0x0200 - Play Sound Effect		|					|
@@ -5922,11 +5923,11 @@ Command	ID				| Parameters				| SD Card Data
 Command	ID				| Parameters				| SD Card Data
 ----------------------------------------------------------------------------------------------------------------------------------------------
 0x8001 - Initialize NMP Hardware	|					|
-0x8600 - Headphone Status		| Headphone Plugged-In Flag		|
 0x8100 - Update Audio			| Audio Buffer / Trackbar / Timestamp	| Audio Samples
+0x8600 - Headphone Status		| Headphone Plugged-In Flag		|
 ----------------------------------------------------------------------------------------------------------------------------------------------</pre>
 
-	<p>For any and all ASCII strings sent to or returned by these commands, each character is encoded as a 16-bit MSB value. Each character uses 16-bits. As an example, sending the character &#34;A&#34; for a command parameter involves writing 0x00 to NMP_DATA_IN_LO first, then 0x41 to NMP_DATA_IN_HI later. The overall string is transferred or received from the first character to the last character in order, e.g. the filename &#34;music.mp3&#34; has &#34;m&#34; as the first character and &#34;3&#34; as the final one. Strings must be null terminated as well.</p>
+	<p>For any and all ASCII strings sent to or returned by these commands, each character is encoded as a 16-bit MSB value. Each character uses 16-bits. As an example, sending the character &#34;A&#34; for a command parameter involves writing 0x00 to NMP_DATA_IN_LO first, then 0x41 to NMP_DATA_IN_HI later. The overall string is transferred or received from the first character to the last character in order, e.g. the filename &#34;music.mp3&#34; has &#34;m&#34; as the first character and &#34;3&#34; as the final one. Strings must be null terminated as well. Additionally, each string may use extended ASCII encoding. Unlike the original Play-Yan and Play-Yan Micro, the NMP has the font to render extended characters. ID3 tags may also use UTF-16LE encoding as long as the characters are Latin script, however, UTF-8 encoding is not supported.</p>
 
 	<p>For each Game Pak IRQ, the first 16-bits of Status Data acts as a sort of &#34;ID&#34; for the command used. Typically, this ID is simply the command itself OR&#39;ed with 0x4000 or 0x8000. Once again, this has parallels to how the Play-Yans operate. When the ID has been OR&#39;ed with 0x4000, this means the NMP is directly responding to a command issued by the software and generating an appropiate Game Pak IRQ. IDs OR&#39;ed with 0x8000, on the other hand, represent Game Pak IRQs generated by the NMP itself.</p>
 
@@ -6079,6 +6080,29 @@ SD Card Data: N/A
 	<p>This command resumes music playback after it has been temporarily put on hold. Game Pak IRQs for audio samples or timestamp and trackbar progress will continue after sending this command.</p>
 	<p class="spc"></p>
 
+
+<pre>-----------------------------------------------------------------------
+Command 0x0060 - Seek Forwards/Backwards
+-----------------------------------------------------------------------
+Parameters :
+
+Byte 0x0000		Stream Position		0x0000 - 0x0063
+Byte 0x0001		Seek Direction
+-----------------------------------------------------------------------
+Status Data :
+
+Byte 0x0000 - 0x0001	Command ID		0x4060
+-----------------------------------------------------------------------
+SD Card Data: N/A
+-----------------------------------------------------------------------</pre>
+
+	<p>This command adjusts the current playback position for audio forwards or backwards. The Stream Position parameter represents the current playback position as a percentage (0% to 99%). Seek Direction is an 8-bit value that determines whether the new playback position moves ahead or rewinds. To change the playback position, this command must be called repeatedly (approximately every 15 frames or so) while incremented or decrementing the Seek Direction.</p>
+
+	<p>For moving forwards, the initial value of Seek Direction should be 0x00 and increase by 0x10 every time this command is sent. For moving backwards, the initial value of Seek Direction should be 0xF0 and decrease by 0x10 every time this command is sent. The NMP will interpret these changes in Seek Direction and alter the playback position accordingly. Note that since Seek Direction observes 8-bit overflow and underflow. When seeking forward, 0xF0 will roll over into 0x00 on the next command, and when seeking backward, 0x00 will roll over into 0xF0.</p>
+
+	<p>Seek Direction is incremented/decremented continuously as long as the user holds down Left or Right on the D-Pad while playing music. It will scale the amount of seconds passed for each instance of the 0x0060 command. The default is 2 seconds, but for every 5 or so instances of the 0x0060 command, another second is added. Due to the way Seek Direction works, the NMP will need to be sent at least 2 0x0060 commands before it actually begins seeking, causing a brief delay when first pressing Left or Right.</p>
+	<p class="spc"></p>
+
 <pre>-----------------------------------------------------------------------
 Command 0x0080 - Adjust Volume
 -----------------------------------------------------------------------
@@ -6183,22 +6207,6 @@ SD Card Data: N/A
 	<p class="spc"></p>
 
 <pre>-----------------------------------------------------------------------
-Command 0x8600 - Headphone Status
------------------------------------------------------------------------
-Parameters : N/A
------------------------------------------------------------------------
-Status Data :
-
-Byte 0x0000 - 0x0001	Command ID		0x8600
-Byte 0x0002 - 0x0003	Headphone Flag		0x00 = No Headphones, 0x01 = Headphones plugged-in
------------------------------------------------------------------------
-SD Card Data: N/A
------------------------------------------------------------------------</pre>
-
-	<p>Whenever headphones are inserted or removed from the NMP&#39;s 3.5mm jack, a Game Pak IRQ is generated. Additionally, immediately after the NMP hardware has been initialized, the cartridge generates a Game Pak IRQ with this Command ID (ensuring that headphones are detected after booting). The IRQ reports the status of whether headphones are plugged-in/removed, using a single byte in Status Data as a flag. Note that this IRQ is only generated for headphones inside the cartridge itself and is completely unrelated to the GBA&#39;s or DS&#39; 3.5mm jack.</p>
-	<p class="spc"></p>
-
-<pre>-----------------------------------------------------------------------
 Command 0x8100 - Update Audio
 -----------------------------------------------------------------------
 Parameters : N/A
@@ -6219,17 +6227,25 @@ Byte 0x0000 - 0x023F	Audio Buffer 2
 
 	<p>After issuing either the 0x50 or 0x200 commands, the NMP hardware will begin generating Game Pak IRQs that return audio samples via the SD Card interface. These IRQs return a lot of Status Data that indicates what is being updated.</p>
 
-	<p>The first is a 16-bit value that dictates the Audio Buffer Size in bytes. Its maximum value is 0x0480, however, it may be smaller. Audio Buffer Size should *always* be a multiple of 16.  The second is a 16-bit value that indicates the Index that needs to be accessed before any audio samples can be read. Unlike the 0x0040 command used to grab ID3 data, Access Index here is completely arbitrary and determined by the hardware, i.e. it may not always have a fixed value.</p>
+	<p>The first is a 16-bit value that dictates the Audio Buffer Size in bytes. Its maximum value is 0x0480, and it should also be divisable by 4 (the NMP software forcibly masks it anyway). Typically, while playing a song, the NMP will constantly update audio with an Audio Buffer Size of 0x480, except for the very last samples of a song, which may not evenly be divisable by 0x480 and thus must use a smaller remainer as the size. The second piece of Status Data is a 16-bit value that indicates the Index that must be accessed before any audio samples are read. Unlike the 0x0040 command used to grab ID3 data, the Access Index here is completely arbitrary and determined by the hardware, i.e. it may not always have a fixed value.</p>
 
 	<p>Trackbar Position represents current playback position as a percentage. 0% is at the very beginning of a song, 50% is at the exact middle of a song, and 99% is at the very end of a song. Going further actually pushes the trackbar indicator offscreen. As such, this value only accepts an 8-bit value with a range of 0 to 99.</p>
 
 	<p>Song Timestamp is the current playback position is seconds. Although it should technically work as 32-bit value, it actually seems to work best as a 24-bit MSB value, using bytes 0x0F, 0x0C, and 0xD in that order. Whereas these bytes add multiple powers of 2 (65536, 256, and 1) to the timestamp, bytes 0x0E adds 1216 seconds to the timestamp.</p>
 
-	<p>If the Access Index is zero, that means the cartridge is updating the Trackbar Position and Song Timestamp. In this case, no audio samples are returned. Otherwise, the specified Index is accessed and data is read through the SD Card interface. The data is split into 2 separate buffers, Audio Buffer 1 and Audio Buffer 2. Each buffer contains half of sound samples. It should be noted that while Audio Buffer 1 uses the Index from Status Data, the Index for Audio Buffer 2 is determined as such:</p>
+	<p>If the Access Index is zero, that means the cartridge is updating the Trackbar Position and Song Timestamp. In this case, no audio samples are returned. Otherwise, the specified Index is accessed and data is read through the SD Card interface. The data is split into 2 separate buffers, a Left Audio Buffer and Right Audio Buffer. Each buffer is half the length of Audio Buffer Size. For example, when using 0x480 as the Audio Buffer size, the Left Audio Buffer and Right Audio Buffer will each have a length of 0x240 bytes.</p>
 
-<pre>ACCESS_INDEX_2 = ACCESS_INDEX_1 + (AUDIO_BUFFER_SIZE / 4)</pre>
+	<p>Before reading any audio samples, the GBA&#39;s CPU must first access the correct index. Afterwards, the sample data becomes available through the SD Card interface. Essentially, the Access Index returned as Status Data represents a virtual address that describes where to grab samples from the NMP. Each address in the Access Index is equal to 16-bits of sample data (a pair of 8-bit samples accessed as a single unit). The first half of this virtual address space is dedicated to the Left Audio Buffer, while the latter half is dedicated to the Right Audio Buffer. For example, if the Audio Buffer Size is 0x480, and the NMP sets the Access Index to 0x200, then the Left Audio Buffer starts at Access Index 0x200, and the Right Audio Buffer starts at Access Index 0x320. Refer to the chart below for more details:</p>
 
-	<p>2 separate reads from the SD Card interface are required to read all audio data as a result of this process. Game Pak IRQs with the Command ID 0x8100 are also generated for sound effects. Functionally, there is no difference between the Status Data used for music or sound effects. The NMP software, however, will only play sound effects if no music is currently playing. Obviously, however, the Trackbar Position and Song Timestamp values are unused/irrelevant for sound effects.</p>
+<pre>-----------------------------------------------------------------------------------------------------------------------
+Index 0x200       | Index 0x201       |  ... ... ... ...   | Index 0x320       | Index 0x321	   |   ... ... ... ...   
+-----------------------------------------------------------------------------------------------------------------------
+L Samples 000-001 | L Samples 002-003 | L Samples 003-575  | R Samples 000-001 | R Samples 002-003 | R Samples 003-575
+-----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>Once the index for either the Left or Right Audio Buffer is accessed, sample data for the entire channel&#39;s buffer can be read from the SD Card interface continually until the buffer is full. When switching between channels, however, a new index must be accessed.</p>
+
+	<p>Game Pak IRQs with the Command ID 0x8100 are also generated for sound effects. Functionally, there is no difference between the Status Data used for music or sound effects. The NMP software, however, will only play sound effects if no music is currently playing. Obviously, however, the Trackbar Position and Song Timestamp values are unused/irrelevant for sound effects.</p>
 
 	<p>When headphones are plugged into the NMP, the cartridge only generates Game Pak IRQs that update the trackbar position. With headphones, audio data is processed by the NMP&#39;s own hardware and output separately from the GBA&#39;s sound system.</p>
 
@@ -6241,6 +6257,22 @@ Byte 0x0000 - 0x023F	Audio Buffer 2
 	<p>One interesting detail is that the maximum file size for firmware was supposed to be 65,536 bytes. This is significantly lower than the only known firmware update given for original Play-Yan, which came in around 554KB. The firmware for the NMP was likely far less complicated, perhaps as a result of the hardware lacking any video decoding and focusing exclusively on audio processing.</p>
 
 	<p>The firmware update file has to follow some sort of format to be considered valid. The NMP software checks for the presence of the string &#34;Nintendo MP3 Player firmware update program&#34; at the very start of the file&#39;s data, much like the original Play-Yan expects of its firmware updates.</p>
+
+<pre>-----------------------------------------------------------------------
+Command 0x8600 - Headphone Status
+-----------------------------------------------------------------------
+Parameters : N/A
+-----------------------------------------------------------------------
+Status Data :
+
+Byte 0x0000 - 0x0001	Command ID		0x8600
+Byte 0x0002 - 0x0003	Headphone Flag		0x00 = No Headphones, 0x01 = Headphones plugged-in
+-----------------------------------------------------------------------
+SD Card Data: N/A
+-----------------------------------------------------------------------</pre>
+
+	<p>Whenever headphones are inserted or removed from the NMP&#39;s 3.5mm jack, a Game Pak IRQ is generated. Additionally, immediately after the NMP hardware has been initialized, the cartridge generates a Game Pak IRQ with this Command ID (ensuring that headphones are detected after booting). The IRQ reports the status of whether headphones are plugged-in/removed, using a single byte in Status Data as a flag. Note that this IRQ is only generated for headphones inside the cartridge itself and is completely unrelated to the GBA&#39;s or DS&#39; 3.5mm jack.</p>
+	<p class="spc"></p>
 
 
 
@@ -7487,7 +7519,7 @@ Command 0x28		DNS Query
 	<ul>
 		<li class="list_item">If the first byte is in the range 0x00-0xF0 (inclusive), the pair is written as a tile and the cursor moves one tile to the right.</li>
 		<li class="list_item">If the first byte is in the range 0xF1-0xFD (inclusive), nothing happens.</li>
-		<li class="list_item">If the first byte is 0xFE, the cursor moves to the next line's leftmost tile.</li>
+		<li class="list_item">If the first byte is 0xFE, the cursor moves to the next line&#39;s leftmost tile.</li>
 		<li class="list_item">If the first byte is 0xFF, the game stops reading the file immediately.</li>
 	</ul>
 
@@ -7504,8 +7536,8 @@ File format
 0x00				::  High byte of ranking count (N). Should always be zero.
 0x01				::  Low byte of ranking count (N). Should be 10 or less.
 0x02 - ...			::  Ranking entries.
-0x02 + 56*N			::  Two bytes. If both are 0x00, the player's ranking is not present.
-0x04 + 56*N			::  Player's ranking entry, optional.
+0x02 + 56*N			::  Two bytes. If both are 0x00, the player&#39;s ranking is not present.
+0x04 + 56*N			::  Player&#39;s ranking entry, optional.
 
 ----------------------------------
 Ranking entries - 56 bytes each
@@ -7513,16 +7545,16 @@ Ranking entries - 56 bytes each
 0x00 - 0x03			::  Rank number in big endian.
 0x04 - 0x2B			::  &#34;myname&#34; data, see below.
 0x2C - 0x33			::  &#34;myscore&#34; data, see below.
-0x34				::  Player's gender: 0x00 = male, 0x01 = female.
-0x35				::  Player's age.
-0x36				::  Player's state/prefecture.
+0x34				::  Player&#39;s gender: 0x00 = male, 0x01 = female.
+0x35				::  Player&#39;s age.
+0x36				::  Player&#39;s state/prefecture.
 0x37				::  &#34;today&#34; value: high 4 bits are a year number (mod 16), low 4 bits are a month number.
 
 ----------------------------------
 myname - 40 bytes
 ----------------------------------
-0x00 - 0x03			::  Player's name, right-padded with 0xFF.
-0x04 - 0x23			::  Player's email, right-padded with 0x00.
+0x00 - 0x03			::  Player&#39;s name, right-padded with 0xFF.
+0x04 - 0x23			::  Player&#39;s email, right-padded with 0x00.
 0x24				::  &#34;today&#34; value, see above.
 0x25 - 0x27			::  Always 0x00, but not checked on download.
 
@@ -7540,12 +7572,14 @@ myscore - 8 bytes
 	<a name="exm_tmp"></a>
 	<p class="gray_title">[EX Monopoly] : 10.temporary.cgb</p>
 
-	<p>After both requests to 0.regist.cgb, the game sends a final POST request to this file in the format &#34;myscore=<8 hex digits>&#34;. The server responds in the following format:</p>
+	<p>After both requests to 0.regist.cgb, the game sends a final POST request to this file in the format &#34;myscore=<16 hex digits>&#34;. The server responds in the following format:</p>
 
 <pre>0x00 - 0x01			::  If both are 0x00, no rank number is present.
 0x02 - 0x05			::  Rank number in big endian, optional.</pre>
 
 	<p>If the rank number is greater than 10, the player will be told that they are unranked.</p>
+
+	<p>Note that, in the initial GET request to this file before authentication is complete, the game sends a &#34;Content-Length: 24&#34; header without sending any content.</p>
 
 	<a name="exm_str"></a>
 	<p class="gray_title">[EX Monopoly] : String Format</p>
@@ -8119,7 +8153,7 @@ Lines 14+			::  Description.</pre>
 	<a name="mka_que"></a>
 	<p class="gray_title">[Mario Kart Advance] : query.cgb</p>
 
-	<p>This file is downloaded after total.cgb via a POST request in the format &#34;myid=<32 hex digits>&myrecord=<4 hex digits>&pickuprecord=<4 hex digits>&state=<2 hex digits>&driver=<2 hex digits>&rk_1=<8 hex digits>&rk_2=<8 hex digits>&rk_3=<8 hex digits>&rk_4=<8 hex digits>&rk_5=<8 hex digits>&rk_6=<8 hex digits>&rk_7=<8 hex digits>&rk_8=<8 hex digits>&rk_9=<8 hex digits>&rk_10=<8 hex digits>&rk_11=<8 hex digits>&#34;, where the &#34;pickuprecord&#34; value is the player's actual record while the &#34;myrecord&#34; value is 1/100 second slower, and the &#34;rk_*&#34; values are the rank numbers to be displayed in the overall rankings category. The file itself has the following format:</p>
+	<p>This file is downloaded after total.cgb via a POST request in the format &#34;myid=<32 hex digits>&myrecord=<4 hex digits>&pickuprecord=<4 hex digits>&state=<2 hex digits>&driver=<2 hex digits>&rk_1=<8 hex digits>&rk_2=<8 hex digits>&rk_3=<8 hex digits>&rk_4=<8 hex digits>&rk_5=<8 hex digits>&rk_6=<8 hex digits>&rk_7=<8 hex digits>&rk_8=<8 hex digits>&rk_9=<8 hex digits>&rk_10=<8 hex digits>&rk_11=<8 hex digits>&#34;, where the &#34;pickuprecord&#34; value is the player&#39;s actual record while the &#34;myrecord&#34; value is 1/100 second slower, and the &#34;rk_*&#34; values are the rank numbers to be displayed in the overall rankings category. The file itself has the following format:</p>
 
 <pre>----------------------------------
 File format
@@ -8232,10 +8266,10 @@ Overall ranking entry
 0x001A				::  High byte of race time.
 0x001B				::  Low byte of race time.
 0x001C - 0x101B			::  Ghost data.
-0x101C - 0x102B			::  Player's name.
-0x102C - 0x1037			::  Player's phone number.
-0x1038 - 0x103F			::  Player's postal code.
-0x1040 - 0x10BF			::  Player's home address.</pre>
+0x101C - 0x102B			::  Player&#39;s name.
+0x102C - 0x1037			::  Player&#39;s phone number.
+0x1038 - 0x103F			::  Player&#39;s postal code.
+0x1040 - 0x10BF			::  Player&#39;s home address.</pre>
 
 	<p>Outside of Mobile GP, personal info is not uploaded: the two numbers are filled with forward slashes, and the other two text fields are filled with asterisks. Otherwise, on an unmodified game, the postal code is always seven digits followed by a lowercase letter &#34;p&#34;.</p>
 
@@ -8354,12 +8388,229 @@ Content-Type: text&#47;plain; charset=iso-2022-jp
 
 	<p>Also of note: there is absolutely no encryption done and any POP or SMTP transfer. While the limited nature, obscurity, and short lifespan of the Mobile System GB network probably prevented any major security concerns from appearing, by modern standards it is a security nightmare. For example, when retrieving mail via the POP3 server, both user ID and password are transmitted in plaintext. Those two pieces of information would be enough to impersonate another user for any other Mobile Adapter compatible game.</p>
 
+
+
+
+
+
+
+
+	<!-- Mobile Pro Yakyuu -->
+	<a name="mpy"></a>
+	<p class="gray_title">Mobile Pro Yakyuu</p>
+	<p class="list_item"><a href="#mpy_gen">General Information</a></p>
+	<p class="list_item"><a href="#mpy_ser">Server Structure</a></p>
+	<p class="list_item"><a href="#mpy_cnt">counter.cgb</a></p>
+	<p class="list_item"><a href="#mpy_mem">200.member.cgb</a></p>
+	<p class="list_item"><a href="#mpy_pla">Player Data</a></p>
+	<p class="list_item"><a href="#mpy_asd">All-Star Data</a></p>
+	<p class="list_item"><a href="#mpy_tem">Team Data</a></p>
+	<p class="list_item"><a href="#mpy_sea">Season Data</a></p>
+	<p class="list_item"><a href="#mpy_fmt">String Format</a></p>
+
+	<a name="mpy_gen"></a>
+	<p class="gray_title">[Mobile Pro Yakyuu] : General Information</p>
+
+	<p>Mobile Pro Yakyuu - Kantoku no Saihai (also known simply as Mobile Professional Baseball) is a baseball game for the Game Boy Advance, published by Mobile21 in 2001. Though it initially released with data for the 2000 NPB season, arguably its most prominent feature was the ability to download updated player data.</p>
+
+	<a name="mpy_ser"></a>
+	<p class="gray_title">[Mobile Pro Yakyuu] : Server Structure</p>
+
+	<p>Mobile Professional Baseball is known to access the following URLs:</p>
+
+	<ul>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;A4&#47;AGB-AMBJ&#47;counter.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;A4&#47;AGB-AMBJ&#47;200.member.cgb</li>
+	</ul>
+
+	<a name="mpy_cnt"></a>
+	<p class="gray_title">[Mobile Pro Yakyuu] : counter.cgb</p>
+
+	<p>This file is one byte simply indicating the current version number of 200.member.cgb, where zero is the version of the data built into the game. If the game sees that this file's byte matches the version number currently present, it will not redownload 200.member.cgb. The version numbers do not need to be sequential, though given the file's name it's very likely that they were.</p>
+
+	<a name="mpy_mem"></a>
+	<p class="gray_title">[Mobile Pro Yakyuu] : 200.member.cgb</p>
+
+	<p>This file is saved directly to the game's save file and thus has a size limit of 0x6000 bytes (24 KiB). When the game first boots (and when new data is downloaded), the data is decompressed using SWI #0x13 (HuffUnComp), then that is itself decompressed using SWI #0x11 (LZ77UnCompWram), and the final data is copied to address 0x2000000. The intermediate and final decompressed data each have a size limit of 0x8000 bytes (32 KiB). The first 16 bytes of the final decompressed data are used as follows:</p>
+
+<pre>----------------------------------
+Initial Pointers
+----------------------------------
+0x00 - 0x03			::	Pointer to player data, stored LSB first.
+0x04 - 0x07			::	Pointer to all-star data, stored LSB first.
+0x08 - 0x0B			::	Pointer to team data, stored LSB first.
+0x0C - 0x0F			::	Pointer to season data, stored LSB first.</pre>
+
+	<p>Most of this data is stored in densely-packed bitfields. These bitfields are entirely little-endian; that is, if a field spans multiple bytes, its least-significant bit(s) are stored in the first byte, and its most-significant bit(s) are stored in the last byte; additionally, when multiple fields take a single byte, the first field takes the least-significant bit(s) of that byte, while the last field takes the most-significant bit(s) of that byte. Byte addresses are suffixed with .0 through .7 to indicate the least-significant bit through the most-significant bit, respectively.</p>
+
+	<a name="mpy_pla"></a>
+	<p class="gray_title">[Mobile Pro Yakyuu] : Player Data</p>
+
+	<p>The player data is simply 12 pointers, each 4 bytes stored LSB first, to 25 player profiles, which are formatted as follows:</p>
+
+<pre>----------------------------------
+Player Profile
+----------------------------------
+0x00.0 - 0x03.7			::	Pointer to player&#39;s long name (width limit: 6 characters).
+0x04.0 - 0x07.7			::	Pointer to player&#39;s short name (width limit: 3 characters).
+0x08.0 - 0x08.7			::	Player&#39;s squad number. Values 100-109 are used for numbers 00-09 with a leading zero.
+0x09.0 - 0x09.3			::	Player&#39;s position (0 = pitcher, 1 = catcher, 2-4 = 1st-3rd base, 5 = shortshop, 6 = left, 7 = center, 8 = right).
+0x09.4 - 0x09.5			::	Pitching hand (0 = right, 1 = left, 2 = both).
+0x09.6				::	0 means the player is an infielder, 1 means otherwise.
+0x09.7 - 0x0A.0			::	Batting hand (0 = right, 1 = left, 2 = both).
+0x0A.1 - 0x0B.0			::	Batting: runs batted in.
+0x0B.1 - 0x0B.7			::	Batting: stolen bases.
+0x0C.0 - 0x0C.7			::	Height (cm).
+0x0D.0 - 0x0D.7			::	Weight (kg).
+0x0E.0 - 0x0E.6			::	Birth year (without century).
+0x0E.7 - 0x0F.2			::	Birth month (1 = January).
+0x0F.3 - 0x0F.7			::	Birth day (1-31).
+0x10.0 - 0x10.7			::	Batting: games played.
+0x11.0 - 0x12.1			::	Batting: at-bats.
+0x12.2 - 0x13.1			::	Batting: runs scored.
+0x13.2 - 0x14.2			::	Batting: hits.
+0x14.3 - 0x15.1			::	Batting: double hits.
+0x15.2 - 0x15.6			::	Batting: triple hits.
+0x15.7 - 0x16.5			::	Batting: home runs.
+0x16.6 - 0x17.1			::	Pitching: shutouts.
+0x17.2 - 0x18.3			::	Batting: batting average times 1,000.
+0x18.4 - 0x19.2			::	Pitching: games played.
+0x19.3 - 0x19.7			::	Pitching: complete games.
+0x1A.0 - 0x1B.1			::	Pitching: innings pitched times 3.
+0x1B.2 - 0x1B.6			::	Pitching: wins.
+0x1B.7 - 0x1C.3			::	Pitching: losses.
+0x1C.4 - 0x1D.1			::	Pitching: saves.
+0x1D.2 - 0x1E.1			::	Pitching: walks granted.
+0x1E.2 - 0x1E.6			::	Pitching: times hit batter.
+0x1E.7 - 0x1F.7			::	Pitching: strikeouts.
+0x20.0 - 0x21.1			::	Pitching: earned-run average times 100.
+0x21.2 - 0x23.7			::	Always zero.
+0x24.0 - 0x25.1			::	&#34;Bat distance&#34; points.
+0x25.2 - 0x26.3			::	&#34;Bat skill&#34; points.
+0x26.4 - 0x27.5			::	&#34;Bat accuracy&#34; points.
+0x27.6 - 0x28.7			::	&#34;Base running&#34; points.
+0x29.0 - 0x2A.1			::	&#34;Catch ball&#34; points.
+0x2A.2 - 0x2B.3			::	&#34;Throw distance&#34; points.
+0x2B.4 - 0x2C.5			::	&#34;Pitch judgement&#34; points.
+0x2C.6 - 0x2D.7			::	&#34;Movement&#34; points.
+0x2E.0 - 0x2F.1			::	&#34;Catcher&#34; points.
+0x2F.2 - 0x30.3			::	&#34;Pitch speed&#34; points.
+0x30.4 - 0x31.5			::	&#34;Ball speed&#34; points.
+0x31.6 - 0x32.7			::	&#34;Sharpness&#34; points.
+0x33.0 - 0x34.1			::	&#34;Control&#34; points.
+0x34.2 - 0x35.3			::	&#34;Endurance&#34; points.
+0x35.4 - 0x36.1			::	Top-left corner of batting skill indicator, see below.
+0x36.2 - 0x36.4			::	Width of batting skill indicator, see below.
+0x36.5 - 0x36.7			::	Height of batting skill indicator, see below.
+0x37.0 - 0x37.5			::	Top-left corner of catching skill indicator, see below.
+0x37.6 - 0x38.0			::	Width of catching skill indicator, see below.
+0x38.1 - 0x38.3			::	Height of catching skill indicator, see below.
+0x38.4 - 0x38.6			::	Level (0 = S, 1-6 = A-F).
+0x38.7 - 0x3C.1			::	3-bit skill multipliers for each position, see below.
+0x3C.2 - 0x3C.7			::	Always zero.
+0x3D.0 - 0x3D.3			::	Unknown, treated as a pitch strength.
+0x3D.4 - 0x3D.7			::	Unknown, treated as a pitch strength.
+0x3E.0 - 0x3E.3			::	&#34;Curve&#34; pitch strength.
+0x3E.4 - 0x3E.7			::	&#34;Change-up&#34; pitch strength.
+0x3F.0 - 0x3F.3			::	&#34;Slider&#34; pitch strength.
+0x3F.4 - 0x3F.7			::	&#34;Shoot&#34; pitch strength.
+0x40.0 - 0x40.3			::	&#34;Sinker&#34; pitch strength.
+0x40.4 - 0x40.7			::	&#34;Fork&#34; pitch strength.
+0x41.0 - 0x41.3			::	Always zero.
+0x41.4 - 0x41.7			::	Unknown, treated as a pitch strength.
+0x42.0 - 0x43.7			::	Always zero.</pre>
+
+	<p>The &#34;skill indicators&#34; are displayed in a 6x6 matrix. The &#34;top-left corner&#34; value is calculated as (row * 6) + column, where the corners of the matrix are (0, 0) and (5, 5). If the indicator is not to be displayed, all its values are set to zero. If both inidicators overlap, the catching skill indicator takes priority. The &#34;skill multipliers&#34; are values from 0-5, where 0 multiplies skill points by 0.5, 1 multiplies them by 0.6, and so forth. The first eight players on a team must take each non-pitcher position, and the ninth must be a pitcher.</p>
+
+	<a name="mpy_asd"></a>
+	<p class="gray_title">[Mobile Pro Yakyuu] : All-Star Data</p>
+
+	<p>The all-star data is 2 pointers (first for the Central League, second for the Pacific League), each 4 bytes stored LSB first, to 25 all-star specifiers, which are formatted as follows:</p>
+
+<pre>----------------------------------
+All-Star Specifier
+----------------------------------
+0x00.0 - 0x00.3			::	Team number.
+0x00.4 - 0x01.0			::	Player number.
+0x01.1 - 0x01.4			::	Position (see above).
+0x01.5 - 0x03.7			::	Always zero.</pre>
+
+	<p>Similarly to player data, the first eight members of an all-star team must take each non-pitcher position, and the ninth must be a pitcher.</p>
+
+	<a name="mpy_tem"></a>
+	<p class="gray_title">[Mobile Pro Yakyuu] : Team Data</p>
+
+	<p>The team data is not an array of pointers, but simply an array of 12 team profiles, which are formatted as follows:</p>
+
+<pre>----------------------------------
+Team Profile
+----------------------------------
+0x00.0 - 0x03.7			::	Pointer to team&#39;s name (width limit: 8 characters).
+0x04.0 - 0x07.7			::	Pointer to manager&#39;s name (width limit: 8 characters).
+0x08.0 - 0x08.6			::	Founding year (without century).
+0x08.7 - 0x09.2			::	Founding month (1 = January).
+0x09.3 - 0x09.7			::	Founding day (1-31).
+0x0A.0 - 0x0B.4			::	Total wins.
+0x0B.5 - 0x0D.1			::	Total losses.
+0x0D.2 - 0x0D.7			::	League wins.
+0x0E.0 - 0x0F.0			::	Average game length? (minutes).
+0x0F.1 - 0x10.2			::	Win rate times 1,000.
+0x10.3 - 0x13.7			::	Always zero.</pre>
+
+	<p>Teams are always in the following order:</p>
+
+<pre>* Yomiuri Giants (Central)
+* Chunichi Dragons (Central)
+* Yokohama BayStars (Central)
+* Yakult Swallows (Central)
+* Hiroshima Toyo Carp (Central)
+* Hanshin Tigers (Central)
+* Fukuoka Daiei Hawks (Pacific)
+* Seibu Lions (Pacific)
+* Nippon-Ham Fighters (Pacific)
+* Orix BlueWave (Pacific)
+* Chiba Lotte Marines (Pacific)
+* Osaka Kintetsu Buffaloes (Pacific)</pre>
+
+	<a name="mpy_sea"></a>
+	<p class="gray_title">[Mobile Pro Yakyuu] : Season Data</p>
+
+	<p>The season data is simply a single byte in the range 0x00-0x03, indicating whether the rest of the data represents the 2000, 2001, 2002, or 2003 NPB season.</p>
+
+	<a name="mpy_fmt"></a>
+	<p class="gray_title">[Mobile Pro Yakyuu] : String Format</p>
+
+	<p>The byte 0x00 terminates a string, 0x5B (left bracket) switches to a half-width font, and 0x5D (right bracket) switches to the default full-width font. Any other byte in a string will be taken along with its next byte as a two-byte Shift-JIS sequence.</p>
+
+	<p>All characters from JIS X 0208 row 1 are supported except the following, which will appear as spaces:</p>
+
+<pre>゛゜´¨ヽヾゝゞ〃仝〆〇‐‖∥‥÷≠∴♂♀°′″℃¢£§</pre>
+
+	<p>All characters from JIS X 0208 row 2 will appear as spaces except the following:</p>
+
+<pre>◆□■△▲▽▼※→←↑↓</pre>
+
+	<p>All characters from JIS X 0208 rows 3-5 are supported, and all characters from rows 6-8 will appear as spaces. The circled digits ① through ⑩ from row 13 are supported only in the full-width font, as are all of the &#34;level 1&#34; kanji (rows 16-47).</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
 	<!-- Net de Get -->
 	<a name="ndg"></a>
 	<p class="gray_title">Net de Get: Mini Game @ 100</p>
 	<p class="list_item"><a href="#ndg_gen">General Information</a></p>
 	<p class="list_item"><a href="#ndg_ser">Server Structure</a></p>
-	<p class="list_item"><a href="#ndg_h00">h0000.cgb</a></p>
+	<p class="list_item"><a href="#ndg_h00">h0000.cgb, h0*.cgb</a></p>
+	<p class="list_item"><a href="#ndg_h08">h8*.cgb</a></p>
 	<p class="list_item"><a href="#ndg_rom">RomList.cgb</a></p>
 	<p class="list_item"><a href="#ndg_cgb">cgb&#47;download?name=&#47;A4&#47;CGB-BMVJ&#47;*</a></p>
 	<p class="list_item"><a href="#ndg_wrp">Download Wrapper</a></p>
@@ -8379,6 +8630,8 @@ Content-Type: text&#47;plain; charset=iso-2022-jp
 
 	<ul>
 		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;A4&#47;CGB-BMVJ&#47;h0000.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;A4&#47;CGB-BMVJ&#47;h0*.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;A4&#47;CGB-BMVJ&#47;h8*.cgb</li>
 		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;A4&#47;CGB-BMVJ&#47;RomList.cgb</li>
 		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;A4&#47;CGB-BMVJ&#47;</li>
 	</ul>
@@ -8387,32 +8640,48 @@ Content-Type: text&#47;plain; charset=iso-2022-jp
 
 
 	<a name="ndg_h00"></a>
-	<p class="gray_title">[Net de Get] : h0000.cgb</p>
+	<p class="gray_title">[Net de Get] : h0000.cgb, h0*.cgb</p>
 
-	<p>Once some of the default minigames have been played, the &#34;セーバ&#34; or &#34;Server&#34; option in the main menu unlocks. After the user&#39;s password is given, this file is then downloaded via HTTP GET. The purpose of h0000.cgb is simply to display the text &#34;ミニゲームリスト&#34; or &#34;Minigame List&#34;. Selecting this downloads RomList.cgb via HTTP GET. The format of h0000.cgb is described below:</p>
+	<p>Once one of the default minigames has been played, the &#34;セーバ&#34; or &#34;Server&#34; option in the main menu unlocks. After the user's password is given, h0000.cgb is then downloaded via HTTP GET. The purpose of these files is simply to display a selection menu.</p>
 
 <pre>----------------------------------
-Header - 4 bytes
+Header - 5 bytes
 ----------------------------------
-0x0000 - &#34;M&#34;			::	0x4D
-0x0001 - &#34;N&#34;			::	0x4E
-0x0002 - &#34;G&#34;			::	0x47
-0x0003 - &#34;L&#34;			::	0x4C
+0x00 - &#34;M&#34;			::	0x4D
+0x01 - &#34;N&#34;			::	0x4E
+0x02 - &#34;G&#34;			::	0x47
+0x03 - &#34;L&#34;			::	0x4C
+0x04				::	Number of menu items.</pre>
 
+	<p>Following this is a five-byte file name for each menu item. If the file name begins with a digit &#34;0&#34; or &#34;8&#34;, it is inserted into the URL http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;A4&#47;CGB-BMVJ&#47;h*.cgb, then the file is downloaded via HTTP GET and its contents treated based on the first digit. In this case, the file name MUST end with a null byte (0x00), or the game will continue copying characters until it reaches one. If the file name does not begin with either of these digits, it is ignored and the menu selection downloads http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;A4&#47;CGB-BMVJ&#47;RomList.cgb instead.</p>
+	
+	<p>After the file names come the null-terminated names of each menu item, using a custom encoding (see below). Additionally, the game is liable to crash and&#47;or corrupt save data if this file does not end with the bytes 0x00, 0x00, 0x01.</p>
+
+	<p>As far as anyone knows, this file only had one menu item, and the &#34;ミニゲームリスト&#34; text itself did not change. Additionally, the game manual shows only one menu item in a screenshot.</p>
+
+	<a name="ndg_h08"></a>
+	<p class="gray_title">[Net de Get] : h8*.cgb</p>
+
+	<p>This file contains a message to the player. Once it has been downloaded, the game disconnects from the internet and the message is displayed.</p>
+
+<pre>----------------------------------
+File format
 ----------------------------------
-Text offset - 6 bytes
-----------------------------------
-0x0004 - Offset			::	Offset to text string. Calculated as 10 + (Offset * 5).
-0x0005 - ???			:: 	0x0005 through 0x0009 seem to be ignored.
-0x0006 - ???			::
-0x0007 - ???			::
-0x0008 - ???			::
-0x0009 - ???			::</pre>
+0x00 - 0x17			::	Background palettes 0-2, used for text.
+0x18 - 0x37			::	Background palettes 3-6, unused.
+0x38 - 0x3F			::	Background palette 7, used for background and other elements.
+0x40 - 0x47			::	Object palette 0, used for blinking arrows.
+0x48 - 0x7F			::	Object palettes 1-7, unused.
+0x80				::	Number of pages. No known maximum, but page numbers above 10 use garbage tiles.
+0x81 - 0x82			::	Pointer to page 1 text.
+...				::	Repeat pointers as needed.</pre>
+
+	<p>Palettes are in GBC format (that is, four colors each in little-endian RGB555). For background palettes, color 0 is the foreground, color 1 is a shadow, and color 3 is the background. The file's contents are read from 0xB000, so the text pointers can be considered as file offsets with 0xB000 added to them.</p>
 
 	<a name="ndg_rom"></a>
 	<p class="gray_title">[Net de Get] : RomList.cgb</p>
 
-	<p>After downloading h0000.cgb, the next file is RomList.cgb. This file contains a list of all available minigames the server has to offer. It also displays how many 8KB blocks of flash memory are required for the  download, as well as the type of minigame being downloaded.</p>
+	<p>This file contains a list of all available minigames the server has to offer. It also displays how many 8KB blocks of flash memory are required for the download, as well as the type of minigame being downloaded.</p>
 
 <pre>----------------------------------
 Entry Count - 1 byte
@@ -8431,8 +8700,10 @@ Data Structure
 ----------------------------------
 0x00	 			::	Number of memory blocks necessary for the download (modulus 100). Should be 0x00 - 0x63 ideally.
 0x01				::	Mini-game icon type. See Icon Type below for details.
-0x08 - 0x0A			::	Disables download (grayed out text). All 3 must be zero, otherwise download is disabled.
-0x0C - 0x0F			::	Disables menu item completely (no text, item not selectable). All 4 must be zero, otherwise menu item is disabled.
+0x08 - 0x0A			::	Minimum levels in each category to download this minigame. If all 3 are not met, the menu item is grayed out and cannot be selected.
+0x0C - 0x0D			::	If both are not zero, the menu item does not appear.
+0x0E				::	Minimum hidden level to download this minigame. If not met, the minigame's name does not appear and it cannot be selected.
+0x0F				::	If not zero, the menu item does not appear.
 0x10				::	String Length 1. Each menu item should ideally be 12 characters or less (font is fixed width). Used for minigame name.
 0x11 - ...			::	Menu Item Text (see String Format below).
 0x11 + String Length 1		::	String Length 2. Each menu item draws additional text to a small on-screen textbox. Used brief explanations about minigame. Ideal max is 0xF.
@@ -8591,6 +8862,17 @@ Secondary Minigame Icon Type
 		<li class="list_item">0xFB is a &#34;smiley face&#34; like 0xFA, but it&#39;s kind of lumpy and missing an eye.</li>
 	</ul>
 
+	<p>Additionally, there are a few control codes:</p>
+
+	<ul>
+		<li class="list_item">0x00 terminates a string.</li>
+		<li class="list_item">0x01 terminates a line.</li>
+		<li class="list_item">0x02 takes a second byte and uses it to set the text color. The default color is 0x00.</li>
+		<li class="list_item">0x03 takes a second byte and uses it as the parameter to an unknown function. It also causes 0x00 to return just after the second byte and continue printing text.</li>
+		<li class="list_item">0x04 clears the text field.</li>
+		<li class="list_item">0x0F causes the game to wait for the A button to be pressed, then continues printing text. However, this continuation is broken and probably shouldn't be used.</li>
+	</ul>
+
 	<a name="ndg_fla"></a>
 	<p class="gray_title">[Net de Get] : MBC6 Flash Operation</p>
 
@@ -8609,6 +8891,20 @@ Secondary Minigame Icon Type
 
 	</ul>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	<!-- Zen Nihon GT Senshuken -->
 	<a name="zng"></a>
 	<p class="gray_title">Zen Nihon GT Senshuken</p>
@@ -8620,7 +8916,8 @@ Secondary Minigame Icon Type
 	<p class="list_item"><a href="#zng_gst">gtgst00.cgb - gtgst06.cgb</a></p>
 	<p class="list_item"><a href="#zng_dat">Ghost Data</a></p>
 	<p class="list_item"><a href="#zng_grk">gtrk00.cgb - gtrk06.cgb</a></p>
-	<p class="list_item"><a href="#zng_rnk">Rank Entry</a></p>
+	<p class="list_item"><a href="#zng_rnk">Ghost Entry</a></p>
+	<p class="list_item"><a href="#zng_fmt">Character Encoding</a></p>
 
 	<a name="zng_gen"></a>
 	<p class="gray_title">[Zen Nihon GT Senshuken] : General Information</p>
@@ -8633,21 +8930,32 @@ Secondary Minigame Icon Type
 	<p>Zen Nihon GT Senshuken is currently known to access the following URLs:</p>
 
 	<ul>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/gtconfig.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/100.gtexcrs***.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/gtgst01.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/gtgst02.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/gtgst03.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/gtgst04.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrkconfig.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk00.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk01.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk02.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk03.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk04.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk05.cgb</li>
-		<li class="list_item">http://gameboy.datacenter.ne.jp/****/gtrk06.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;28&#47;AGB-AGTJ&#47;gtconfig.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;28&#47;AGB-AGTJ&#47;100.gtexcrs***.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;28&#47;AGB-AGTJ&#47;gtgst00.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;28&#47;AGB-AGTJ&#47;gtgst01.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;28&#47;AGB-AGTJ&#47;gtgst02.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;28&#47;AGB-AGTJ&#47;gtgst03.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;28&#47;AGB-AGTJ&#47;gtgst04.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;28&#47;AGB-AGTJ&#47;gtgst05.cgb</li>
+		<li class="list_item">http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;28&#47;AGB-AGTJ&#47;gtgst06.cgb</li>
 	</ul>
+
+	<p>Additionally, the following files are accessed with a URL prefix defined in gtconfig.cgb:</p>
+
+	<ul>
+		<li class="list_item">gtrkconfig.cgb</li>
+		<li class="list_item">gtrk00.cgb</li>
+		<li class="list_item">gtrk01.cgb</li>
+		<li class="list_item">gtrk02.cgb</li>
+		<li class="list_item">gtrk03.cgb</li>
+		<li class="list_item">gtrk04.cgb</li>
+		<li class="list_item">gtrk05.cgb</li>
+		<li class="list_item">gtrk06.cgb</li>
+	</ul>
+
+	<p>Finally, ghost data can have any file name prefixed with &#34;http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;28&#47;AGB-AGTJ&#47;&#34;.</p>
+
 
 	<a name="zng_cfg"></a>
 	<p class="gray_title">[Zen Nihon GT Senshuken] : gtconfig.cgb</p>
@@ -8657,18 +8965,23 @@ Secondary Minigame Icon Type
 <pre>----------------------------------
 File Structure
 ----------------------------------
-0x00	 			::	Unknown data.
+0x00				::	Service status bitfield, see below.
 0x01				::	Enables Time Trial Ghost downloads for select race tracks.
-0x02				::	Numerical suffix for downloadable course
-0x03				::	Unknown data.
+0x02				::	Downloadable course ID.
+0x03				::	Course ID for ghost uploads.
 0x04 - 0xC3			::	Dynamic URL data for mobile rank files. Uses ASCII characters.
 0xC4 - 0xC7			::	A 32-bit checksum for all bytes from 0x00 - 0xC3. All bytes are added, one-by-one. Checksum stored LSB first.</pre>
+
+	<p>Byte 0x00 is a bitfield indicating the current service status. When Bit 1 is set, course downloads cannot be accessed, with an error message implying that the service will not return. When Bit 1 is clear but Bit 0 is set, course downloads cannot be accessed, with an error message implying that the outage is temporary. Only when both bits are clear can course downloads be accessed. Bits 5 and 4 apply in the same way to all other services.</p>
 
 	<p>When downloading Time Trial Ghosts, the game will display 7 menus, 1 for each race track. For Byte 0x01, each of the bits from Bit 0 through Bit 6 controls whether an individual track is enabled. Setting the bit to &#34;0&#34; enables it, while setting the bit to &#34;1&#34; disables it.</p>
 
 	<p>When downloading extra courses, Byte 0x02 is converted to Base 10 (decimal) and appended to the file name as a 3 digit number. For example, if the value of Byte 0x02 is 0x30, the game will download the file &#34;100.gtexcrs048.cgb&#34; for the course.</p>
 
-	<p>The dynamic URL data is an ASCII string terminated with a null character (0x00). The string points the game to the file gtrkconfig.cgb as well as the gtrk00.cgb through gtrk06.cgb files. Apparently, some portions of the string are ignored when the game makes the actual HTTP GET request. For example, if the string is &#34;gameboy.datacenter.ne.jp/cgb/&#34;, the GET request only appears as &#34;/cgb/&#34;. Any text prior to the first &#34;/&#34; character is effectively removed. This string is exclusively used for files related to mobile ranking.</p>
+	<p>The game&#39;s programmers evidently tried to prevent ghost uploads for custom courses other than the one whose ID matches Byte 0x03, but in practice, the upload still goes through, rendering Byte 0x03 meaningless.</p>
+
+	<p>The dynamic URL data is an ASCII string terminated with a null character (0x00). The string points the game to the file gtrkconfig.cgb as well as the gtrk00.cgb through gtrk06.cgb files.</p>
+
 
 	<a name="zng_gtc"></a>
 	<p class="gray_title">[Zen Nihon GT Senshuken] : gtrkconfig.cgb</p>
@@ -8678,11 +8991,12 @@ File Structure
 <pre>----------------------------------
 File Structure
 ----------------------------------
-0x00				::	Enables mobile rankings for select race tracks
-0x01 - 0x03 			::	Unknown data.
+0x00				::	Enables mobile rankings for select race tracks.
+0x01				::	Enables ghost uploads for select race tracks.
+0x02 - 0x03 			::	Unused.
 0x04 - 0x07			::	A 32-bit checksum for all bytes from 0x00 - 0x03. All bytes are added, one-by-one. Checksum stored LSB first.</pre>
 
-	<p>When downloading mobile rankings, the game will display 7 menus, 1 for each race track. For Byte 0x00, each of the bits from Bit 0 through Bit 6 controls whether an individual track is enabled. Setting the bit to &#34;0&#34; enables it, while setting the bit to &#34;1&#34; disables it.</p>
+	<p>When downloading mobile rankings, the game will display 7 menus, 1 for each race track. For Byte 0x00, each of the bits from Bit 0 through Bit 6 controls whether an individual track is enabled. Setting the bit to &#34;0&#34; enables it, while setting the bit to &#34;1&#34; disables it. Byte 0x01 is intended to apply in the same way to ghost uploads, but like Byte 0x03 of gtconfig.cgb, all uploads go through regardless of Byte 0x01.</p>
 
 	<a name="zng_exc"></a>
 	<p class="gray_title">[Zen Nihon GT Senshuken] : 100.gtexcrs***.cgb</p>
@@ -8692,8 +9006,10 @@ File Structure
 <pre>----------------------------------
 Racetrack Download Format
 ----------------------------------
-0x0000 - 0x0003 		::	Unknown 32-bit value. Seems to be ignored.
-0x0004 - 0x001B			::	10 character title plus terminating character. Uses a custom 16-bit character encoding.
+0x0000				::	Course ID. Used to prevent purchasing the same course twice.
+0x0001				::	A value of 0x01 changes the scenery to promote the Famitsu magazine.
+0x0002 - 0x0003			::	Unused. Should be zero.
+0x0004 - 0x001B			::	11 character title. Uses a custom 16-bit character encoding.
 0x001C - 0x010B			::	Racetrack data.
 0x010C - 0x010F			::	A 32-bit checksum for all bytes from 0x0000 - 0x010B. All bytes are added, one-by-one. Checksum stored LSB first.</pre>
 
@@ -8715,11 +9031,9 @@ Block Turn Types
 0x00				::	East-to-South turn.
 0x01				::	South-to-West turn.
 0x02				::	West-to-North turn.
-0x03				::	North-to-East turn.</pre>
+0x03				::	North-to-East turn.
 
-<p></p>
-
-<pre>----------------------------------
+----------------------------------
 Block Starting Position Types
 ----------------------------------
 0x00				::	Start race facing East.
@@ -8727,52 +9041,42 @@ Block Starting Position Types
 0x02				::	Start race facing West.
 0x03				::	Start race facing North.</pre>
 
+
 	<a name="zng_gst"></a>
 	<p class="gray_title">[Zen Nihon GT Senshuken] : gtgst00.cgb - gtgst06.cgb</p>
 
-	<p>These 7 files represent menus for different ghost data that can be downloaded. From this menu, the player can choose a specific ghost from a specific track and then proceed to save it to the game cartridge. Each file 0x9E4 bytes long. Together, they give the player access to 210 sets of ghost data for each of the 7 race courses available (30 per track). The file for each .cgb file is as follows</p>
+	<p>These 7 files represent menus for different ghost data that can be downloaded. From this menu, the player can choose a specific ghost from a specific track and then proceed to save it to the game cartridge. Each file 0x9E4 bytes long. Together, they give the player access to 210 sets of ghost data for each of the 7 race courses available (30 per track). The file for each .cgb file is as follows:</p>
 
 <pre>----------------------------------
 Ghost Menu File Structure
 ----------------------------------
-0x0000 - 0x0001			::	Year of last update, LSB first.
-0x0002				::	Month of last update.
-0x0003				::	Day of last update.
-0x0004 - 0x0007			::	Unknown data.
+0x0000 - 0x0007			::	Local timestamp for last update.
 0x000A - 0x09DF			::	Ghost Data Entries.
-0x09E0 - 0x09E3			::	A 32-bit checksum for all bytes from 0x0000 - 0x09DF. All bytes are added, one-by-one. Checksum stored LSB first.</pre>
+0x09E0 - 0x09E3			::	A 32-bit checksum for all bytes from 0x0000 - 0x09DF. All bytes are added, one-by-one. Checksum stored LSB first.
 
-<p></p>
-
-<pre>----------------------------------
+----------------------------------
 Ghost Data Entries
 ----------------------------------
-0x00				::	Unknown data.
-0x01				::	Weather condition for ghost data (0 = Sunny, 1 = Rain). 
-0x02				::	Car type used for ghost data.
-0x03				::	Car transmission used for ghost data (0 = Automatic, 1 = Manual).
-0x04 - 0x0B			::	Unknown data.
-0x0C - 0x0D			::	Handicap Weight. 16-bit value stored LSB first. Max value is 990, game displays values as units of 10 (e.g. 10, 20, 30, 40...) May be zero.
-0x0E - 0x23			::	Ghost Name. 10 characters plus terminating character. Uses a custom 16-bit character encoding.
-0x24 - 0x27			::	Ghost Time. 32-bit value stored LSB first. See notes below on format
-0x28 - 0x33			::	Unknown data.
-0x34 - 0x55			::	URL to download the ghost data. Uses ASCII characters.</pre>
+0x00 - 0x33			::	Mobile Rank Entry.
+0x34 - 0x53			::	URL to download the ghost data. Uses ASCII characters.</pre>
 
 	<p>Each Ghost Data Entry takes up 84 bytes. Once the player selects an entry, the game goes on to download the file specified by the URL. The URL in the entry is limited to 32 characters. Ultimately, if the URL is something like &#34;myghostfile.cgb&#34;, the game ends up downloading from the following address:</p>
 
-<pre>http://gameboy.datacenter.ne.jp/cgb/download?name=/28/AGB-AGTJ/myghostfile.cgb</pre>
+<pre>http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;28&#47;AGB-AGTJ&#47;myghostfile.cgb</pre>
 
-	<p>The total time used for the ghost is stored in a 32-bit value. The overall time works based on 1/100s of a second. To calculate the total time, start counting at zero and add according to this table:</p>
+	<p>The URL must contain one or two dots. If it contains one dot, it is marked as free in the download menu. If it contains two dots, it must have a service fee of 0, 50, 100, 150, 200, 250, or 300 yen (which is shown in the download menu), or the entry will not be displayed.</p>
+
+	<p>The total time used for the ghost is stored in a 32-bit value. The overall time works based on 1&#47;100s of a second. To calculate the total time, start counting at zero and add according to this table:</p>
 
 <pre>----------------------------------
 Ghost Entry Time Format
 ----------------------------------
-0x00				::	Time = Time + (1/100) * Byte Value
-0x01				::	Time = Time + (256 * (1/100)) * Byte Value
-0x02				::	Time = Time + (65536 * (1/100)) * Byte Value
-0x03				::	Time = Time + (16777216 * (1/100)) * Byte Value</pre>
+0x00				::	Time = Time + (1&#47;100) * Byte Value
+0x01				::	Time = Time + (256 * (1&#47;100)) * Byte Value
+0x02				::	Time = Time + (65536 * (1&#47;100)) * Byte Value
+0x03				::	Time = Time + (16777216 * (1&#47;100)) * Byte Value</pre>
 
-	<p>The maximum time alotted for any Ghost 99 minutes, 99 seconds, and 99 hundreths of a second.</p>
+	<p>The maximum time alotted for any Ghost is 99 minutes, 59 seconds, and 99 hundredths of a second.</p>
 
 	<a name="zng_dat"></a>
 	<p class="gray_title">[Zen Nihon GT Senshuken] : Ghost Data</p>
@@ -8782,18 +9086,10 @@ Ghost Entry Time Format
 <pre>----------------------------------
 Ghost Data File Format
 ----------------------------------
-0x00				::	Race Track.
-0x01				::	Weather condition for ghost data (0 = Sunny, 1 = Rain). 
-0x02				::	Car type used for ghost data.
-0x03				::	Car transmission used for ghost data (0 = Automatic, 1 = Manual).
-0x04 - 0x0B			::	Unknown data.
-0x0C - 0x0D			::	Handicap Weight. 16-bit value stored LSB first. Max value is 990, game displays values as units of 10 (e.g. 10, 20, 30, 40...) May be zero.
-0x0E - 0x23			::	Ghost Name. 10 characters plus terminating character. Uses a custom 16-bit character encoding.
-0x24 - 0x27			::	Ghost Time. 32-bit value stored LSB first. See notes above on format.
-0x28 - 0x33			::	Unknown data.
+0x00 - 0x33			::	Mobile Rank Entry.
 0x34 - EOF			::	Track Movement Data.</pre>
 
-	<p>The format for the metadata is largely the same as the ghost menu. Byte 0 is used here, however, to define the specific race track the ghost belongs to. This forces the game to run that exact course, regardless of which menu it was downloaded from online. A list of all possible options follows:</p>
+	<p>This is the only file where Byte 0x00 of the Mobile Rank Entry is used. This forces the game to run that exact course, regardless of which menu it was downloaded from online. A list of all possible options follows:</p>
 
 <pre>----------------------------------
 Ghost Race Track Values
@@ -8819,9 +9115,7 @@ Ghost Race Track Values
 
 	<p>Time Trial Ghost Data can apply to custom courses as well, thus allowing players of Zen Nihon GT to both download a unique track from the server as well as a ghost for it as well. Mirrored versions of each course is also available.</p>
 
-	<p>The Track Movement Data is a recording of a car&#39;s movements along the race course. For the downloaded file, it has the exact same format as regular Time Trial ghosts made locally by the player and saved on the cartridge. Zen Nihon GT essentially copy + pastes this section to Flash RAM as is.</p>
-
-	<p>No checksum is need for this file. The Track Movement Data uses 32-bit checksums periodically (approximately once every 4KB) to ensure data integrity, however.</p>
+	<p>The Track Movement Data is a recording of a car&#39;s movements along the race course. For the downloaded file, it has the exact same format as regular Time Trial ghosts made locally by the player and saved on the cartridge. Zen Nihon GT essentially copy + pastes this section to Flash RAM as is, only adding a checksum every 4KB. No checksum is need for the file itself.</p>
 
 	<a name="zng_grk"></a>
 	<p class="gray_title">[Zen Nihon GT Senshuken] : gtrk00.cgb - gtrk06.cgb</p>
@@ -8831,12 +9125,7 @@ Ghost Race Track Values
 <pre>----------------------------------
 Mobile Ranking File Format
 ----------------------------------
-0x0000 - 0x0001			::	Year of last update, LSB first.
-0x0002				::	Month of last update.
-0x0003				::	Day of last update.
-0x0004				::	Hour of last update.
-0x0005				::	Minute of last update.
-0x0006 - 0x0007			::	Unknown Data.
+0x0000 - 0x0007			::	Local timestamp for last update.
 0x0008 - 0x0A2F			::	Mobile Rank Entries.
 0x0A30 - 0x0A33			::	A 32-bit checksum for all bytes from 0x0000 - 0x0A2F. All bytes are added, one-by-one. Checksum stored LSB first.</pre>
 
@@ -8845,18 +9134,36 @@ Mobile Ranking File Format
 <pre>----------------------------------
 Mobile Rank Entry
 ----------------------------------
-0x00				::	Unknown Data.
+0x00				::	Race Track (see above).
 0x01				::	Weather condition for ghost data (0 = Sunny, 1 = Rain).
 0x02				::	Car type used for the race.
 0x03				::	Car transmission used for the race (0 = Automatic, 1 = Manual).
-0x04 - 0x0B			::	Unknown Data.
-0x0C - 0x0D			::	Handicap Weight. 16-bit value stored LSB first. Max value is 990, game displays values as units of 10 (e.g. 10, 20, 30, 40...) May be zero.
-0x0E - 0x23			::	Player Name
+0x04				::	Gear Ratio (0 = Low, 1 = Medium, 2 = High).
+0x05				::	Steering (0 = Slow, 1 = Medium, 2 = Quick).
+0x06				::	Brake (0 = Soft, 1 = Medium, 2 = Hard).
+0x07				::	Tire (0 = Soft, 1 = Medium, 2 = Hard).
+0x08				::	Aerodynamics (0 = Low, 1 = Medium, 2 = High).
+0x09				::	Course ID (for custom courses).
+0x0A - 0x0B			::	Unused. Should be zero.
+0x0C - 0x0D			::	Handicap Weight in kilograms. 16-bit value stored LSB first. Max value is 990, game displays values as units of 10 (e.g. 10, 20, 30, 40...). May be zero.
+0x0E - 0x23			::	11 character player name. Uses a custom 16-bit character encoding.
 0x24 - 0x27			::	Course Completion Time. 32-bit value stored LSB first. Same format as Ghost Time, see notes above.
-0x28 - 0x33			::	Unknown Data. Appears to be three 32-bit values that must be non-zero.</pre>
+0x28 - 0x2F			::	GMT timestamp for registration.
+0x30 - 0x33			::	Ghost ID. 32-bit value stored LSB first. Must not be zero.
+
+----------------------------------
+Timestamp
+----------------------------------
+0x00 - 0x01			::	Year. 16-bit value stored LSB first.
+0x02				::	Month.
+0x03				::	Day.
+0x04				::	Hour.
+0x05				::	Minute.
+0x06				::	Second.
+0x07				::	Unused. Should be zero.</pre>
 
 	<a name="zng_rnk"></a>
-	<p class="gray_title">[Zen Nihon GT Senshuken] : Rank Entry</p>
+	<p class="gray_title">[Zen Nihon GT Senshuken] : Ghost Entry</p>
 
 	<p>Players could enter their Time Trial Ghosts to participate in online mobile rankings. Zen Nihon GT transfers to Ghost Data to the server and the leaderboard would be updated. It is unknown if the process was manually handled by server administrators or if server-side software automatically parsed and sorted the fastest times. The game transmits the data as part of an email attachment via SMTP. The format of the sent email is as follows:</p>
 
@@ -8866,15 +9173,15 @@ Subject: GT-CHAMP-ENTRY
 X-Game-code: AGB-AGTJ-00
 X-Game-title: GT-CHAMP
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary=&#34;--AGB-AGTJ&#34;
+Content-Type: multipart&#47;mixed; boundary=&#34;--AGB-AGTJ&#34;
 ----AGB-AGTJ
-Content-Type: text/plain; charset=iso-2022-jp
+Content-Type: text&#47;plain; charset=iso-2022-jp
 Context-Transfer-Encoding: 7bit
 -----------------------
 【全日本ＧＴ選手権】でランキング登録が失敗している可能性があります。
 -----------------------
 ----AGB-AGTJ
-Content-Type: application/octec-stream; name=&#34;gtent**.cgb&#34;
+Content-Type: application&#47;octec-stream; name=&#34;gtent**.cgb&#34;
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename=&#34;gtent**.cgb&#34;
 DATA
@@ -8882,9 +9189,49 @@ DATA
 DATA
 ----AGB-AGTJ--</pre>
 
-	<p>The attached file varies depending on which race track was recorded in the Time Trial Ghost. The server will receive files from gtent00.cgb through gtent06.cgb.</p>
+	<p>The message, encoded as ISO-2022-JP, translates to: &#34;There is a possibility that ranking registration has failed in the [All Japan GT Championship].&#34; &#34;octec-stream&#34; is not a typo.</p>
 
-	<p>The message, encoded as ISO-2022 JP translates to: &#34;There is a possibility that ranking registration has failed in the [All Japan GT Championship].&#34;</p>
+	<p>The attached file varies depending on which race track was recorded in the Time Trial Ghost. The server will receive files from gtent00.cgb through gtent06.cgb in the following format:</p>
+
+<pre>----------------------------------
+Ghost Entry Format
+----------------------------------
+0x0000 - 0x001F			::	Player&#39;s email address.
+0x0020 - 0x0053			::	Mobile Rank Entry.
+0x0054 - 0x2FAB			::	Track Movement Data.
+0x2FAC - 0x2FAF			::	Always zero.
+0x2FB0 - 0x2FB3			::	A 32-bit checksum for all bytes from 0x0000 - 0x2FAF. All bytes are added, one-by-one. Checksum stored LSB first.</pre>
+
+	<p>The player name as uploaded is limited to 5 characters. The Ghost ID as uploaded is calculated by starting with 0x20031DC, adding the remaining bytes of the Mobile Rank Entry, then adding all bytes of the Track Movement Data, one-by-one.</p>
+
+	<a name="zng_fmt"></a>
+	<p class="gray_title">[Zen Nihon GT Senshuken] : Character Encoding</p>
+
+<pre>	0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
+0x000	 	!	&#34;	#	$	%	&	&#39;	(	)	*	+	,	-	.	&#47;
+0x010	0	1	2	3	4	5	6	7	8	9	:	;	<	=	>	?
+0x020	@	A	B	C	D	E	F	G	H	I	J	K	L	M	N	O
+0x030	P	Q	R	S	T	U	V	W	X	Y	Z	[	¥	]	^	_
+0x040	`	a	b	c	d	e	f	g	h	i	j	k	l	m	n	o
+0x050	p	q	r	s	t	u	v	w	x	y	z	{	|	}	~	〒
+0x060	☆	★	○	●	◎	◇	◆	□	■	△	▲	▽	▼	❤	♂	♀
+0x070	\	≠	＜	＞	±	✕	÷	‖	‘	’	“	”	〔	〕	《	》
+0x080	 	。	「	」	、	・	ヲ	ァ	ィ	ゥ	ェ	ォ	ャ	ュ	ョ	ッ
+0x090	ー	ア	イ	ウ	エ	オ	カ	キ	ク	ケ	コ	サ	シ	ス	セ	ソ
+0x0A0	タ	チ	ツ	テ	ト	ナ	ニ	ヌ	ネ	ノ	ハ	ヒ	フ	ヘ	ホ	マ
+0x0B0	ミ	ム	メ	モ	ヤ	ユ	ヨ	ラ	リ	ル	レ	ロ	ワ	ン	゛	゜
+0x0C0	‥	…	ヰ	ヴ	ヱ	 	ガ	ギ	グ	ゲ	ゴ	ザ	ジ	ズ	ゼ	ゾ
+0x0D0	ダ	ヂ	ヅ	デ	ド	パ	ピ	プ	ペ	ポ	バ	ビ	ブ	ベ	ボ	♪
+0x0E0	∞	【	】	℃	¢	£	§	＝	～	™	©	®	→	←	↑	↓
+0x0F0	 	。	『	』	、	・	を	ぁ	ぃ	ぅ	ぇ	ぉ	ゃ	ゅ	ょ	っ
+0x100	ー	あ	い	う	え	お	か	き	く	け	こ	さ	し	す	せ	そ
+0x110	た	ち	つ	て	と	な	に	ぬ	ね	の	は	ひ	ふ	へ	ほ	ま
+0x120	み	む	め	も	や	ゆ	よ	ら	り	る	れ	ろ	わ	ん	゛	゜
+0x130	‥	…	ゐ	 	ゑ	 	が	ぎ	ぐ	げ	ご	ざ	じ	ず	ぜ	ぞ
+0x140	だ	ぢ	づ	で	ど	ぱ	ぴ	ぷ	ぺ	ぽ	ば	び	ぶ	べ	ぼ</pre>
+
+	<p>For user input, the game uses characters 0x000, 0x081, 0x084, 0x0F5, and 0x100. Characters 0x0BE and 0x0BF appear on the katakana keyboard, while characters 0x12E and 0x12F appear on the hiragana keyboard, though none are actual input characters, and they are unlikely to have been used in downloadable content. Characters 0x0C0, 0x0C1, 0x130, and 0x131 are not available for user input, so it is unknown which, if any, were used in downloadable content. Character 0x135, along with all characters starting at 0x14F, have garbage tile data and should not be used. Finally, character 0xFFFF is used as a terminator.</p>
+
 
 
 
