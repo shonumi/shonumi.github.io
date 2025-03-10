@@ -1,10 +1,21 @@
 body 
 {
-	font-family: "times new roman", serif, verdana;
-	font-size: 1.125em;
+	font-family: sans-serif;
+	font-size: 1.05em;
 	margin: 0px;
 	background-color: #FFF;
-} 
+	line-height: 1.5;
+	text-align: justify;
+	text-justify: inter-word;
+}
+
+@media screen and (max-width: 720px)
+{
+	body
+	{
+		font-size: 0.93em;
+	}
+}
 
 li
 {
@@ -28,6 +39,7 @@ code
 	background-color: #4C4C4C;
 	text-align: center;
 	margin: auto;
+	text-justify: none;
 }
 
 img
@@ -56,6 +68,13 @@ img.cap
 .center_img
 {
 	text-align: center;
+	margin-top: 10px;
+	margin-bottom: 0px;
+}
+
+.code_img
+{
+	margin-left: 50px;
 	margin-top: 10px;
 	margin-bottom: 0px;
 }
@@ -135,7 +154,7 @@ img.cap
 {
 	margin-top: 0px;
 	margin-bottom: 30px;
-	font-size: 1em;
+	font-size: 0.97em;
 	text-align: center;
 }
 
@@ -143,7 +162,7 @@ img.cap
 {
 	margin-top: 0px;
 	margin-bottom: 0px;
-	font-size: 1em;
+	font-size: 0.97em;
 	text-align: center;
 }
 
@@ -206,11 +225,19 @@ img.cap
 
 .box_outer
 {
-	width: 90%;
+	width: 75%;
 	border: 1px #808080 solid;
 	background-color: #D7D7D7;
 	margin: auto;
 	margin-top: 30px;
+}
+
+@media screen and (max-width: 720px)
+{
+	.box_outer
+	{
+		width: 95%;
+	}
 }
 
 .inner_text
@@ -285,7 +312,8 @@ img.cap
 	margin-left: 10px;
 	font-size: 1.125em;
 	padding: 4px;
-	padding-left: 1em; 
+	padding-left: 1em;
+	padding-right: 1em;
 	display: block;
 	background-color: #D0D0D0;
 	color: #0996E7;
@@ -304,6 +332,7 @@ img.cap
 	height: 1.25;
 	text-align: center;
 	font-size: 1.5em;
+	font-weight: bold;
 	letter-spacing: 5px;
 	margin: auto;
 	margin-top: 3px;
