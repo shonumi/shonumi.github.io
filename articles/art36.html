@@ -152,7 +152,7 @@ WHILE (ROM_STAT & 0xA00A) NOT EQUAL TO 0xA00A
 //Read Block ID and Block Length
 ROM_STAT = 0xA00A
 BLOCK_ID = READ 16 BITS FROM [0x8000000]
-BLOCK_LEN = READ 16 BITS [0x8000000]
+BLOCK_LEN = READ 16 BITS FROM [0x8000000]
 
 //Read data as long as Block ID is not 0xCD00
 IF BLOCK_ID NOT EQUAL TO 0xCD00
@@ -554,7 +554,7 @@ Bank ID	| Error Type
 
 				<p class="inner_text_large"><strong>Hanging Up</strong></p>
 
-				<p class="inner_text">So there it is, folks. The Campho Advance, one of more unique and interesting cartridges released for the GBA. This one was a tough nut to crack, mostly because no one had ever dumped the ROM but also due to the weird, messed up data bus that obfuscates read and write values. At first, it seemed like a steep challenge, one that left me a little uncertain about whether I could actually pull it off. Although the whole process proved difficult, it felt very rewarding to finally have this device emulated, to know how it works, and at last to see it preserved.</p>
+				<p class="inner_text">So there it is, folks. The Campho Advance, one of the more unique and interesting cartridges released for the GBA. This one was a tough nut to crack, mostly because no one had ever dumped the ROM but also due to the weird, messed up data bus that obfuscates read and write values. At first, it seemed like a steep challenge, one that left me a little uncertain about whether I could actually pull it off. Although the whole process proved difficult, it felt very rewarding to finally have this device emulated, to know how it works, and at last to see it preserved.</p>
 
 				<p class="inner_text">Campho Advances are kinda rare, and they aren't getting any cheaper or younger. Who's to say when the hardware will start giving out and become endangered? Many areas in certain countries are moving away from landline telephone systems in favor of wireless radio-based technologies or wired Voice-Over-IP solutions. Who knows when it'll be hard enough to even setup your own internal PBX or something similar. We shouldn't assume that there will always be a chance to study these bits of gaming history, especially in an ever-evolving world of hardware.</p>
 
@@ -564,7 +564,7 @@ Bank ID	| Error Type
 
 				<p class="inner_text">Or so it would seem... Unfortunately, when I came up with the whole <strong>Triforce of Terror</strong> bit, I had kinda sorta overlooked yet another GBA cartridge with special hardware inside that needed to be reverse-engineered. Whoops! To be fair, this thing was super obscure; the ROM hadn't even been dumped properly until I took a look at it. Additionally, at first, it wasn't really clear if it was supposed to be a DS or GBA product (the box is seriously confusing, <a href="https://www.nintendon.it/wp-content/uploads/2021/05/Nintendo-DS-TV-Tuner-Agatsuma-NintendOn.png">see for yourself</a>).</p>
 
-				<p class="inner_text">Well, like any good RPG, there's always a &#34;real&#34; final boss at the end of some bonus dungeon. The other GBA cartridges may have been defeated, but one villain remains at large. On the next <s>episode</s> article for <em>Edge of Emulation</em> I'll tackle <a href="https://web.archive.org/web/20071015131646/http://www.agatsuma-toys.com/accessorie/">Agatsuma's TV Tuner</a>, the only Nintendo-approved way to watch television on your GBA. This is really, really the last unemulated GBA cartridge. I mean, it has to be, right?</p>
+				<p class="inner_text">Well, like any good RPG, there's always a &#34;real&#34; final boss at the end of some bonus dungeon. The other GBA cartridges may have been defeated, but one villain remains at large. In the next <s>episode</s> article for <strong>Edge of Emulation</strong> I'll tackle <a href="https://web.archive.org/web/20071015131646/http://www.agatsuma-toys.com/accessorie/">Agatsuma's TV Tuner</a>, the only Nintendo-approved way to watch television on your GBA. This is really, really the last unemulated GBA cartridge. I mean, it has to be, right?</p>
 				<p class="center_img"><img class="img_box" src="campho_30.png" alt="The Agatsuma TV Tuner" /></p>
 
 			</div>
