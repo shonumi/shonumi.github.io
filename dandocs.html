@@ -134,6 +134,7 @@
 			<p class="list_item"><a href="#pabs">Power Antenna + Bug Sensor</a></p>
 			<p class="list_item"><a href="#tbgb">Turbo File GB</a></p>
 			<p class="list_item"><a href="#sew">Sewing Machines</a></p>
+			<p class="list_item"><a href="#gkl">GB KISS LINK</a></p>
 
 			<p class="list_head"><strong>GBA</strong></p>
 			<p class="list_item"><a href="#gss">GBA Screen Stretch</a></p>
@@ -2193,6 +2194,993 @@ Bit 6 - Foot Pedal		| 0 = Foot pedal is up, 1 = Foot pedal is pressed down.
 Bit 7 - Pause Operation		| Alerts software when sewing operations are immediately paused.
 -------------------------------------------------</pre>
 
+
+
+
+
+	<!-- GB KISS LINK -->
+
+	<a name="gkl"></a>
+	<p class="gray_title">GB KISS LINK</p>
+	<p class="list_item"><a href="#gkl_gen">General Hardware Information</a></p>
+	<p class="list_item"><a href="#gkl_com">Compatible Games</a></p>
+	<p class="list_item"><a href="#gkl_ovr">GBF Infrared Protocol Overview</a></p>
+	<p class="list_item"><a href="#gkl_low">GBF Infrared Protocol Low Level</a></p>
+	<p class="list_item"><a href="#gkl_dep">GBF Infrared Protocol In-Depth</a></p>
+	<p class="list_item"><a href="#gkl_nmp">Nectaris Map Infrared Protocol</a></p>
+	<p class="list_item"><a href="#gkl_gbd">Nectaris GB Map Data</a></p>
+	<p class="list_item"><a href="#gkl_pcd">Nectaris PC Map Data</a></p>
+
+	<a name="gkl_gen"></a>
+	<p class="gray_title">[GB KISS LINK] : General Hardware Information</p>
+
+	<p>The GB KISS LINK is an infrared modem that connects to PCs in order to send/receive data from Game Boys. It was made by Hudson and released on March 6, 1998. The unit sold through mail order to the ASCII Corporation and was compatible with select titles that featured HuC-1 and HuC-3 cartridge mappers. The infrared connectivity allowed data to flow freely between the user&#39;s PC and the Game Boys. It was most prominently used to transfer GBF files and Nectaris maps, some of which could be downloaded from Hudson&#39;s website.</p>
+
+	<ul>
+		<li class="list_item">Unit came as a plain PCB protected only by a wrap-around plastic cover</li>
+		<li class="list_item">Powered by a single 9V battery</li>
+		<li class="list_item">Featured 2 infrared diodes for sending and receiving signals</li>
+		<li class="list_item">Connected to PC via D-SUB25 serial cable</li>
+		<li class="list_item">Required PC special Windows 95 software and drivers to use</li>
+		<li class="list_item">Officially uses the model number HC-749</li>
+	</ul>
+
+	<a name="gkl_com"></a>
+	<p class="gray_title">[GB KISS LINK] : Compatible Games</p>
+
+	<p>Only a handful of games used HuC-1 and HuC-3 mappers. Within this group, an even smaller selection took advantage of the GB KISS LINK for downloadable content provided online by Hudson. The list below notes these titles along with what kinds of features were enabled by the GB KISS LINK.</p>
+
+	<p class="list_item"><strong>Nectaris GB</strong></p>
+	<ul class="list_item"><li class="list_item">Mapper: HuC-1</li> <li class="list_item">Downloading custom maps</li></ul><p></p>
+
+	<p class="list_item"><strong>Pocket Family GB</strong></p>
+	<ul class="list_item"><li class="list_item">Mapper: HuC-3</li> <li class="list_item">Downloading custom alarm songs, a family photo event, and new characters</li></ul><p></p>
+
+	<p>Other games are more broadly compatible with the GB KISS menu, a standardized menu that allows content to be shared between other Game Boys or via the GB KISS LINK. These, however, were not known to specifically have any downloadable content from Hudson.</p>
+
+	<ul>
+		<li class="list_item">Daikaiju Monogatori: The Miracle of the Zone</li>
+		<li class="list_item">GBKiss Mini Games</li>
+		<li class="list_item">Pocket Bomberman</li>
+		<li class="list_item">Robot Poncots (Sun, Star, Moon, and Comic BomBom Versions)</li>
+		<li class="list_item">Super B-Daman Fighting Phoenix</li>
+	</ul>
+
+	<p>All of the above titles (Nectaris GB and Pocket Family GB included) can access the GB KISS Menu, which can be used to send or receive GBF files. The sender or recipient can be another Game Boy or the GB KISS LINK. Nectaris GB, however, has a separate mode for transmitting map files. As a result, GBF and map files have different protocols.</p>
+
+	<a name="gkl_ovr"></a>
+	<p class="gray_title">[GB KISS LINK] : GBF Infrared Protocol Overview</p>
+
+	<p>The GB KISS LINK uses a specific protocol to communicate with GB KISS compatible software to transfer GBF files. This protocol appears to be the same regardless if the sender or receiver is a Game Boy or the GB KISS LINK. Below is a high-level description of how the protocol works:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender							| Receiver
+----------------------------------------------------------------------------------------------------------------------
+1)  Read Receiver ID String				| 1)  Return ID String
+2)  Send Transfer Start Flag				| 2)  Get Transfer Start Flag
+3)  Start Session					| 3)  Wait
+4)  Send Title and Icon data				| 4)  Get Title and Icon Data, Return File Search Input + Echo
+5)  Search File						| 5)  Return File Metadata and Echo of Title and Icon data
+6)  Unknown Read					| 6)  Return Unknown Data
+7)  Prep File Data Transfer				| 7)  Wait
+8)  Send History Data					| 8)  Get History Data, Return ACK Data
+9)  Send File Data					| 9)  Get File Data, Return ACK Data
+10) End File Data Transfer				| 10) Return File Metadata and ACK Data
+11) Send Cartridge Code					| 11) Get Cartridge Code, Return ACK Data
+12) Send Transfer End Flag				| 12) Get Transfer End Flag
+13) End Session						| 13) End Session
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The sender dictates the flow of communications by sending a pair of &#34;magic bytes&#34; (0x48 and 0x75) along with a 10-byte command packet in the following format:</p>
+
+<pre>---------------------------------------------------------
+Byte	| Description
+---------------------------------------------------------
+0	| Transfer Status
+1	| Command Byte
+2	| Local Address Lo
+3	| Local Address Hi
+4	| Remote Address Lo
+5	| Remote Address Hi
+6	| Data Operation Length
+7	| Parameter
+---------------------------------------------------------</pre>
+
+	<p>Transfer Status is a bit-field that alerts the receiver if any errors have occured on the sender&#39;s side. Most GB KISS LINK software, seem to ignore this as long as the value is non-zero. When transferring a GBF file, the sender normally uses a constant value of 0x30 for the Transfer Status.</p>
+
+	<p>The Command Byte tells the receiver what operation is being performed during the transfer. Its value indicates whether the receiver should wait for the next command or start returning data. There are a just a few commands used for GBF file transfers:</p>
+
+<pre>---------------------------------------------------------
+Command	| Description
+---------------------------------------------------------
+0x00	| Start/Stop Session
+0x02	| Send Title and Icon Data
+0x03	| File Search
+0x04	| Start/Stop File Data Transer
+0x08	| Read Remote RAM
+0x0A	| Send File Data
+0x0B	| Write Remote RAM
+---------------------------------------------------------</pre>
+
+	<p>Local/Remote Addresses are often analogous to Source/Destination Addresses, depending on the command. This allows the sender to specify where in RAM to pull data and where to push it when the receiver gets it.</p>
+
+	<p>Data Operation Length specifies how many bytes a given command should read or write, if applicable. Some commands may repurpose this byte for other uses (such File Search).</p>
+
+	<p>The final byte is a miscellaneous parameter that changes context based on the command. For example, often times it is used to specify which slot within the GB KISS Menu the GBF file will be written to.</p>
+
+	<p>At the very end of a command packet, an 8-bit checksum is sent out. This is the sum of all previous 8 bytes bitwise complemented and incremented by 1:</p>
+
+<pre>SUM = SUM OF ALL BYTES
+SUM = ~SUM
+SUM = SUM + 1</pre>
+
+	<p>For any command that sends data, those bytes come immediately after the command packet checksum. Additionally, the data is requires its own checksum at the end. Altogether, a complete command from the sender will look like this:</p>
+
+<pre>---------------------------------------------------------
+1) Command Packet
+2) Command Checksum
+3) Data Bytes
+4) Data Checksum
+---------------------------------------------------------</pre>
+
+<p>Between each command from the sender and response from the receiver, a brief handshake is exchanged between both sides. The values used for these handshakes changes depending on which side is currently sending data. The handshake is as follows:</p>
+
+<pre>---------------------------------------------------------
+Sending Data		| Receiving Data
+---------------------------------------------------------
+0xAA			| 0x55
+0xC3			| 0x3C
+---------------------------------------------------------</pre>
+
+	<p>For example, when using the Read Remote RAM command, the sender initiates the handshake with the value 0xAA and waits for a 0x55 response. The sender then issues the byte 0xC3 and waits for a 0x3C response. When the receiver returns RAM data for the command, the roles are reversed. In this case, the sender must wait for the 0xAA and 0xC3 values and respond accordingly with 0x55 and 0x3C.</p>
+
+	<a name="gkl_low"></a>
+	<p class="gray_title">[GB KISS LINK] : GBF Infrared Protocol Low Level</p>
+
+	<p>Individual bytes are transferred MSB-first. In an ideal environment, pulses representing a &#34;1&#34; bit have an ON-OFF transition of ~720 CPU cycles. Pulses representing a &#34;0&#34; bit have an ON-OFF transition of ~460 cycles. These numbers likely do not reflect real-world infrared timings, however, they do illustrate what the software itself considers acceptable. The ON period should be around ~200 cycles at minimum. Certain portions of the infrared protocol have unusual timings, chiefly the handshakes in between commands, and so-called &#34;pings&#34; that happen in between command and data bytes.</p>
+
+	<p>Handshakes start with a dummy pulse typically lasting around ~560 cycles. Afterwards, each bit is transferred. Following the last bit is a final pulse about ~1220 cycles long, which acts as a sort of stop signal:</p>
+
+<pre>---------------------------------------------------------
+Handshake Pulses
+---------------------------------------------------------
+560		| Dummy Pulse
+xxx		| Bits 7 - 0
+1220		| Stop Pulse
+---------------------------------------------------------</pre>
+
+	<p>When transitioning from the handshake to sending/receiving a command, the sender initiates another Dummy Pulse. The ON phase of this pulse should be rather long (~400 cycles seems safe). Before this pulse completes, the receiver will trigger a very brief &#34;ping&#34; pulse. This lasts about ~100 cycles on average. This ping is done for the magic bytes as well as every byte of the command packet. The final ping is used to send the Command Checksum. The ping pulse may be a bit longer when the receiver needs some additional time to process data. This is commonly observed when verifying checksums. In any case, the sender should still issue a Dummy Pulse and wait for the ping to finish.</p>
+
+	<a name="gkl_dep"></a>
+	<p class="gray_title">[GB KISS LINK] : GBF Infrared Protocol In-Depth</p>
+
+	<p>This section will go through the entire protocol to transfer a GBF file step-by-step, outlining all of the data used by both the sender and receiver. Parts with &#34;...&#34; represent bytes with variable values. To begin, the sender constantly sends out the first byte of a handshake (0xAA) and briefly waits for a response. If there is no response, the process keeps looping until it the receiver is ready of the user quits the transfer manually. Once the receiver is detected, the handshake continues and afterwards the sender will request the receiver&#39;s ID with a Read Remote RAM command:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status 
+0x01		| 0x08			| Command Byte (Read Remote RAM)
+0x02 - 0x03	| 0xCE00		| Local Address
+0x04 - 0x05	| 0xCE00		| Remote Address
+0x06		| 0x10			| Data Operation Length
+0x07		| 0x00			| Parameter
+0x08		| 0x1C			| Command Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The receiver the responds with an ASCII string: &#34;GB KISS MENU &#34;. This string must be an exact match, otherwise the sender will fail to initialize continue after a certain point. The receiver&#39;s respon looks like this:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Receiver Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x00			|
+0x01		| 0x02			|
+0x02 - 0x0F	| &#34;GB KISS MENU &#34;	| Receiver ID String
+0x10		| ...			| GB KISS Menu Slot Number
+0x11		| ...			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The receiver also sends the Slot Number where the GBF file will be written to the GB KISS Menu. After getting the receiver&#39;s ID, the sender will write a flag in the receiver&#39;s RAM indicating that a transfer is about to start:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status 
+0x01		| 0x0B			| Command Byte (Write Remote RAM)
+0x02 - 0x03	| 0xCE00		| Local Address
+0x04 - 0x05	| 0xCE00		| Remote Address
+0x06		| 0x01			| Data Operation Length
+0x07		| 0x00			| Parameter
+0x08		| 0x28			| Command Checksum
+0x09		| 0x01			| Data Byte (Tranfer Start Flag)
+0x0A		| 0xFF			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>For all Write Remote RAM commands, the receiver simply responds with the Data Checksum it was sent. Next, the sender must begin the session as such:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status 
+0x01		| 0x00			| Command Byte (Start/Stop Session)
+0x02 - 0x03	| 0xCE00		| Local Address
+0x04 - 0x05	| 0xCE00		| Remote Address
+0x06		| 0x01			| Data Operation Length
+0x07		| 0x00			| Parameter
+0x08		| 0x33			| Command Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>There is a significant delay (about 1/4 of a second) after starting a session, probably so both sides can prepare for the coming transfers as well as changing the background tiles to indicate on-screen to the users that the transfer has begun. Next, Title and Icon data is transferred from the sender&#39;s GBF file:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status 
+0x01		| 0x02			| Command Byte (Send Title and Icon Data)
+0x02 - 0x03	| 0xC700		| Local Address
+0x04 - 0x05	| 0xC50C		| Remote Address
+0x06		| ...			| Data Operation Length
+0x07		| 0x00			| Parameter
+0x08		| ...			| Command Checksum
+0x09 - ...	| ...			| Title and Icon Data
+...		| ...			| Title and Icon Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The length of Title and Icon Data is specified by the Byte 0x04 of the GBF file. The receiver responds with some data that can be used for the File Search function along with an echo of Title and Icon Data that was just sent:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Receiver Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x90			| Transfer Status
+0x01		| 0x00			|
+0x02  - 0x03	| 0xC500		| Remote Address
+0x04		| ...			| Title and Icon Length
+0x05		| 0xC4			|
+0x06  - 0x07	| 0x0000		|
+0x08		| ...			| Checksum
+0x09  - 0x12	| ...			| File Search Input
+0x13		| ...			| Title and Icon Length
+0x14  - 0x108	| ...			| Title and Icon Data
+0x109		| ...			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The total length of this transfer is *ALWAYS* 265 bytes. Since the Title and Icon data will not fill up this space, it seems random RAM bytes are transferred towards the very end before the Data Checksum. The format for File Search Input is currently not known. Note that in the case that a GBF file does not have its own icon, only the Title data will actually be transferred. The 11 bytes sent here are copied and used by the sender later on. Before that, the sender writes to the receiver&#39;s RAM for unknown reasons:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status 
+0x01		| 0x0B			| Command Byte (Write Remote RAM)
+0x02 - 0x03	| 0xCE00		| Local Address
+0x04 - 0x05	| 0xCE00		| Remote Address
+0x06		| 0x01			| Data Operation Length
+0x07		| ...			| Parameter (GB KISS Menu Slot Number)
+0x08		| ...			| Command Checksum
+0x09		| 0x05			| Data Byte (Tranfer Start Flag)
+0x0A		| 0xFB			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The parameter used above is the Slot Number for the GB KISS Menu. Again, the receiver responds with the Data Checksum that was just sent. The File Search command is called next:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status
+0x01		| 0x03			| Command Byte (File Search)
+0x02  - 0x03	| 0xC700		| Local Address
+0x04  - 0x05	| ...			| Raw File Size
+0x06		| ...			| GB KISS Menu Slot Number
+0x07		| ...			| GBF Flags
+0x08		| ...			| Command Checksum
+0x09  - 0x108	| ...			| File Search Input
+0x109		| ...			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The Raw File Size is the data within a GBF file *after* metadata has been stripped. That is to say, it&#39;s the data that comes after the File Size, Flags, Cartridge Code, Title+Icon Size, Creator Code, Title Data, Icon Data, and History Data. Depending on the GBF file, metadata can range in size from 6 to 256 bytes. The data following that is the &#34;raw&#34; data for a GBF file. Once again, the sender specifies the GB KISS Menu Slot Number. It also sets the GBF Flags, which is Byte 0x02 of the GBF file. File Search Input is an exact copy of the response data from the Send Title and Icon Data command, so this command is always 265 bytes total. The receiver sends the following data in response to the File Search command:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Receiver Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x80			| Transfer Status
+0x01		| 0x00			|
+0x02  - 0x03	| 0xC500		| Local Address
+0x04  - 0x05	| 0xC50C		| Remote Address
+0x06		| 0x00			|
+0x07		| ...			| ??? Used as a parameter for next Read Remote RAM command
+0x08		| ...			| Checksum
+0x09  - 0x0A	| ...			| ???
+0x0B		| 0x00			|
+0x0C  - 0x0D	| ...			| Metadata Size
+0x0E  - 0x0F	| ...			| Metadata Size
+0x10  - 0x11	| ...			| Total File Size
+0x12		| ...			| GBF Flags
+0x13		| 0xFF			|
+0x14		| ...			| Title and Icon Size
+0x15  - 0x108	| ...			| Title and Icon Data
+0x109		| ...			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>After this, the sender requests an unknown read from the receiver. It uses whatever parameter was previously Byte 0x07 of the above File Search response:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status
+0x01		| 0x08			| Command Byte (Read Remote RAM)
+0x02 - 0x03	| 0xCE00		| Local Address
+0x04 - 0x05	| 0xDFFC		| Remote Address
+0x06		| 0x02			| Data Operation Length
+0x07		| ...			| Parameter (Byte 0x07 from previous response data)
+0x08		| ...			| Command Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The response data appears to be constant no matter what kind of GBF file is being transferred:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Receiver Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x05			|
+0x01		| 0x02			|
+0x02		| 0xFB			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>Next, the sender sends a command that appears to prep both sides to start uploading file data. Interestingly, History Data seems to be included as part of the file upload process despite being metadata:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status
+0x01		| 0x04			| Command Byte (Start/Stop File Data Transfer)
+0x02 - 0x03	| 0xC500		| Local Address
+0x04 - 0x05	| 0xFFD2		| Remote Address
+0x06		| 0x2E			| Data Operation Length (no data sent, but this is the max length of History Data)
+0x07		| 0x00			| Parameter
+0x08		| 0x08			| Command Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The receiver then sends an ACK packet of data:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Receiver Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x40			| Transfer Status
+0x01		| 0x01			|
+0x02 - 0x03	| 0xC500		| Local Address
+0x04 - 0x05	| 0xFFD2		| Remote Address
+0x06 - 0x07	| ...			| Metadata Size
+0x08		| ...			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>Next, the sender transfers any History Data available. This command is always called even if the GBF file has no History Data. In that case, the Data Operation Length is simply zero.</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status
+0x01		| 0x0A			| Command Byte (Send File Data)
+0x02 - 0x03	| 0xC500		| Local Address
+0x04 - 0x05	| 0xC600		| Remote Address
+0x06		| ...			| Data Operation Length (length of History Data)
+0x07		| 0x00			| Parameter
+0x08		| ...			| Data Checksum
+0x09 - 0x36	| ...			| History Data
+0x37		| ...			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The receiver returns the following ACK packet:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Receiver Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x80			| Transfer Status
+0x01		| 0x00			|
+0x02 - 0x03	| 0xC500		| Local Address
+0x04		| ...			| Length of History Data
+0x05		| 0xC4			|
+0x06		| ...			| Length of History Data
+0x07		| 0x00			|
+0x08		| ...			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>Finally, both sides are now ready to send the Raw File Data for a GBF file. The sender issues the Send File Data command for as many times as it takes to transfer the entire file. Each command can only transfer 256 bytes of file data at max. If the Data Operation Length is zero, that means the full 256 bytes are transferred. Any non-zero length indicates the very last bytes of a file, assuming it is not divisiable by 256. Additionally, the Parameter is always set to 0x01 while a file transfer is incomplete. The last transfer switches this parameter to 0x00.</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status
+0x01		| 0x0A			| Command Byte (Send File Data)
+0x02 - 0x03	| 0xC500		| Local Address
+0x04 - 0x05	| 0xC600		| Remote Address
+0x06		| ...			| Data Operation Length (0x00 = 256 bytes)
+0x07		| 0x00 or 0x01		| Parameter (0x01 = Transfer in Progress, 0x00 = Final Transfer)
+0x08		| ...			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>For every one of these commands, the receiver sends an ACK packet in response. The first one is used while the file transfer is in progress, while the second is used for the final transfer:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Receiver Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x80			| Transfer Status
+0x01		| 0x00			|
+0x02 - 0x03	| 0xC500		| Local Address
+0x04 - 0x05	| 0xC500 		| Remote Address
+0x06		| 0x00			| 
+0x07		| 0x01			| Parameter
+0x08		| 0xF5			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Receiver Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x80			| Transfer Status
+0x01		| 0x00			|
+0x02 - 0x03	| 0xC500		| Local Address
+0x04 - 0x05	| 0xC403 		| Remote Address
+0x06		| 0x03			| 
+0x07		| 0x00			| Parameter
+0x08		| 0xF1			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>Once all the file data has been sent, the transfer is ended. There is a curious 16-bit value used after the Local Address, which is calculated as 0x03 - (File Size - Raw File Size). The command looks like this:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status
+0x01		| 0x04			| Command Byte (Start/Stop File Data Transfer)
+0x02 - 0x03	| 0xC50B		| Local Address
+0x04 - 0x05	| 0xFF0B		| 0x03 - (File Size - Raw File Size)
+0x06		| 0x00			| Data Operation Length (no data sent)
+0x07		| 0x00			| Parameter
+0x08		| 0xF2			| Command Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>Again, the receiver sends an ACK packet for the Start/Stop File Data Transfer command:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Receiver Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x40			| Transfer Status
+0x01		| 0x01			|
+0x02 - 0x03	| 0xC500		| Local Address
+0x04 - 0x05	| 0xFF0B		| 0x03 - (File Size - Raw File Size)
+0x06 - 0x07	| ...			| Metadata Size
+0x08		| ...			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The last bit of data from the sender, oddly enough, is the Cartridge Code, Byte 0x03 of the GBF file:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status
+0x01		| 0x0A			| Command Byte (Send File Data)
+0x02 - 0x03	| 0xC500		| Local Address
+0x04 - 0x05	| 0xC50A		| Remote Address
+0x06		| 0x01			| Data Operation Length
+0x07		| 0x00			| Parameter
+0x08		| 0x31			| Command Checksum
+0x09		| ...			| Cartridge Code
+0x0A		| ...			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The receiver sends this ACK packet afterwards:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Receiver Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x80			| Transfer Status
+0x01		| 0x00			|
+0x02 - 0x03	| 0xC500		| Local Address
+0x04 - 0x05	| 0xC401 		| Remote Address
+0x06		| 0x01			| 
+0x07		| 0x00			| Parameter
+0x08		| 0xF5			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>Before finishing up communications, the sender sets the Transfer End Flag with a Write Remote RAM command:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status 
+0x01		| 0x0B			| Command Byte (Write Remote RAM)
+0x02 - 0x03	| 0xCE00		| Local Address
+0x04 - 0x05	| 0xCE00		| Remote Address
+0x06		| 0x01			| Data Operation Length
+0x07		| 0x00			| Parameter
+0x08		| 0x28			| Command Checksum
+0x09		| 0x02			| Data Byte (Tranfer End Flag)
+0x0A		| 0xFE			| Data Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The receiver responds with the Data Checksum value. Now the transfer is just about complete. The very last command from the sender ends the session. Note that the command is exactly the same as starting it. No parameters have changed:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status 
+0x01		| 0x00			| Command Byte (Start/Stop Session)
+0x02 - 0x03	| 0xCE00		| Local Address
+0x04 - 0x05	| 0xCE00		| Remote Address
+0x06		| 0x01			| Data Operation Length
+0x07		| 0x00			| Parameter
+0x08		| 0x33			| Command Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<a name="gkl_nmp"></a>
+	<p class="gray_title">[GB KISS LINK] : Nectaris Map Infrared Protocol</p>
+
+		<p>The infrared protocol used by Nectaris GB is much simpler than that used for GBF files. In this mode, the GB KISS LINK always takes on the role of sender, even if the map data itself is technically being transferred to it. The main difference is whether the GB KISS LINK reads remote RAM stored on the Game Boy or writes to it. The following steps are done when the GB KISS LINK communicates with the Game Boy:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+GB KISS LINK						| Game Boy
+----------------------------------------------------------------------------------------------------------------------
+1)  Read Receiver ID String				| 1)  Return ID String
+							|
+	** If ID is &#34;RECEIVE&#34; **			| 	** If ID is &#34;RECEIVE&#34; **
+	2a) Send 1st 256 bytes of map data		| 	2a) Receive 1st 256 bytes of map data
+	3a) Send 2nd 256 bytes of map data		| 	3a) Receive 2nd 256 bytes of map data
+							|
+	** If ID is &#34;TRANCE&#34; **				|	** If ID is &#34;TRANCE **
+	2b) Receive 1st 256 bytes of map data		|	2b) Send 1st 256 bytes of map data
+	3b) Receive 2nd 256 bytes of map data		|	3b) Send 2nd 256 bytes of map data
+							|
+4) End Session						| 4) End Session
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>When the user chooses to send or receive a map, Nectaris GB will write a short ASCII string in RAM and 0xD000. The GB KISS LINK will read this with the Read Remote RAM command. Depending on the value, the GB KISS LINK will then determine if it needs to send or receive a map. The device must issue 2 Write Remote RAM commands or 2 Read Remote SRAM commands as described below:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status
+0x01		| 0x0B			| Command Byte (Write Remote RAM)
+0x02 - 0x03	| 0xD000 and 0xD100	| Local Address
+0x04 - 0x05	| 0xD000 and 0xD100	| Remote Address
+0x06		| 0x00			| Data Operation Length
+0x07		| 0x00			| Parameter
+0x08		| ...			| Command Checksum
+----------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status
+0x01		| 0x09			| Command Byte (Read Remote SRAM)
+0x02 - 0x03	| 0x4000+		| Local Address
+0x04 - 0x05	| 0x4000+		| Remote Address
+0x06		| 0x00			| Data Operation Length
+0x07		| 0x00			| Parameter
+0x08		| ...			| Command Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>Sending maps from the GB KISS LINK to the Game Boy uses fixed addresses. The destination/source of the 1st 256 block of map data is at 0xD000. The destination/source of the 2nd block of map data is at 0xD100.</p>
+
+	<p>When the GB KISS LINK receives a map from the Game Boy, Nectaris GB will transfer a single byte after the &#34;TRANCE&#34; string. This value represents an offset to the map&#39;s data in SRAM. Map data is reserved for the 3rd SRAM bank, however, the Read Remote RAM command treats the entire 32KB as a single addressable block of memory. In other words, map data begins at 0x4000. The offset represents increments of 512 bytes. For example, an offset of 0x07 points to map data at 0x4E00.</p>
+
+	<p>Neither the Write Remote RAM commands nor the Read Remote SRAM commands appear to use the Parameter byte. When reading the ID string from a Game Boy, the Data Operation Length should be 0x07 at a minimum. Additionally, the length should be 0x00 when reading and writing each 256 byte block of map data.</p>
+
+	<a name="gkl_gbd"></a>
+	<p class="gray_title">[GB KISS LINK] : Nectaris GB Map Data</p>
+
+	<p>Nectaris GB largely separates unit placement data and terrain placement data. Unit placement data is saved in SRAM while terrain placement data is mostly hardcoded into ROM. Game Boy-to-Game Boy transfers primarily only deal with unit placement data. It is currently unknown if GB KISS LINK transfers are supposed to pull terrain data from Nectaris GB&#39;s ROM or if Hudson provided PC versions of these maps. These Game Boy-to-PC transfers via the GB KISS LINK were handled by Hudson&#39;s unit placement program, UnitEdit.exe. Maps measure in at 15x10 on-screen tiles.</p>
+
+	<p>The unit placement data for Game Boy maps follows this format:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Bytes		| Value		| Description
+----------------------------------------------------------------------------------------------------------------------
+0x0000 - 0x0005	| &#34;NECTAR&#34;	| Magic Bytes 
+0x0006		| 0x20 - 0x47	| Map ID
+0x0007		| 0x04		| Map Type (Construction Map Data)
+0x0008 - 0x000D | ...		| Map Name
+0x000E - 0x000F | 0xFF		| Padding?
+0x0010 - 0x0013 | 0x00		| Padding?
+0x0014 - 0x002B | ...		| Terrain Data
+0x002C - 0x017B | ...		| Unit Data
+0x017C - 0x017D | ...		| Cursor Position
+0x017E - 0x017F | 0x00		| Unknown Data
+0x0180 - 0x01E3 | 0xFF		| Padding? 
+0x01E4 - 0x01FE | 0x00		| Padding?
+0x01FF		| ...		| Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The Map ID determines which set of terrain data from ROM is used for a given map. Indexing begins at 0x20 and can access all 40 maps available for Nectaris GB. Campaign maps use lower values from 0x00 to 0x1F, although Nectaris GB does not appear to allow editing campaign maps.</p>
+
+	<p>The Map Type determines how the map will be interpreted by Nectaris GB. For example, other values signify a campaign or multiplayer map. For GB KISS LINK transfers, this value is meant to be constant.</p>
+
+	<p>The Map Name is a 6-byte ASCII field. For construction map data, this field typically contains the name &#34;EMAPxx&#34; where &#34;xx&#34; is the string &#34;01&#34; through &#34;40&#34;. Campaign maps use their 6-character names here.</p>
+
+	<p>A very small amount of terrain data is alotted for construction map data. These are often used to put factories on the map, although the format allows for any kind of terrain (mountains, bridges, valleys, etc) to appear. These tiles will overwrite any of the original terrain data found from ROM. The format of terrain data is as follows:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Bytes		| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| X Coordinate
+0x01		| Y Coordinate
+0x02		| Terrain Type
+----------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------
+Value		| Terrain Type
+----------------------------------------------------------------------------------------------------------------------
+0x00		| Flat Land
+0x01		| Road
+0x02		| Hill
+0x03		| Wasteland
+0x04		| Valley
+0x05		| Mountain
+0x06		| Bridge
+0x07		| Bridge
+0x08		| Union Base
+0x09		| Guicy Base
+0x0A		| Union Factory
+0x0B		| Guicy Factory
+0x0C		| Nuetral Factory
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>There are 336 bytes dedicated to the actual units placed on a map. Data for each unit uses 6 bytes. As a result, a maximum of 56 units may be placed on any given map. The format of unit data is as follows:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Bytes		| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| Unit Type
+0x01		| X Coordinate
+0x02		| Y Coordinate
+0x03		| Unit Level
+0x04		| 0xFF
+0x05		| Unit Quantity
+----------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------
+Value		| Unit Type (Translated Codename)
+----------------------------------------------------------------------------------------------------------------------
+0x00		| M77 (Porcupine)
+0x01		| FX-1 (Falco)
+0x02		| AX-87 (Javi)
+0x03		| EF-88 (Hunter)
+0x04		| T-79 (Grizzly)
+0x05		| PT-6 (Armadillo)
+0x06		| S-61 (Bison)
+0x07		| GS-81 (Slug)
+0x08		| GT-86 (Monster)
+0x09		| HMB-2 (Giant)
+0x0A		| TT-1 (Lenet)
+0x0B		| SG-4 (Nashorn)
+0x0C		| MR-22 (Estol)
+0x0D		| MB-5 (Rabbit)
+0x0E		| MB-4 (Lynx)
+0x0F		| AAG-4 (Seeker)
+0x10		| MM107 (Hawkeye)
+0x11		| SS-80 (Monoculus)
+0x12		| GX-77 (Munks?)
+0x13		| GX-87 (Dabek?)
+0x14		| CBX-1 (Draper)
+0x15		| NC-1 (Mule)
+0x16		| C-61 (Pelican)
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>Setting Bit 7 of the Unit Type byte will add that unit to the Guicy forces. Otherwise, if Bit 7 is unset, the unit will be added to the Union forces.</p>
+
+	<p>When construction map data is saved, the X/Y Coordinates of the cursor are also stored. Nectaris GB, however, does not appear to use the data to restore the cursor position when opening a map to edit (nor does it appear to be used when saving map data for campaign battles).</p>
+
+	<p>The checksum is a simple 8-bit value calculated by adding all bytes from 0x0000 to 0x01FE. This bytes must be correct, otherwise Nectaris GB will raise an error when receiving maps from the GB KISS LINK.</p>
+
+	<a name="gkl_pcd"></a>
+	<p class="gray_title">[GB KISS LINK] : Nectaris PC Map Data</p>
+
+	<p>The PC version of Nectaris combines terrain and unit placement data into a single file, unlike Nectaris GB. As a result, each PC map is completely self-contained, however, there is no fixed size either. There are 2 different formats depending on the version used:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Bytes		| Value		| Description
+----------------------------------------------------------------------------------------------------------------------
+0x0000 - 0x000F | &#34;NEC MAP 1.0&#34;	| Magic Bytes
+0x0010 		| ...		| Map Width
+0x0011		| ...		| Map Height
+0x0012 - ...	| ...		| Terrain Data
+...    - ...	|		| Unit Data
+EOF		| 0xFF		| EOF Marker
+----------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------
+Bytes		| Value		| Description
+----------------------------------------------------------------------------------------------------------------------
+0x0000 - 0x000F | &#34;NEC MAP 1.1&#34;	| Magic Bytes
+0x0010 - 0x0015 | ...		| Map Name
+0x0016 - 0x0017 | 0x00		| Padding?
+0x0018		| ...		| Map Width
+0x0019		| ...		| Map Height
+0x001A - ...	| ...		| Terrain Data
+...    - ...	| ...		| Unit Data
+EOF		| 0xFF		| EOF Marker
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The first version omits the Map Name. Additionally, it uses a more compact data format for terrain and unit data. In both versions, terrain bytes are ordered starting from the top-left and ending at the bottom-right of the map. Each row of the map is stored one after the others. The difference between versions is that V0 uses simple 8-bit values for each terrain tile. V1, however, pads this out to 16-bits, where the 2nd byte is 0x00. A typical 16x11 map, for example, will have exactly 176 bytes of terrain data in V0 and 352 in V1. Both versions use the following format for units data:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Bytes		| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| Unit Type
+0x01		| X Coordinate
+0x02		| Y Coordinate
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>Unit Types use the same format as Nectaris GB (see section above). Once again, setting Bit 7 of the Unit Type byte makes the unit part of the Guicy army, while leaving Bit 7 unset makes the unit part of the Union Army. Terrain data is a bit more elaborate than Nectaris GB. More tiles are available for the PC version, allowing it to show greater details like craters, large boulders, and complex roads. The following is a list of which values generates specific terrain data. Note that road orientations are described as routes according to clock-wise compass directions (North first, East, South, then West).</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Value		| Terrain Type					| Road Shape (if applicable)
+----------------------------------------------------------------------------------------------------------------------
+0x01		| Mountain					|
+0x02		| Mountain					|
+0x03		| Mountain					|
+0x04		| Mountain					|
+0x05		| Mountain					|
+0x06		| Mountain					|
+0x07		| Wasteland					|
+0x08		| Mountain					|
+0x09		| Flat Land					|
+0x0A		| Mountain					|
+0x0B		| Flat Land					|
+0x0C		| Mountain					|
+0x0D		| Mountain					|
+0x0E		| Flat Land					|
+0x0F		| Mountain					|
+0x10		| Mountain					|
+0x11		| Mountain					|
+0x12		| Flat Land					|
+0x13		| Mountain  (Single Tile)			|
+0x14		| Flat Land					|
+0x15		| Flat Land					|
+0x16		| Mountain					|
+0x17		| Mountain					|
+0x18		| Mountain					|
+0x19		| Mountain					|
+0x1A		| Flat Land					|
+0x1B		| Flat Land					|
+0x1C		| Wasteland					|
+0x1D		| Flat Land					|
+0x1E		| Mountain					|
+0x1F		| Mountain					|
+0x20		| Mountain					|
+0x21		| Mountain					|
+0x22		| Mountain					|
+0x23		| Flat Land					|
+0x24		| Flat Land					|
+0x25		| Flat Land					|
+0x26		| Mountain					|
+0x27		| Mountain					|
+0x28		| Mountain					|
+0x29		| Flat Land					|
+0x2A		| Flat Land					|
+0x2B		| Mountain					|
+0x2C		| Mountain					|
+0x2D		| Flat Land					|
+0x2E		| Mountain					|
+0x2F		| Mountain					|
+0x30		| Mountain					|
+0x31		| Flat Land					|
+0x32		| Flat Land					|
+0x33		| Horizontal Road, Flat Land on North Side	| ━
+0x34		| Flat Land					|
+0x35		| Flat Land					|
+0x36		| Mountain					|
+0x37		| Mountain					|
+0x38		| Flat Land					|
+0x39		| Flat Land					|
+0x3A		| Flat Land (Single Tile)			|
+0x3B		| Flat Land					|
+0x3C		| Flat Land					|
+0x3D		| Flat Land					|
+0x3E		| Flat Land					|
+0x3F		| Mountain					|
+0x40		| Wasteland					|
+0x41		| Wasteland					|
+0x42		| Wasteland					|
+0x43		| Wasteland					|
+0x44		| Hill						|
+0x45		| Hill (Single Tile)				|
+0x46		| Flat Land					|
+0x47		| Flat Land					|
+0x48		| Wasteland					|
+0x49		| Wasteland					|
+0x4A		| Wasteland					|
+0x4B		| Hill						|
+0x4C		| Hill						|
+0x4D		| Hill 						|
+0x4E		| Flat Land					|
+0x4F		| Flat Land					|
+0x50		| Wasteland					|
+0x51		| Wasteland					|
+0x52		| Wasteland					|
+0x53		| Flat Land					|
+0x54		| Hill						|
+0x55		| Hill						|
+0x56		| Flat Land (Crater)				|
+0x57		| Flat Land (Crater)				|
+0x58		| Wasteland					|
+0x59		| Wasteland					|
+0x5A		| Hill						|
+0x5B		| Hill						|
+0x5C		| Hill						|
+0x5D		| Hill						|
+0x5E		| Flat Land (Crater)				|
+0x5F		| Flat Land (Crater)				|
+0x60		| Union Base					|
+0x61		| Mountain					|
+0x62		| Guicy Base					|
+0x63		| Guicy Factory					|
+0x64		| Flat Land					|
+0x65		| Hill						|
+0x66		| Flat Land					|
+0x67		| Flat Land					|
+0x68		| Flat Land					|
+0x69		| Wasteland					|
+0x6A		| Hill						|
+0x6B		| Flat Land					|
+0x6C		| Flat Land					|
+0x6D		| Hill						|
+0x6E		| Hill						|
+0x6F		| Flat Land					|
+0x70		| Neutral Factory				|
+0x71		| Flat Land					|
+0x72		| Hill						|
+0x73		| Wasteland					|
+0x74		| Hill						|
+0x75		| Union	Factory					|
+0x76		| Flat Land					|
+0x77		| Flat Land					|
+0x78		| Mountain					|
+0x79		| Flat Land					|
+0x7A		| Mountain					|
+0x7B		| Wasteland					|
+0x7C		| Flat Land					|
+0x7D		| Union Factory					|
+0x7E		| Flat Land					|
+0x7F		| Mountain					|
+0x80		| Mountain					|
+0x81		| Mountain					|
+0x82		| Mountain					|
+0x83		| Mountain					|
+0x84		| Mountain					|
+0x85		| Mountain					|
+0x86		| Flat Land					|
+0x87		| Flat Land					|
+0x88		| Mountain					|
+0x89		| Mountain					|
+0x8A		| Flat Land					|	
+0x8B		| Flat Land					|
+0x8C		| Mountain					|
+0x8D		| Flat Land					|
+0x8E		| Guicy Base					|
+0x8F		| S-SE Elbow Road (Leads to Guicy Base)		| ┗
+0x90		| Hill						|
+0x91		| Hill						|
+0x92		| Hill						|
+0x93		| Mountain					|
+0x94		| Mountain					|
+0x95		| NE Road (Leads to Guicy Base)			| /
+0x96		| Vertical Road (Leads to Guicy Base)		| ┃
+0x97		| Mountain					|
+0x98		| Flat Land					|
+0x99		| Valley					|
+0x9A		| Valley					|
+0x9B		| T-Junction Road				| ┳
+0x9C		| Valley					|
+0x9D		| Horizontal Road (Guicy Base on South Side)	| ━ 
+0x9E		| Valley					|
+0x9F		| Mountain					|
+0xA0		| Valley					|
+0xA1		| Valley					|
+0xA2		| Valley					|
+0xA3		| Valley					|
+0xA4		| Valley					|
+0xA5		| Flat Land					|
+0xA6		| Wasteland					|
+0xA7		| Valley					|
+0xA8		| Valley					|
+0xA9		| Valley					|
+0xAA		| Valley					|
+0xAB		| Valley					|
+0xAC		| Valley					|
+0xAD		| Valley					|
+0xAE		| Valley					|
+0xAF		| T-Junction Road				| ┣╸
+0xB0		| Horizontal Road (Dead End on Right Side)	| ━
+0xB1		| Horizontal Road (Flat Land on South Side)	| ━
+0xB2		| Horizontal Road (Flat Land on North Side)	| ━
+0xB3		| Horizontal Road (Dead End on Left Side)	| ━
+0xB4		| NE->N Elbow Road				| ┛		
+0xB5		| SE Road					| \
+0xB6		| E-NE and Horizontal Road			| ━&lt;
+0xB7		| Valley					|
+0xB8		| NE Road					| /		
+0xB9		| N->NE Elbow Road				| ┏		
+0xBA		| NE->N Elbow Road				| ┛
+0xBB		| NE Bridge					| /
+0xBC		| Valley					|
+0xBD		| Vertical Road 				| ┃ 
+0xBE		| Vertical Road					| ┃
+0xBF		| Horizontal Road Neutral Factory to the North	| ━
+0xC0		| Mountain					|
+0xC1		| Mountain					|
+0xC2		| SE->S Elbow Road				| ┓
+0xC3		| Mountain					|
+0xC4		| Mountain					|
+0xC5		| N->SE and N->SW 3-Way Junction Road		| ⅄
+0xC6		| S-SE Elbow Road				| ┗
+0xC7		| Mountain					|
+0xC8		| Mountain					|
+0xC9		| Mountain					|
+0xCA		| Flat Land					|
+0xCB		| Flat Land					|
+0xCC		| Wasteland					|
+0xCD		| Flat Land					|
+0xCE		| Mountain					|
+0xCF		| Flat Land					|
+0xD0		| Mountain					|
+0xD1		| Wasteland					|
+0xD2		| Mountain					|
+0xD3		| Mountain					|
+0xD4		| Flat Land					|
+0xD5		| Mountain					|
+0xD6		| Mountain					|
+0xD7		| Flat Land					|
+0xD8		| Mountain					|
+0xD9		| Mountain					|
+0xDA		| Mountain					|
+0xDB		| Flat Land					|
+0xDC		| Mountain					|
+0xDD		| Flat Land					|
+0xDE		| Mountain					|
+0xDF		| Vertical Bridge				| ┃
+0xE0		| Valley					|
+0xE1		| Valley					|
+0xE2		| Valley					|
+0xE3		| Valley					|
+0xE4		| Mountain					|
+0xE5		| Mountain					|
+0xE6		| Mountain					|
+0xE7		| W-NW and Horizontal Road			| &gt;━
+0xE8		| Flat Land					|
+0xE9		| Flat Land					|
+0xEA		| Mountain					|
+0xEB		| Flat Land					|
+0xEC		| Mountain					|
+0xED		| Mountain					|
+0xEE		| Mountain					|
+0xEF		| Mountain					|
+0xF0		| Flat Land					|
+0xF1		| Flat Land					|
+0xF2		| Mountain					|
+0xF3		| Mountain					|
+0xF4		| Mountain					|
+0xF5		| Mountain					|
+0xF6		| Flat Land					|
+0xF7		| Mountain					|
+0xF8		| Mountain					|
+0xF9		| Mountain					|
+0xFA		| Mountain					|
+0xFB		| Mountain					|
+0xFC		| Mountain					|
+0xFD		| Mountain					|
+0xFE		| Mountain					|
+0xFF		| Mountain					|
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>Unlike maps for Nectaris GB, the PC version does not use checksums. Instead, the last byte of each file is simply 0xFF to mark EOF.</p>
+
+	<p>It is currently unknown exactly how Hudson&#39;s UnitEdit.exe program converted between GB and PC versions of maps and whether or not only certain types of maps were capable of conversion. An archived version of UnitEdit.exe still exists, however, this earlier version lacks the updates Hudson made to work with the GB KISS LINK. Many of the PC terrain types are used to add an increased level of detail and variety to maps, but they can be simplified to match the Game Boy versions.</p>
+
+	<p>Some of the above terrain types are marked as &#34;Single Tile&#34;, meaning they represent the closest direct conversion to Nectaris GB, since the graphics occupy a single, isolated tile and are typically not meant to be stitched together with others.</p>
+
+
+
+
+
+
+
 	<!-- Soul Doll Adapter -->
 
 	<a name="sda"></a>
@@ -2330,6 +3318,8 @@ Bit 7               | Bit 6               | Bit 5               | Bit 4         
 Address		| Data Description
 -----------------------------------------------------------
 0x302		| Legend ID
+0x317 - 0x318	| Extended Legend ID
+0x351		| Training Bonus
 0x398 - 0x39C	| Owner Name
 0x3A1 - 0x3B0	| Message
 0x3B1 - 0x3B9	| Legend Name
@@ -2347,6 +3337,8 @@ Address		| Data Description
 Address		| Data Description
 -----------------------------------------------------------
 0x302		| Legend ID
+0x317 - 0x318	| Extended Legend ID
+0x351		| Training Bonus
 0x390 - 0x394	| Owner Name
 0x3A1 - 0x3B0	| Message
 0x399 - 0x3A0	| Legend Name
@@ -2391,7 +3383,25 @@ Address		| Data Description
 0x20 = Chibi Shiron			0x42 = Kraken					0x73 = Valkyrie
 											0x74 = Cerberus</pre></p>
 
-	<p>Several IDs appear to be mapped to the same Legend. This may be explained by the fact that some Soul Dollz were released in A, B, and sometimes C variants. The plastic figurine is different, but the GBA games generate the same sprite and default name for the Soul Doll. All of the potential duplicates are marked with &#34;?&#34; in the list above. Although there are 103 Soul Dollz, the list remains incomplete. The gaps between entries do not generate valid Legendz, which suggests other bytes in EEPROM are also responsible for the ID.</p>
+	<p>Several IDs appear to be mapped to the same Legend. This may be explained by the fact that some Soul Dollz were released in A, B, and sometimes C variants. The plastic figurine is different, but the GBA games generate the same sprite and default name for the Soul Doll. All of the potential duplicates are marked with &#34;?&#34; in the list above. Some Soul Dolls use a longer ID that expands to 24-bits. This combines the 8-bit value from 0x302 and the 16-bit value from 0x317 - 0x318. This extension is stored MSB first. The chart below lists the Legendz obtainable via the extended IDs (format is 8-bit ID :: 16-bit extension):</p>
+
+<p><pre>0x02 :: 0x002C = Blazedragon (A)?
+0x02 :: 0x0055 = Greedo Unawakened Version
+0x02 :: 0x0104 = Blazedragon (C)?
+0x02 :: 0x0122 = GW Nicol
+0x29 :: 0x004F = Griffin
+0x29 :: 0x005D = Griffin (Elemental Version)?
+0x29 :: 0x0163 = Griffin Zan Armed
+0x2A :: 0x0040 = Bigfoot
+0x2A :: 0x004B = Bigfoot (Elemental Version)?
+0x2A :: 0x013B = Bigfoot Cure Armed
+0x2F :: 0x0073 = Colonel Windragon (A)
+0x2F :: 0x0104 = Colonel Windragon Strike Armed
+0x2F :: 0x01E8 = True Windragon
+0x30 :: 0x0078 = Colonel Blazedragon (A)
+0x30 :: 0x0122 = Colonel Blazedragon Zoldyck Armed
+0x40 :: 0x0064 = Chibi Ranshiin
+0x40 :: 0x0140 = Ranshiin (A)?</pre></p>
 
 	<p>1 byte represents the so called &#34;Training Bonus&#34; granted to a Legend when it is reborn. This adds a certain amount of points to its various base stats, such as HP, Strength, Defense, etc. The larger the value of this byte, the greater the stat boost will be. It has a limited range of valid values (1 = Minimum, 6 = Maximum).</p>
 
@@ -2421,7 +3431,7 @@ HP
 -----------------------------------------------------------
 VAL1 = READ 16 BITS FROM (ADDRESS)
 VAL2 = READ 08 BITS FROM (ADDRESS + 2)
-HP = (VAL_1 &gt;&gt; 6) | ((VAL & 0x0F) &lt;&lt; 10)
+HP = (VAL_1 &gt;&gt; 6) | ((VAL_2 & 0x0F) &lt;&lt; 10)
 
 
 -----------------------------------------------------------
@@ -6654,19 +7664,24 @@ Read Bit
 	<p>By writing certain bytes to the ATVT (using the protocol described above) the CPU can send several commands to the device. Typically the last two bytes of a command are 8-bit or 16-bit parameters. In the case of read commands, there are no parameters used. A list of known commands is shown in the table below along with whether the command uses TV_CNT_A or TV_CNT_B:</p>
 
 <pre>-----------------------------------------------------------
-Command Name		| Command Pattern (in hexadecimal)
+Command Name		| Command Pattern	|Register
 -----------------------------------------------------------
-Read Channel Status	| 87
-Change Channel		| C0 xx xx
-Switch to AV Input Mode	| D8 02 E0
-Switch to TV Mode	| D8 02 E1
-Set Video Contrast	| D8 10 xx
-Set Video Brightness	| D8 11 xx
-Set Video Hue		| D8 15 xx
-Clear Video Frame	| D8 0D 80
-Render Video Frame	| D8 0D 00
-Read Something?		| D9
+Unknown Command		| 86 xx xx		| TV_CNT_B
+Read Channel Status	| 87			| TV_CNT_B
+Change Channel		| C0 xx xx		| TV_CNT_B
+Switch to AV Input Mode	| D8 02 E0		| TV_CNT_A
+Switch to TV Mode	| D8 02 E1		| TV_CNT_A
+Set Video Contrast	| D8 10 xx		| TV_CNT_A
+Set Video Brightness	| D8 11 xx		| TV_CNT_A
+Set Video Hue		| D8 15 xx		| TV_CNT_A
+Clear Video Frame	| D8 0D 80		| TV_CNT_A
+Render Video Frame	| D8 0D 00		| TV_CNT_A
+Read Something?		| D9			| TV_CNT_A
 -----------------------------------------------------------</pre>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command 86 - Unknown Command</strong></p>
+	<p class="list_item">This command appears related to changing the channel. It is called at least 4 times before reading the channel status and changing the channel frequency; each time different parameters are used.</p>
 
 	<p class="spc"></p>
 	<p class="list_item"><strong>Command 87 - Read Channel Status</strong></p>
