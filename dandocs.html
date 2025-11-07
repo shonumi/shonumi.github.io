@@ -158,6 +158,7 @@
 			<p class="list_item"><a href="#utp">Ubisoft Thrustmaster Pedometer</a></p>
 			<p class="list_item"><a href="#hcv">HCV-1000</a></p>
 			<p class="list_item"><a href="#kmr">Magic Reader</a></p>
+			<p class="list_item"><a href="#wcs">Wantame Card Scanner</a></p>
 			
 		</div>
 
@@ -176,6 +177,14 @@
 			<p class="list_item"><a href="#mbt">Mobile Trainer</a></p>
 			<p class="list_item"><a href="#ndg">Net de Get: Minigame @ 100</a></p>
 			<p class="list_item"><a href="#zng">Zen Nihon GT Senshuken</a></p>
+		</div>
+
+		<div class="toc_sec">
+			<p class="toc_gray_title">Unreleased Hardware</p>
+
+			<p class="list_head"><strong>DMG and GBC</strong></p>
+			<p class="list_item"><a href="#vaus">Vaus Controller</a></p>
+			<p class="list_item"><a href="#work">WorkBoy</a></p>
 		</div>
 	</div>
 
@@ -2179,7 +2188,7 @@ ELSE
 	<a name="sew_sta"></a>
 	<p class="gray_title">[Sewing Machines] : Sewing Machine Status</p>
 
-	<p>The sewing machines report their status whenever the Game Boy sends the value 0x80 via external transfer. This byte describes various aspect of the machine during operation.</p>
+	<p>The sewing machines report their status whenever the Game Boy sends the value 0x80 via external transfer. This byte describes various aspects of the machine during operation.</p>
 
 <pre>-------------------------------------------------
 Status Byte
@@ -2368,7 +2377,7 @@ Sender Bytes	| Value			| Description
 0x08		| 0x1C			| Command Checksum
 ----------------------------------------------------------------------------------------------------------------------</pre>
 
-	<p>The receiver the responds with an ASCII string: &#34;GB KISS MENU &#34;. This string must be an exact match, otherwise the sender will fail to initialize continue after a certain point. The receiver&#39;s respon looks like this:</p>
+	<p>The receiver the responds with an ASCII string: &#34;GB KISS MENU &#34;. This string must be an exact match, otherwise the sender will fail to initialize continue after a certain point. The receiver&#39;s response looks like this:</p>
 
 <pre>----------------------------------------------------------------------------------------------------------------------
 Receiver Bytes	| Value			| Description
@@ -2444,7 +2453,30 @@ Receiver Bytes	| Value			| Description
 0x109		| ...			| Data Checksum
 ----------------------------------------------------------------------------------------------------------------------</pre>
 
-	<p>The total length of this transfer is *ALWAYS* 265 bytes. Since the Title and Icon data will not fill up this space, it seems random RAM bytes are transferred towards the very end before the Data Checksum. The format for File Search Input is currently not known. Note that in the case that a GBF file does not have its own icon, only the Title data will actually be transferred. The 11 bytes sent here are copied and used by the sender later on. Before that, the sender writes to the receiver&#39;s RAM for unknown reasons:</p>
+	<p>The Transfer Status here represents whether or not the receiver already has a GBF file that matches what the sender is trying to transfer. The value 0x80 means an existing file is present, which prompts the sender to confirm if the file will be sent anyway. The value 0x90 indicates no matching file is present. The actual content of the GBF file may be different or updated, something that isn&#39;t communicated when just sending the Title and Icon. This should be considered a preliminary check at best for users to detect duplicate files. All infrared activity is paused until the sender makes a choice to send the file or quit the transfer immediately.</p>
+
+	<p>The total length of this transfer is *ALWAYS* 265 bytes. Since the Title and Icon data will not fill up this space, it seems random RAM bytes are transferred towards the very end before the Data Checksum. The format for File Search Input is currently not known. Note that in the case that a GBF file does not have its own icon, only the Title data will actually be transferred. The 11 bytes sent here are copied and used by the sender later on.</p>
+
+	<p>If a duplicate file is not sent, the connection is closed and with a command to stop the current session. Otherwise, a new command is sent to indicate that the receiver will delete the current file and write the the incoming GBF file data (potentially moving it to a new slot as well).</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Sender Bytes	| Value			| Description
+----------------------------------------------------------------------------------------------------------------------
+0x00		| 0x30			| Transfer Status 
+0x01		| 0x06			| Command Byte (Continue File Transfer)
+0x02 - 0x03	| 0xC700		| Local Address
+0x04		| 0x10			|
+0x05		| 0x09			| 
+0x06		| 0x08			| 
+0x07		| 0x23			| Parameter
+0x08		| ...			| Command Checksum
+0x09 - ...	| ...			| Echo of File Search Input + Title and Icon Length/Data
+...		| ...			| Echo Checksum
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>This command essentially copies all the data from the original response to the Send Title and Icon Data command. It appears to force the receiver to accept the incoming file and mark the old data to be deleted. The 4 parameters after the Local Address are used for currently unknown purposes, however, they appear to be constant values, at least as far as most GB KISS transfers are concerned. Once this command is finished, the sender must repeat the above Send Title and Icon Data. At this point, the receiver&#39;s Transfer Status value will read 0x90.</p>
+
+	<p>After the Send Title and Icon Data command, the sender writes to the receiver&#39;s RAM:</p>
 
 <pre>----------------------------------------------------------------------------------------------------------------------
 Sender Bytes	| Value			| Description
@@ -4653,6 +4685,7 @@ Bit		| Function
 	<p class="list_item"><a href="#ama_sys">File System And Hierarchy</a></p>
 	<p class="list_item"><a href="#ama_lok">00.AM3</a></p>
 	<p class="list_item"><a href="#ama_err">Error Handling</a></p>
+	<p class="list_item"><a href="#ama_gbp">Game Boy Player Copy Protection</a></p>
 	<p class="list_item"><a href="#ama_lst">List of AM3 Cards and Products</a></p>
 
 	<a name="ama_gen"></a>
@@ -4709,7 +4742,7 @@ AM_SMC_EOF	(R)	0x0801040E	16-bit		Remaining bytes from current read pointer to E
 
 	<p>AM_SMC_SIZE determines the size of data to read from the SmartMedia card. As the Advance Movie Adapter only maps in a maximum of 1KB for data blocks, this value is never greater than 0x400 as far as the firmware is concerned. Note that setting the size of data for firmware reads is a separate register.</p>
 
-	<p>AM_SMC_FILE selects the current file to begin reading data from. Below in further section, a thorough explanation of the AM3 file hierarchy is provided.</p>
+	<p>AM_SMC_FILE selects the current file to begin reading data from. Below in a further section, a thorough explanation of the AM3 file hierarchy is provided.</p>
 
 	<p>AM_SMC_EOF returns the remaining bytes from the current read pointer until the current End-Of-File is reached. This value normally reports the same 16-bit value as AM_SMC_SIZE when at least that many bytes remain between the read pointer and EOF. If the read pointer advances after mapping in new data, and the distance between the read pointer and the EOF is less than AM_SMC_SIZE, AM_SMC_EOF will report the smaller value. Note that AM_SMC_EOF can also change when simply switching to a new file (by writing to AM_SMC_FILE) that is smaller than AM_SMC_SIZE.</p>
 
@@ -4722,9 +4755,9 @@ AM_SMID		(R)	0x08010410	128-bit		16-byte SmartMedia ID used for copy-protection
 
 	<p>AM_FILE_SIZE returns the current file size as determined by the FAT of the SmartMedia card. Note that this register overlaps with AM_SMID. To switch, the CPU must write the value 0x05 to AM_BLK_STAT.</p>
 
-	<p>AM_SMID returns the 128-bit (16-byte) SmartMedia ID (SMID) that the firmware verifies for copy-protection purposes. This ID is unique to every SmartMedia cards and is embedded in a region not normally accessible by standard card readers. When no SmartMedia card is inserted in the adapter, these bytes return zero. Note that this register partially overlaps with AM_FILE_SIZE. To switch, the CPU must write the value 0x03 to AM_BLK_STAT.</p>
+	<p>AM_SMID returns the 128-bit (16-byte) SmartMedia ID (SMID) that the firmware verifies for copy-protection purposes. This ID is unique to every SmartMedia card and is embedded in a region not normally accessible by standard card readers. When no SmartMedia card is inserted in the adapter, these bytes return zero. Note that this register partially overlaps with AM_FILE_SIZE. To switch, the CPU must write the value 0x03 to AM_BLK_STAT.</p>
 
-	<p>To properly access any of the I/O registers, the PHI terminal output should be set to 16.78MHz. On that note, the amount of cycles spent in various waitstates does not appear to affect the overall operation of the adapter. However, slower access, if significant, could potentially degrade the firmware&#39;s video playback functions. The firmware should handle a small amount slower access without issue. For example, on the DS Lite, there is a brief pause during the initial setup (before the AM3 logo appears) with a small loading icon. This screen is not shown on an original Game Boy Advance due to apparent timing differences.</p>
+	<p>To properly access any of the I/O registers, the PHI terminal output should be set to 16.78MHz. On that note, the amount of cycles spent in various waitstates does not appear to affect the overall operation of the adapter. However, slower access, if significant, could potentially degrade the firmware&#39;s video playback functions. The firmware should handle a small amount of slower access without issue. For example, on the DS Lite, there is a brief pause during the initial setup (before the AM3 logo appears) with a small loading icon. This screen is not shown on an original Game Boy Advance due to apparent timing differences.</p>
 
 	<a name="ama_sta"></a>
 	<p class="gray_title">[Advance Movie Adapter] : AM_BLK_STAT</p>
@@ -4733,8 +4766,7 @@ AM_SMID		(R)	0x08010410	128-bit		16-byte SmartMedia ID used for copy-protection
 
 <pre>-----------------------------------------------------------
 Bit 0		(R/W)		Execute Operation
-Bit 1-2		(R/W)		Operation Type
-Bit 3		(R/W)		Internal Operation/External Operation
+Bit 1-3		(R/W)		Operation Type
 ...
 Bit 8		(R)		EOF Reached/Passed Flag
 ...
@@ -4743,24 +4775,7 @@ Bit 14		(R)		I/O Registers Ready Flag
 
 	<p>Whenever AM_BLK_STAT is written, firmware waits indefinitely to validate that the register holds the new value. Every command issued to the adapter must set Bit 0 to &#34;1&#34; to take effect. Afterwards, it waits until Bit 0 returns to &#34;0&#34; to signal the end of the operation. After every operation, the lower 8-bits of AM_BLK_STAT will always read as zero, however, depending on the current status of the adapter, the upper read-only 8-bits may be set.</p>
 
-	<p>Operation Type describes 4 fundamental operations available:</p>
-
-<pre>-----------------------------------------------------------
-Value		| Operation Description
------------------------------------------------------------
-0		| Read Block
-1		| Write I/O Register
-2		| Set File Size Mode
-3		| Set SMID Mode
------------------------------------------------------------</pre>
-
-	<p>The most common operation is &#34;Read Block&#34; which simply copies a data block of a set size from either firmware or the SmartMedia card.</p>
-
-	<p>Writing to an I/O register is exactly that. AM_BLK_STAT needs to signal to the adapter that the CPU will update one of its I/O registers.</p>
-
-	<p>Set File Size Mode and Set SMID Mode refer to the values held in AM_FILE_SIZE and AM_SMID. Since these registers have overlapping addresses, AM_BLK_STAT controls which mode the adapter will use, and which values to return when reading these memory locations. Once the SMID is read, there is usually no need to return to this mode.</p>
-
-	<p>These operations can be further divided as being &#34;internal&#34; or &#34;external&#34;. The first deals with data that resides on the Advance Movie Adapter itself, such as reading firmware or writing to I/O registers. The second deals with data residing on the SmartMedia card, such as the files themselves, file sizes, and SMID. A value of &#34;1&#34; chooses internal operations, while a value of &#34;0&#34; chooses external operations. In practice, however, only a few limited values are ever written to AM_BLK_STAT. These can then be seen as single-byte &#34;commands&#34;.</p>
+	<p>Operation Type describes 5 operations available. Because Bit 0 of AM_BLK_STAT executes these operations, they can be seen as single-byte &#34;commands&#34;:</p>
 
 <pre>-----------------------------------------------------------
 Command		| Description
@@ -4771,6 +4786,12 @@ Command		| Description
 0x09		| Read Firmware Data Block
 0x0B		| Write I/O Register
 -----------------------------------------------------------</pre>
+
+	<p>The most common operations are reading data blocks from SmartMedia Card or firmware. This simply maps data of a specified length from either source to AM_BLK_ADDR.</p>
+
+	<p>Writing to an I/O register is exactly that. AM_BLK_STAT needs to signal to the adapter that the CPU will update one of its I/O registers.</p>
+
+	<p>Set File Size Mode and Set SMID Mode refer to the values held in AM_FILE_SIZE and AM_SMID. Since these registers have overlapping addresses, AM_BLK_STAT controls which mode the adapter will use and which values to return when reading these memory locations. Once the SMID is read, there is usually no need to return to this mode.</p>
 
 	<p>When performing any of these commands, it is recommended to disable interrupts. Any non-zero writes to AM_BLK_STAT will trigger a GamePak IRQ once the value of AM_BLK_STAT is updated. Servicing other interrupts may delay the progam from determining when exactly an operation has finished when AM_BLK_STAT&#39;s Bit 0 reads zero. For AM3 cards, this timing is critical to deliver smooth audio and video playback, so interrupts are disabled frequently in the firmware while it waits in several tight loops.</p>
 
@@ -4787,7 +4808,7 @@ Command		| Description
 	<p class="list_item">After issuing this command, the 16 bytes beginning at AM_SMID (0x08010410 - 0x0801041F) will return the 128-bit SmartMedia ID whenever read.</p><p class="spc"></p>
 
 	<p class="list_item"><strong>Command 0x05 - Set File Size Mode</strong></p>
-	<p class="list_item">After issuing this command, the 4 bytes at AM_FILE_SIZE (0x08010410 - 0x08010413) will return the current file size. These values are pulled from the File Allocation Table written to the SmartMedia card. Most importantly, when switching to a new file by writing to AM_SMC_FILE, this commands updates the current file size the CPU will read. When a new file is chosen, AM_SMC_FILE <strong>does not</strong> update automatically. That is to say, the old value will be read unless the Set File Size Mode command is called.</p><p class="spc"></p>
+	<p class="list_item">After issuing this command, the 4 bytes at AM_FILE_SIZE (0x08010410 - 0x08010413) will return the current file size. These values are pulled from the File Allocation Table written to the SmartMedia card. Most importantly, when switching to a new file by writing to AM_SMC_FILE, this command updates the current file size the CPU will read. When a new file is chosen, AM_SMC_FILE <strong>does not</strong> update automatically. That is to say, the old value will be read unless the Set File Size Mode command is called.</p><p class="spc"></p>
 
 	<p class="list_item"><strong>Command 0x09 - Read Firmware Data Block</strong></p>
 	<p class="list_item">Data Source: Current Read Pointer</p>
@@ -4887,10 +4908,10 @@ Read SMID in 32-bit Chunks
 WHILE [AM_BLK_STAT] NOT EQUAL TO 0x03
 	READ [AM_BLK_STAT] AGAIN
 
-SMID_0 = [AM_SMID + 0x00]			//Read 0x08010410 - 0x08010413
-SMID_1 = [AM_SMID + 0x04]			//Read 0x08010414 - 0x08010417
-SMID_2 = [AM_SMID + 0x08]			//Read 0x08010418 - 0x0801041B
-SMID_3 = [AM_SMID + 0x0C]			//Read 0x0801041C - 0x0801041F</pre>
+SMID_0 = [AM_SMID + 0x00]		//Read 0x08010410 - 0x08010413
+SMID_1 = [AM_SMID + 0x04]		//Read 0x08010414 - 0x08010417
+SMID_2 = [AM_SMID + 0x08]		//Read 0x08010418 - 0x0801041B
+SMID_3 = [AM_SMID + 0x0C]		//Read 0x0801041C - 0x0801041F</pre>
 
 	<a name="ama_ptr"></a>
 	<p class="gray_title">[Advance Movie Adapter] : Read Pointer</p>
@@ -4966,6 +4987,11 @@ INFO.AM3
 	<p>The Advance Movie Adapter behaves slightly differently when the SmartMedia card cannot be read. While the first 1KB section of the firmware is loaded normally for the initial bootloader, trying to read subsequent 1KB blocks of the firmware returns a repeating 5KB section of code dedicated to error handling. This 5KB section is distinct from the regular firmware 11KB that deals with decoding and playing audio/video files. It can only be accessed when a SmartMedia card related issue occurs. Examples include a missing/improperly inserted card, an unsupported SmartMedia card type, or a damaged SmartMedia card. The error handling code helpfully displays an on-screen message in Japanese and English (with a typo) in such an event.</p>
 
 	<p>Additionally, when the adapter needs to handle SmartMedia card errors, Bit 8 of AM_BLK_STAT no longer serves as an EOF flag. The GBA can read an indefinite amount of repeating 1KB blocks from firmware (the 5KB section) without ever changing the status of Bit 8. Lastly, AM_SMID will return zeroes for each of its 16-bytes. These two conditions can be used for software to manually check whether or not a SmartMedia card is inside the adapter.</p>
+
+	<a name="ama_gbp"></a>
+	<p class="gray_title">[Advance Movie Adapter] : Game Boy Player Copy Protection</p>
+
+	<p>In addition to the encrypted &#34;lock file&#34;, the Advance Movie Adapter&#39;s firmware can also enable or disable compatibility with the Game Boy Player. Depending on the data on the SmartMedia card, publishers could choose whether or not they wanted to protect their videos from potentially playing on TVs (and thus susceptible to recording devices). Unlike the Game Boy Advance Video series by Majesco, not every video for the Advance Movie Adapter was locked down in this regard. For example, while the Pokemon videos prohibited use of the Game Boy Player, the Detective Conan episodes did not.</p>
 
 	<a name="ama_lst"></a>
 	<p class="gray_title">[Advance Movie Adapter] : List of AM3 Cards and Products</p>
@@ -6928,7 +6954,7 @@ ROM_CNT = 0x4015
 
 	<p>Eventually, the modem will respond with data in much the same way it sends camera and telephony input. ROM_STAT will change to 0xA00A. Afterwards, the GBA will read 32-bits from ROM_DATA_1, which will contain 2 16-bit components: a Transfer Type and the length of incoming data. For AT command responses, the Transfer Type will be 0x41A0. The length here, however, does refer to the total number of bytes received from the modem. The response data is another ASCII string with the same encoding as previously described. Once the Campho Advance parses the string, it will be displayed.</p>
 
-	<a name="cam_cfg"></a>
+	<a name="cam_com"></a>
 	<p class="gray_title">[Campho Advance] : System Compatibility</p>
 
 	<p>The Campho Advance is incompatible with any model from the Nintendo DS family. Attempting to boot the original DS or a DS Lite with the Campho Advance in Slot-2 while providing external power generally causes the system to halt with a blank white screen. The likely culprit is the novel way the Campho Advance streams ROM data, which conflicts with the DS firmware as it tries to read Slot-2 when turning on the system. Ultimately, the entire process on the DS differs significantly from the normal GBA BIOS startup routine, which the Campho Advance was heavily tailored around.</p>
@@ -7549,6 +7575,7 @@ SD Card Data: N/A
 		<li class="list_item">Only compatible with analog broadcasts (NTSC-J).</li>
 		<li class="list_item">Tunes into 62 channels.</li>
 		<li class="list_item">Capable of receiving signals from 55.25MHz to 801.25MHz.</li>
+		<li class="list_item">Uses a Philips FQ1236/P H-3 as the actual TV tuner.</li>
 	</ul>
 
 	<a name="atv_reg"></a>
@@ -7586,7 +7613,7 @@ Bit 0	| I/O Data
 Bit 1	| Clock (0 = LOW, 1 = HIGH)
 -----------------------------------------------------------</pre>
 
-	<p>Depending on the command, TV_CNT_A must have Bits 2, 6, and 7 set HIGH (essentially OR&#39;ed 0xC4), while TV_CNT_B must have Bit 6 set HIGH (essentially OR&#39;ed by 0x40). The high-level protocol issuing commands protocol looks something like this:</p>
+	<p>The ATVT uses the I2C protocol for data transfers, but the specifics of how it is implemented on the GBA are detailed in this section. Depending on the command, TV_CNT_A must have Bits 2, 6, and 7 set HIGH (essentially OR&#39;ed 0xC4), while TV_CNT_B must have Bit 6 set HIGH (essentially OR&#39;ed by 0x40). The high-level protocol for issuing commands looks something like this:</p>
 
 <pre>-----------------------------------------------------------
 START SIGNAL
@@ -7661,35 +7688,56 @@ Read Bit
 	<a name="atv_cmd"></a>
 	<p class="gray_title">[Agatsuma TV Tuner] : Commands</p>
 
-	<p>By writing certain bytes to the ATVT (using the protocol described above) the CPU can send several commands to the device. Typically the last two bytes of a command are 8-bit or 16-bit parameters. In the case of read commands, there are no parameters used. A list of known commands is shown in the table below along with whether the command uses TV_CNT_A or TV_CNT_B:</p>
+	<p>By writing certain bytes to the ATVT (using the protocol described above) the CPU can send several commands to the device. The first byte is the address frame. The last two bytes of a command are 16-bit parameters. As is typical of I2C, Bit 0 of the address frame determines whether the command will read or write values. In the case of read commands, no parameter bytes are used. A list of known commands is shown in the table below along with whether the command uses TV_CNT_A or TV_CNT_B:</p>
 
-<pre>-----------------------------------------------------------
-Command Name		| Command Pattern	|Register
------------------------------------------------------------
-Unknown Command		| 86 xx xx		| TV_CNT_B
-Read Channel Status	| 87			| TV_CNT_B
-Change Channel		| C0 xx xx		| TV_CNT_B
-Switch to AV Input Mode	| D8 02 E0		| TV_CNT_A
-Switch to TV Mode	| D8 02 E1		| TV_CNT_A
-Set Video Contrast	| D8 10 xx		| TV_CNT_A
-Set Video Brightness	| D8 11 xx		| TV_CNT_A
-Set Video Hue		| D8 15 xx		| TV_CNT_A
-Clear Video Frame	| D8 0D 80		| TV_CNT_A
-Render Video Frame	| D8 0D 00		| TV_CNT_A
-Read Something?		| D9			| TV_CNT_A
------------------------------------------------------------</pre>
+<pre>----------------------------------------------------------------------------------------------------------------------
+Command Name		| Address Frame		|Command Pattern	|Register
+----------------------------------------------------------------------------------------------------------------------
+Unknown Command		| 86 			| xx xx			| TV_CNT_B
+Read Channel Status	| 87			|			| TV_CNT_B
+Change Channel		| C0			| xx xx			| TV_CNT_B
+Unknown Command		| D8			| 00			| TV_CNT_A
+Switch to AV Input Mode	| D8			| 02 E0			| TV_CNT_A
+Switch to TV Mode	| D8			| 02 E1			| TV_CNT_A
+Set Video Contrast	| D8			| 10 xx			| TV_CNT_A
+Set Video Brightness	| D8			| 11 xx			| TV_CNT_A
+Unknown Command		| D8			| 14			| TV_CNT_A
+Set Video Hue		| D8			| 15 xx			| TV_CNT_A
+Unknown Command		| D8			| 1E xx			| TV_CNT_A
+Clear Video Frame	| D8			| 0D 80			| TV_CNT_A
+Render Video Frame	| D8			| 0D 00			| TV_CNT_A
+Read Command Data	| D9			| 			| TV_CNT_A
+----------------------------------------------------------------------------------------------------------------------</pre>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Command 86 - Unknown Command</strong></p>
-	<p class="list_item">This command appears related to changing the channel. It is called at least 4 times before reading the channel status and changing the channel frequency; each time different parameters are used.</p>
+	<p class="list_item"><strong>Command 86 xx xx - Unknown Command</strong></p>
+	<p class="list_item">This command appears related to changing the channel. It is called 3 times before reading the channel status or changing the channel frequency. The 16-bit parameters always follow this pattern:</p>
+
+<pre>-----------------------------------------------------------
+Byte	1		| Byte 2
+-----------------------------------------------------------
+0x00			| 0x56
+0x01			| 0x30
+0x02			| 0x44
+-----------------------------------------------------------</pre>
+
+	<p>The second byte of the first 16-bit parameter changes depending on the channel frequency. If the frequency is between 55.25MHz and 159.9375MHz inclusive, the value is 0x41. If the frequency is between 160MHz and 441.9375MHz inclusive, the value is 0x42. If the frequency is greater than 442MHz, the value is 0x44.</p>
 
 	<p class="spc"></p>
 	<p class="list_item"><strong>Command 87 - Read Channel Status</strong></p>
 	<p class="list_item">This command returns an 8-bit value representing the status of the current channel&#39;s reception. If the ATVT detects a valid TV signal, it will return the value 0xC0. Any other value seems to indicate that no proper reception was found for that channel, at least on the frequency assigned for it.</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Command C0 - Change Channel</strong></p>
-	<p class="list_item">This command changes the current channel. Its parameters form a 16-bit value that represents the channel&#39;s frequency in MHz. The lowest frequency possible is 55.25MHz and is representing by the hex value 0x0650. The highest possible frequency is 801.25MHz and is represented by the hex value 0x34F0. Essentially, increasing/decreasing the 16-bit value by 1 changes the frequency by 0.0625MHz. The Change Channel command is called when the user manually switches between saved channels, when scanning for available channels, and when manually tuning channels.</p>
+	<p class="list_item"><strong>Command C0 xx xx - Change Channel</strong></p>
+	<p class="list_item">This command changes the current channel. This command is called twice. For the first call, its parameters form a 16-bit value that represents the channel&#39;s frequency in MHz. The lowest frequency possible is 55.25MHz and is representing by the hex value 0x0650. The highest possible frequency is 801.25MHz and is represented by the hex value 0x34F0. Essentially, increasing/decreasing the 16-bit value by 1 changes the frequency by 0.0625MHz.</p>
+
+	<p>For the second call, the 16-bit parameter uses 3 values depending on the channel frequency. If the frequency is between 55.25MHz and 159.9375MHz inclusive, the value is 0x8641. If the frequency is between 160MHz and 441.9375MHz inclusive, the value is 0x8642. If the frequency is greater than 442MHz, the value is 0x8644.</p>
+
+	<p>The Change Channel command is called when the user manually switches between saved channels, when scanning for available channels, and when manually tuning channels.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command D8 00 - Unknown Command</strong></p>
+	<p class="list_item">This command is used right after the Render Video Frame command. It returns a single byte.</p>
 
 	<p class="spc"></p>
 	<p class="list_item"><strong>Command D8 02 E0 - Switch to AV Input Mode</strong></p>
@@ -7700,16 +7748,24 @@ Read Something?		| D9			| TV_CNT_A
 	<p class="list_item">This command is used to switch video input from composite A/V input to TV signals whenever the user presses the Select button.</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Command D8 10 - Set Video Contrast</strong></p>
+	<p class="list_item"><strong>Command D8 10 xx - Set Video Contrast</strong></p>
 	<p class="list_item">This command sets the contrast of all video output. It accepts a single signed 8-bit value (2&#39;s complement), where the lowest value (-128) represents the minimum contrast and the highest value (127) represents the maximum contrast.</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Command D8 11 - Set Video Brightness</strong></p>
+	<p class="list_item"><strong>Command D8 11 xx - Set Video Brightness</strong></p>
 	<p class="list_item">This command sets the brightness of all video output. It accepts a single signed 8-bit value (2&#39;s complement), where the lowest value (-128) represents the minimum brightness and the highest value (127) represents the maximum brightness.</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Command D8 15 - Set Video Hue</strong></p>
+	<p class="list_item"><strong>Command D8 14 - Unknown Command</strong></p>
+	<p class="list_item">This command is used after the Render Video Frame command and right after the command D8 00. It returns a single byte.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command D8 15 xx - Set Video Hue</strong></p>
 	<p class="list_item">This command sets the hue of all video output. It accepts a single signed 8-bit value (2&#39;s complement), where the lowest value (-128) represents the minimum hue and the highest value (127) represents the maximum hue. Although this feature is labeled as hue by the ATVT itself, functionally it manipulates the saturation, with lower values skewing video more towards grayscale, but never completely so.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Command D8 1E xx - Unknown Command</strong></p>
+	<p class="list_item">This command is used right before the Render Video Frame and Clear Video Frame commands. It accepts an 8-bit parameter. The ATVT appears to set this to a constant value of either 0x06 when rendering a frame or 0x26 when clearing a frame.</p>
 
 	<p class="spc"></p>
 	<p class="list_item"><strong>Command D8 0D 80 - Clear Video Frame</strong></p>
@@ -7720,8 +7776,8 @@ Read Something?		| D9			| TV_CNT_A
 	<p class="list_item">This command renders any video frame from TV signals or the A/V input source. After issuing this command, 15bpp image data is available to read at the address range 0xA800000 - 0xA812BFF.</p>
 
 	<p class="spc"></p>
-	<p class="list_item"><strong>Command D9 - Read Something?</strong></p>
-	<p class="list_item">This command appears to read the result of several unidentified commands. Its purpose and function are currently unknown.</p>
+	<p class="list_item"><strong>Command D9 - Read Command Byte</strong></p>
+	<p class="list_item">This command reads a single byte that represents the result of several unidentified commands. Specifically, it is used in conjection with the D8 00 and D8 14 commands.</p>
 
 	<a name="atv_fla"></a>
 	<p class="gray_title">[Agatsuma TV Tuner] : Flash Memory</p>
@@ -8307,6 +8363,104 @@ JS1-57	| 0038	| いでよ鋼の盾
 JS1-59	| 003A	| 炎の闘技場</pre>
 
 	<p>The cards themselves use tiny carbon dots to produce an index value. According to the OID specification, carbon ink can replace K when using CMYK. Black colors would need to be reproduced by merging CMY dots in close proximity to one another. At any rate, these dots are meant to absorb light rather than reflect it. The CMOS inside the Magic Reader can&#39;t detect these dots, so these &#34;empty&#34; spots form a pattern that can be recognized and converted into a number. These dots are not completely invisible to the human eye, however. Ordinary cameras are capable of capturing them. The dots occupy the entire face of the card with the exception of the borders and likely the silver text of some cards.</p>
+
+
+
+
+
+	<!-- Wantame Card Scanner -->
+	<a name="wcs"></a>
+	<p class="gray_title">Wantame Card Scanner</p>
+	<p class="list_item"><a href="#wcs_gen">General Hardware Information</a></p>
+	<p class="list_item"><a href="#wcs_btp">Barcode Transmission Protocol</a></p>
+
+	<a name="wcs_gen"></a>
+	<p class="gray_title">[Wantame Card Scanner] : General Hardware Information</p>
+
+	<p>On November 22, 2007, Capcom released an action-rhythm game called Wantame Music Channel: Doko Demo Style for the Nintendo DS. It was part of the &#34;Won!Tertainment&#34; franchise developed in conjunction with Takara Tomy. Players can dress up as different dogs wearing various outfits by scanning physical cards with barcodes printed on them. This game was a port of the larger arcade version that was also capable of scanning the very same cards. The portable scanner for the DS offically was never officially given a name or product code, so for the purposes of this documentation is referred to simple as the Wantame Card Scanner.</p>
+
+	<p>Doko Demo Style shares some gameplay concepts with Oshare Majo and Sega&#39;s HCV-1000. Design-wise, the Wantame Card Scanner is also very similar in operation to the Wave Scanner, another device that Capcom and Takara Tomy collaborated on.</p>
+
+	<ul>
+		<li class="list_item">Uses DS microphone plug to transmit data.</li>
+		<li class="list_item">Uses Slot-2 only for stability. There is no ROM chip or PCB connected to the Slot-2 pins.</li>
+		<li class="list_item">Powered by 3 LR44 batteries.</li>
+		<li class="list_item">Features a detachable guard for Slot-2 to better fit the original DS or DS Lite.</li>
+		<li class="list_item">Compatible with DSi models thanks to microphone cable.</li>
+		<li class="list_item">Has a red LED to indicate card scanning or errors.</li>
+		<li class="list_item">Microphone cable is tucked under the bottom of the unit.</li>
+		<li class="list_item">Has a reset button on the backside.</li>
+		<li class="list_item">Uses 12 character barcodes in Code-128 C format.</li>
+	</ul>
+
+	<a name="wcs_btp"></a>
+	<p class="gray_title">[Wantame Card Scanner] : Barcode Transmission Protocol</p>
+
+	<p>The Wantame Card Scanner translates barcodes into sound pulses via the DS microphone. By reading samples, the game grabs the barcode data as individual bits, verifies the integrity of the data, then checks to see if the barcode is valid for the game. Note that the arcade version was continually updated all the way through Fall 2009, therefore, some cards are incompatible with the DS version. The transmission protocol consists of the following parts:</p>
+
+<pre>---------------------------------------------------------
+Protocol Stage	| Description
+---------------------------------------------------------
+ACK Signal	| Initial pulses
+Barcode MSB	| Upper 10-bits
+Barcode LSB	| Lower 32-bits
+Check Digit	| Code-128 C checksum
+---------------------------------------------------------</pre>
+
+	<p>The ACK Signal alerts the game of incoming data. Normally, microphone input would be zero (assuming no noise from the Wantame Card Scanner). The game will wait for 2 separate LOW-to-HIGH transitions. At a minimum, each LOW and HIGH period should be sampled at least 9 times, but less than 16. The following psuedo-code can be used to determine whether a sample from the microphone is LOW or HIGH:</p>
+
+<pre>MIC_SAMPLE = READ_DS_MIC()
+MIC_SAMPLE = MIC_SAMPLE * 2
+MIC_SAMPLE = MIC_SAMPLE AND 0xFF
+
+IF MIC_SAMPLE LESS THAN 0x48
+	SAMPLE_TYPE = LOW
+
+ELSE
+	SAMPLE_TYPE = HIGH</pre>
+
+	<p>After sending the ACK Signal, the Wantame Card Scanner sends a continuous stream of 49 bits. Depending on the length of the LOW part of the the LOW-to-HIGH transition, a &#34;0&#34; or a &#34;1&#34; will be recorded. If the LOW portion measures at 6 or more samples, this represents a &#34;1&#34; in the bitstream, otherwise it represents a &#34;0&#34;. Importantly, each LOW and HIGH portion must measure at least 3 samples, and the total LOW-to-HIGH transition must not exceed 16 samples.</p>
+
+	<p>The first 42-bits of the stream represent the barcode as a hexadecimal number, and the final 7 bits represent the barcode&#39;s checksum. The barcode is split across 2 32-bit integers, with the the upper 10-bits received first, and lower 32-bits received immediately afterwards. However, each integer receives its bits big endian first, and the same is true of the Check Digit.</p>
+
+	<p>The format of the barcode data itself uses 7-bits to represent Code-128 C values. These values range from 00 to 99. Each barcode uses 12 characters, but these are &#34;doubled up&#34; in pairs so that only 6 Code-128 C values are necessary. As an example, a barcode such as &#34;011128531729&#34; can be encoded into hexadecimal as such:</p>
+
+<pre>---------------------------------------------------------
+Barcode Pair	| Raw Hex Value		| Shift
+---------------------------------------------------------
+&#34;01&#34;		| 0x01			| 35		
+&#34;11&#34;		| 0x0B			| 28
+&#34;28&#34;		| 0x1C			| 21
+&#34;53&#34;		| 0x35			| 14
+&#34;17&#34;		| 0x11			| 7
+&#34;29&#34;		| 0x1D			| 0
+---------------------------------------------------------
+
+FINAL_VALUE = ((0x01 LSL 35) OR (0x0B LSL 28) OR (0x1C LSL 21) OR (0x35 LSL 14) OR (0x11 LSL 7) OR (0x1D))</pre>
+
+	<p>The result for this case would be 0x8B38D489D, which would get split up into 0x08 for the 10-bit segment and 0xB38D489D for the 32-bit segment. Continuing with the example barcode of &#34;011128531729&#34;, the Check Digit can be calculated as such:</p>
+
+<pre>---------------------------------------------------------
+Barcode Pair	| Sum
+---------------------------------------------------------
+&#34;01&#34;		| Sum += (1 * 1)
+&#34;11&#34;		| Sum += (11 * 2)
+&#34;28&#34;		| Sum += (28 * 3)
+&#34;53&#34;		| Sum += (53 * 4)
+&#34;17&#34;		| Sum += (17 * 5)
+&#34;29&#34;		| Sum += (29 * 6)
+---------------------------------------------------------
+		| Sum += 105
+		| Sum = (Sum % 103)
+---------------------------------------------------------</pre>
+
+	<p>Essentially, the first pair is multiplied by 1 and added to the sum, the second pair is multiplied by 2 and added to the sum, and so on and so forth for the other pairs. After that, a value of 105 is added to the sum, then a modulo of 103 is applied to the sum for the final result. For this example it would be 0x41.</p>
+
+	<p>After all of these signals are transferred from the Wantame Card Scanner via microphone input, the rest of the samples should go LOW until a new scan.</p>
+
+
+
+
 
 	<!-- Mobile Adapter GB -->
 	<a name="magb"></a>
@@ -10482,6 +10636,201 @@ Ghost Entry Format
 	<p>For user input, the game uses characters 0x000, 0x081, 0x084, 0x0F5, and 0x100. Characters 0x0BE and 0x0BF appear on the katakana keyboard, while characters 0x12E and 0x12F appear on the hiragana keyboard, though none are actual input characters, and they are unlikely to have been used in downloadable content. Characters 0x0C0, 0x0C1, 0x130, and 0x131 are not available for user input, so it is unknown which, if any, were used in downloadable content. Character 0x135, along with all characters starting at 0x14F, have garbage tile data and should not be used. Finally, character 0xFFFF is used as a terminator.</p>
 
 
+
+
+
+
+
+	<!-- Vaus Controller -->
+	<a name="vaus"></a>
+	<p class="gray_title">Vaus Controller</p>
+	<p class="list_item"><a href="#vaus_gen">General Information</a></p>
+	<p class="list_item"><a href="#vaus_opr">Operation</a></p>
+
+	<a name="vaus_gen"></a>
+	<p class="gray_title">[Vaus Controller] : General Information</p>
+
+	<p>The Vaus Controller is a hypothetical accessory for the original Game Boy. In theory, it would have been released alongside the Game Boy in early 1989. Alleyway, a launch title for the system, still has leftover code that appears to communicate with an unknown device via the Link Cable. The data returned from the Link Cable controls the player&#39;s paddle and allows the game to pause/resume and start a new ball.</p>
+
+	<p>Given Alleyway&#39;s similarity to Arkanoid, the device may have been a &#34;Vaus Controller&#34; similar to those found on other platforms (such the one for the NES made by Taito). It would have comprised some sort of rotating control knob and a single button to fire the ball. If it had been released, the &#34;Vaus Controller&#34; would have been the earliest example of analog controls on the Game Boy.</p>
+
+	<p>The exact reason why the Vaus Controller was never realized is unknown. One suggestion is that, as a Link Cable accessory that likely required 2 hands, it may have been cumbersome to deal with on the Game Boy. Additionally, design-wise it may not have been suitable for the image of portability Nintendo wanted project for its new handheld.</p>
+
+	<a name="vaus_opr"></a>
+	<p class="gray_title">[Vaus Controller] : Operation</p>
+
+	<p>The Vaus Controller returns a 16-bit value representing the ADC value of the control knob as well as input for a single button. The Game Boy acts on an internal clock when communicating with the Vaus Controller and must send 2 transfers to grab the 16-bit value. The Vaus Controller does not seem to care about the incoming values from the Game Boy. Data is transferred Least Significant Byte first. Its format is as follows:</p>
+
+<pre>---------------------------------------------------------
+Bit 0 - 7	| 8-bit ADC
+Bit 8 - 14	| N/A
+Bit 15		| Button Input
+---------------------------------------------------------</pre>
+
+	<p>The 8-bit ADC value should have a minimum range of 0x3F and a maximum range of 0x97. These values translate the paddle from left to right across the screen. An ADC value of 0x6B centers the paddle.</p>
+
+	<p>Button Input is a single bit. When Bit 15 is set to 1, a new ball is launched. Alternatively, this will pause/resume gameplay. In effect, Alleyway treats this as a substitute for the START button.</p>
+
+
+
+
+
+
+
+
+	<!-- WorkBoy -->
+	<a name="work"></a>
+	<p class="gray_title">WorkBoy</p>
+	<p class="list_item"><a href="#work_gen">General Information</a></p>
+	<p class="list_item"><a href="#work_com">Communication Protocol</a></p>
+	<p class="list_item"><a href="#work_rtc">Real-Time Clock</a></p>
+	<p class="list_item"><a href="#work_key">Keyboard Input</a></p>
+
+	<a name="work_gen"></a>
+	<p class="gray_title">[WorkBoy] : General Information</p>
+
+	<p>The WorkBoy is a cancelled Game Boy accessory made by Fabtek. It would have been released in December 1992, but circumstances prevented the product from launching. The device itself is a small, handheld keyboard that connects to the Game Boy via the Link Cable. In conjunction with specialized software, the WorkBoy allows users to send keyboard input to the Game Boy in order to perform small office-related tasks. Previously, both the software and the hardware were believed to be lost to time but have since been found.</p>
+
+	<ul>
+		<li class="list_item">Uses 2 coin-cell batteries for power.</li>
+		<li class="list_item">Features a miniature QWERTY keyboard.</li>
+		<li class="list_item">Has a built-in real-time clock.</li>
+		<li class="list_item">Has a built-in speaker for alarm functionality.</li>
+		<li class="list_item">Contains a small amount of DRAM to save some data.</li>
+	</ul>
+
+	<a name="work_com"></a>
+	<p class="gray_title">[WorkBoy] : Communication Protocol</p>
+
+	<p>The WorkBoy communicates via the Link Cable using several commands. The Game Boy runs on an Internal Clock and is responsible for driving the protocol. The known commands are listed below:</p>
+
+<pre>---------------------------------------------------------
+Command	| Description
+---------------------------------------------------------
+0x44	| Read RTC Data
+0x4F	| Poll Keyboard Input
+0x52	| WorkBoy Init
+0x57	| Write RTC Data
+---------------------------------------------------------</pre>
+
+	<p>When booting, software will issue the WorkBoy Init command. This is a single byte command with no parameters, however, the WorkBoy should eventually respond with a 0x44 byte to indicate that the RTC can be read. The following sections deal with RTC reading/writing and keyboard input in detail.</p>
+
+	<a name="work_rtc"></a>
+	<p class="gray_title">[WorkBoy] : Real-Time Clock</p>
+
+	<p>To read the RTC, the Game Boy must first send the command byte 0x44. The WorkBoy should immediately respond with a series of 42 bytes representing the current time and date as well as other data that is currently undocumented. After the command byte, the Game Boy continually transfers the value 0x00 while the WorkBoy is replying. Evidently, all data from the WorkBoy must be non-zero, otherwise it seems to indicate an error. The following bytes from the WorkBoy are the known data for the RTC:</p>
+
+<pre>---------------------------------------------------------
+Byte	| Description
+---------------------------------------------------------
+0x04	| Seconds - First Digit
+0x05	| Seconds - Second Digit
+0x06	| Minutes - First Digit
+0x07	| Minutes - Second Digit
+0x08	| Hours - First Digit
+0x09	| Hours - Second Digit
+0x0A	| Day - First Digit
+0x0B	| Day - Second Digit
+0x0C	| Month - First Digit
+0x0D	| Month - Second Digit
+0x1E	| Year - MSB
+0x1F	| Year - LSB
+---------------------------------------------------------</pre>
+
+	<p>Every value except the year is expressed as ASCII values that represent a 2 digit number. That is to say, representing something like 37 seconds would use the ASCII values &#34;3&#34; and &#34;7&#34;, or 0x33 and 0x37 in hexadecimal.</p>
+
+	<p>Years are slightly more elaborate. The lowest year possible is 1900, and this is used as a base. The current year is then an offset from that, calculated as such, using whole integers for division:</p>
+
+<pre>---------------------------------------------------------
+YEAR_DIFF = CURRENT_YEAR - 1900
+YEAR_DIV = (DIFF / 16)
+
+YEAR MSB = 0x30 + YEAR_DIV
+YEAR LSB = 0x30 + (CURRENT_YEAR - (YEAR_DIFF * 16))
+---------------------------------------------------------</pre>
+
+	<p>To write to the RTC, the Game Boy must first send the command byte 0x57. Afterwards, the Game Boy sends a stream of 23 bytes to set the time and date. The format of the data is as follows:</p>
+
+<pre>---------------------------------------------------------
+Byte	| Description
+---------------------------------------------------------
+0x06	| Always 0x04
+0x08	| Seconds
+0x09	| Minutes
+0x0A	| Hours
+0x0B	| Days + Some Bits of Years
+0x0C	| Month + Some Bits of Years
+0x15	| Years
+0x16	| Years (Copy)
+---------------------------------------------------------</pre>
+
+	<p>For Seconds, Minutes, and Hours, the values written to the WorkBoy are binary coded decimals. This is also true of Bits 0-5 of Days value and Bits 0-4 of Month value. The upper-bits of both, however, store information about the Year value. The Year value is the current number of years since 1900 with the lower 2 bits masked off. Those same 2 bits, however, are the upper-bits of the Days value. The upper 3 bits of the Months value is incremented once for every year since 1900 *and* it is also incremented again every 4 years.</p>
+
+	<a name="work_key"></a>
+	<p class="gray_title">[WorkBoy] : Keyboard Input</p>
+
+	<p>The WorkBoy has a semi-standard QWERTY keyboard that can be used as input in addition to the Game Boy&#39;s buttons. Software can poll the WorkBoy to receive the latest key that was pressed. Only a single value from the keyboard will be read at any given time, so it is important to poll the keyboard frequently to catch user input. To read from the keyboard, the Game Boy simply sends the command byte 0x4F. The following values represent the key selected:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------
+Byte	| CAPS Mode				| NUM Mode
+----------------------------------------------------------------------------------------------------------------------
+0x00	| No Keyboard Input			|
+0x01	| App Key -> Clock			|
+0x02	| App Key -> Tempurature Conversion	|
+0x03	| App Key -> Currency and Checkbook	|
+0x04	| App Key -> Calculator			|
+0x05	| App Key -> Calendar and Appointments	|
+0x06	| App Key -> Unit Conversion		|
+0x07	| App Key -> Database and Phone Records	|
+0x08	| App Key -> Translator and World Map	|
+0x09	| App Key -> Phone Dialer		|
+0x0A	| Escape				|
+0x0B	| Delete / Backspace			|
+0x0C	| Insert				|
+0x10	| Left Arrow				|
+0x11	| Q					| 1
+0x12	| W					| 2
+0x13	| E					| 3
+0x14	| R					| M+ (for calculator only)
+0x15	| T					| M- (for calculator only)
+0x16	| Y					| MR (for calculator only)
+0x17	| U					| MC (for calculator only)
+0x18	| I					| !
+0x19	| O					| £
+0x1A	| P					| *
+0x1B	| $					| #
+0x1C	| A					| 4
+0x1D	| S					| 5
+0x1E	| D					| 6
+0x1F	| F					| +
+0x20	| G					| -
+0x21	| H					| × (for calculator only)
+0x22	| J					| ÷ (for calculator only)
+0x23	| K					| (
+0x24	| L					| )
+0x25	| ;					| :
+0x26	| Return / Enter			|
+0x27	| NUMS Mode				|
+0x28	| Z					| 7
+0x29	| X					| 8
+0x2A	| C					| 9
+0x2B	| V					| .
+0x2C	| B					| %
+0x2D	| N					| =
+0x2E	| M					| C (for calculator only)
+0x2F	| ,					| <
+0x30	| .					| >
+0x31	| /					| ?
+0x32	| CAPS Mode				|
+0x33	| &#34;					| 0
+0x34	| Space					|
+0x35	| &#39;					| @
+0x36	| Up Arrow 				|
+0x37	| Down Arrow				|
+0x38	| Right Arrow				|
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>The WorkBoy&#39;s keyboard does not appear to have a dedicated shift key to modify values. Instead, it relies on the CAPS and NUM keys to swap between each mode. Unlike most PC keyboards, the WorkBoy does not have any built-in lighting to indicate which mode is active. Instead, the software typically puts a &#34;C&#34; or &#34;N&#34; character inside a colored block for the cursor. Note that some applications (such as the telephone dialer) can force CAPS or NUM mode.</p>
 
 
 	</body>
