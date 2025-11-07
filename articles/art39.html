@@ -1,0 +1,204 @@
+﻿<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Edge of Emulation: Wantame Card Scanner</title>
+		<link rel="stylesheet" type="text/css" href="./../main.css" />
+
+		<meta property="og:title" content="Edge of Emulation: Wantame Card Scanner" />
+		<meta property="og:image" content="https://shonumi.github.io/articles/wcs_mini.png" />
+		<meta property="og:description" content="Emulating the unknown: Reading Barcodes on the Nintendo DS (again)" />
+		<meta property="og:type" content="article" />
+ 		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1" name="viewport" />
+
+		<style type="text/css">
+
+			.scroll_seg
+			{
+				font-size: 1.5em;
+				padding: 5px;
+				width: 90%;
+				overflow: scroll;
+				margin: auto;
+				background-color: #D0D0D0;
+				border: 1px solid #000;
+			}
+
+		</style>
+
+	</head>
+
+	<body>
+
+		<!-- Main Header -->
+		<div class="header">
+
+			<!-- Left Header -->
+			<div class="header_left">
+				<div class="header_text"><strong><a class="header_link_current" href="../index.html">Shonumi</a></strong></div>
+			</div>
+		
+			<!-- Right Header -->
+			<div class="header_right">
+				<a class="header_link_current" href="../articles.html">Articles</a>
+				<a class="header_link" href="../books.html">My<span class="no">_</span>Books</a>
+				<a class="header_link" href="../blog.html">Blog</a>
+				<a class="header_link" href="../downloads.html">Downloads</a>
+				<a class="header_link" href="../dandocs.html">Dan<span class="no">_</span>Docs</a>
+			</div>
+
+		</div>
+
+		<!-- Main Page Outer Box -->
+		<div class="box_outer">
+			
+			<!-- Main Page Inner Box -->
+			<div class="box_inner">
+
+				<div class="center_headline">Edge of Emulation: Wantame Card Scanner</div>
+				<div class="headline_underline">. . . . . . . . . . .</div>
+
+				<p class="center_img"><img src="wcs_01.png" alt="" width="800" height="300" /></p>
+
+				<p class="inner_text_large"><strong>Rescue Dogs</strong></p>
+
+				<p class="inner_text">The last article was a momentous ocassion. After years of work and research, every single piece of officially licensed Game Boy hardware was finally emulated. While it took literal decades for the community to reach that, we nevertheless accomplished it. This was one of the biggest goals I&#39;d been pursuing as an emudev, however, it wasn&#39;t the only one. Rather than retire, I figured I&#39;d take a short break before jumping right back into the fray. Although the Game Boy is finished, there are still a host of peripherals on other platforms that desperately need preservation. As a result, the <strong>Edge of Emulation</strong> ain&#39;t over. In fact, we&#39;re just getting started.</p>
+
+				<p class="inner_text">What better way to return to form than by examining a game about... uh... dressing up 3D dogs and making them dance? In November of 2007, Capcom released a game for the Nintendo DS called Wantame Music Channel: Doko Demo Style. It was a rhythm action game where players could choose from a variety of dog breeds, accessorize them with dozens (if not hundreds) of outfits and hats, then have them dance in sync with different music tracks and stages. Doko Demo Style on the DS was actually a port of the larger arcade version. Both games allowed players to scan barcodes from physical cards to select and customize their dog.</p>
+
+				<p class="inner_text">The DS Doko Demo Style game came bundled with a small card scanner. Apparently, it has no official name or product code, so I&#39;ve ended up just calling it the Wantame Card Scanner or <strong>WCS</strong> to distinguish it from all of the other barcode readers I&#39;ve covered before. The WCS is very similar to the Wave Scanner for Mega Man Star Force 1, as both products were a collaboration between Capcom and Takara Tomy. Doko Demo Style as a game is also very similar to Sega&#39;s Oshare Majo, another card-scanning rhythm action arcade game that got a DS version, complete with its own scanner too, <a href="art21.html">the HCV-1000.</a></p>
+
+				<p class="inner_text">Perhaps the WCS isn&#39;t nearly as glamorous as some of the other things I&#39;ve looked at in the past, but it still marks a serious gap in DS emulation. Even if it&#39;s yet another barcode reader, it represents a fairly cool piece of video game history. The cards used for the arcade version were interchangeable with the handheld one. This was a feat only 2 other DS titles managed to pull off. It really gives a feel for how innovative the Japanese arcade scene remained in the mid to late 2000s even as markets in North America and elsewhere stagnated. Although Doko Demo Style can be played without the scanner, it&#39;s a somewhat hollow experience without the add-on. As such, it&#39;s imperative to emulate the hardware.</p>
+
+				<p class="inner_text_large"><strong>Not In The Cards</strong></p>
+
+				<p class="inner_text">As always, I tried to get my hands on the hardware so I could run tests on it. After waiting around on Mercari back in 2020, I finally found a copy of Doko Demo Style along with the scanner. The cards were purchased separately, but I had everything shipped together. One thing to note is that the arcade version of Doko Demo Style was periodically updated to support new cards, all the way up to Fall 2009. Capcom even added cats to the game, eventually. The DS version, however, couldn&#39;t receive any sort of patches or upgrades, so it was limited to an early collection of cards. I had no idea which ones were compatible, so I just picked a lot online that had a decent amount of cards (100+). I figured at least one of them would work.</p>
+
+				<p class="inner_text">The WCS itself slips right into Slot-2 of the DS. It&#39;s not too bulky or heavy, and it&#39;s only a bit bigger than the HCV-1000. However, the scanner is actually not a Slot-2 device, despite its appearances. The pins used for the GBA slot don&#39;t really connect to anything inside the scanner; there&#39;s no real circuitry attached. Instead, the WCS outputs data through a small cable that plugs into the DS&#39; microphone. This is just like how the Wave Scanner operates, and it&#39;s obvious Capcom/Takara Tomy copied a lot from their earlier work. Slot-2 is merely used to keep the unit stable while the scanner is in use. The microphone cable also makes the WCS compatible with DSi models, which lack Slot-2.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="wcs_02.png" alt="The Wantame Card Scanner Front" /> 
+					<img class="img_box" src="wcs_03.png" alt="The Wantame Card Scanner Back" />  
+				</p>
+				<p class="img_caption">Don&#39;t be fooled! This scanner does not use Slot-2 on the DS <strong>at all!</strong></p>
+
+				<p class="center_img">
+					<a href="wcs_04.png"><img src="wcs_04.png" alt="Several cards for the scanner" height="400" width="375" /></a>
+				</p>
+				<p class="img_caption">Also, it&#39;s important to note how pretty all the cards are. Some even sparkle! (Click to enlarge)</p>
+
+				<p class="inner_text">Interestingly enough, the WCS also has a removable plastic guard for the portion that connects to Slot-2. This changes how far in players can push the unit into Slot-2, which allows it to sit flush with the original DS or DS Lite. The scanner features a red LED to indicate when a barcode is processing, and the hardware is powered by 3 LR44 batteries. I&#39;m used to dealing with coin-cell batteries like CR1616, CR2025, or CR2032, and common ones like AA or AAA, but LR44 is a first for me in the context of gaming peripherals. The batteries have to be secured by a screw-plate, but players can safely forget about them once installed. The WCS only powers on when it detects a card being swiped, thanks to a small switch inside the... card swipey lane slot thingy, or whatever it&#39;s called.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="wcs_05.png" alt="Card swipey lane slot thingy" />  
+				</p>
+				<p class="img_caption_multi">I&#39;m sure there&#39;s a proper name for... this, but I don&#39;t know what it&#39;s called.</p>
+				<p class="img_caption">Regardless, you can see the activation trigger just above the &#34;CARD IN&#34; engraving.</p>
+
+				<p class="inner_text">Before probing the hardware, I wanted to see how the WCS worked in person. After setting everything up, booting the game, and grabbing a couple of cards, I was all prepared to see some delightful dancing dogs. Unfortunately, I would have no such luck. After swiping the card, the scanner seemed to register it, however, it merely started blinking 3 times before doing nothing. The game didn&#39;t react at all, not even a message regarding some kind of error. Puzzled, I tried swiping different cards, swiping them left instead of right, backwards instead of forwards. I tried different DS units and different DS models, ultimately to no avail. It seems I&#39;d bought one that was a total dud. To be fair, the seller didn&#39;t have a DS themselves and could not test it, which was the reason for its low price. I&#39;d gambled on it working and lost that bet.</p>
+
+				<p class="inner_text">That was some years back at the start of 2021, so at the time I put the stuff back on my shelf and started working on other areas where I could make real progress. Finishing the rest of the Game Boy&#39;s peripherals was a top priority, so any setbacks on the DS were placed on hold. Jumping ahead, now that everything for the Game Boy was complete, my attention turned back to the WCS. I&#39;ll admit, I was bored, I was hungry. For me, there&#39;re few things more thrilling than diving into unknown hardware, ripping the system apart, and finding out every little mysterious detail that makes it tick. I can&#39;t just <em>not</em> do it, and the WCS looked like a good opportunity to get back into this kind of emudev.</p>
+
+				<p class="inner_text">Although my scanner was messed up, I still had access to the game software itself. Instead of reading and analyzing data from the hardware, I&#39;d have to take a peek at Doko Demo Style&#39;s code. I&#39;m no stranger to reverse-engineering something solely based on its programming. It&#39;s not my first choice, but it may be necessary every now and then. The whole process can definitely prove slow and cumbersome, given how complicated most software is, but it&#39;s perfectly doable if ever the hardware becomes inaccessible.</p>
+
+				<p class="inner_text_large"><strong>Check Your Pulse</strong></p>
+
+				<p class="inner_text">The first order of business was to track down the code that handled microphone input in the Doko Demo Style ROM, which wasn&#39;t exactly a straightforward task. Before digging into the game&#39;s programming, I had to make sure GBE+ was equipped to receive microphone samples. On the DS, microphone input does not have its own dedicated memory-mapped I/O register, unlike other hardware components such as button input or sound. The CPU can&#39;t simply read/write to a single memory location; instead it has to use the DS&#39; <strong>Serial Peripheral Interface</strong> bus, also known simply as the <strong>SPI</strong> bus. This essentially transfers 1 byte to/from different components such as the touchscreen and firmware, and it also deals with power management (turning off the speakers, Wi-Fi, and 2D and 3D graphics). The touchscreen controller has several separate channels that can be selected, which will return data such as the X or Y component of touch input. A special channel called <strong>AUX</strong> is connected to the microphone and provides audio samples.</p>
+
+				<p class="inner_text">So, in a rather round-about way, the DS&#39; microphone is accessed through the SPI bus via the touchscreen controller&#39;s AUX channel. Please note that this is entirely separate from the <strong>AUXSPI</strong> bus, which transfers data to and from the cartridge in Slot-1. In any case, GBE+ already handled everything except for the AUX channel. Here, the emulator would eventually have to return 8-bit samples, but for now I simply flagged anytime the microphone was read from. I needed to see what code was trying to record anything, then investigate what the game did with those samples. After booting Doko Demo Style and selecting a play mode, I was prompted to scan a card. At this point, GBE+ began continuously logging thousands of microphone reads. This made sense, as the scanner was probably silent most of the time until the user swiped a card. As a result, the game had to constantly monitor any input audio.</p>
+
+				<p class="inner_text">GBE+ alerted me of the exact location in the ROM where the microphone was read. With that information, I set a breakpoint at the given address through the emulator&#39;s debugger. Stepping through each instruction, I saw that Doko Demo Style reserved a small 1KB buffer to store microphone samples. Once it reached the end, it would start filling it up again from the beginning. I took note of the buffer&#39;s location in RAM, then I set a new breakpoint for anytime the CPU read that data. The initial recording was handled by the DS&#39; ARM7, which on most commercial games is relegated to background tasks like controlling sound and Wi-Fi. The buffer itself was actually processed by the beefier ARM9 CPU, as I later found out.</p>
+
+				<p class="inner_text">To get a better idea of what was going on, I turned to the reverse-engineering tool Ghidra to disassemble and decompile the game&#39;s code. Within minutes, I&#39;d pinpointed the function where the microphone buffer was accessed. To summarize everything, Doko Demo Style was basically checking for a sound pulse. Every sample was multiplied by 2 first, then compared against the value <code class="highlight_hor_gray">0x48</code>. For microphone input, the value of a sample represents its volume, so the code was looking for samples that had reached a certain threshold. The game apparently needed to see at least 9 continuous <strong>HIGH</strong> samples above the threshold followed by at least 9 continous <strong>LOW</strong> samples below the threshold. Additionally, each individual <strong>HIGH</strong> and <strong>LOW</strong> phase couldn&#39;t last more than 16 samples, or else it would restart testing. Once all of these checks had passed, the game moved on to process the rest of the samples.</p>
+
+
+				<p class="center_img">
+					<img class="img_box" src="wcs_06.png" alt="Illustration of ACK signal" width="698" height="400" /> 
+				</p>
+
+				<p class="inner_text">I figured this was some sort of acknowledgement signal, a kind of flag that alerted the software that valid barcode data was incoming rather than random data or noise. Afterwards, the game began checking for more pulses and calculating their lengths. For this part, the code wanted each pulse to be a minimum of 3 samples and a maximum of 16 samples. If those conditions were true, Doko Demo Style started setting individual bits depending on how long the pulse was. If the pulse was larger than 6 samples, this represented a bit with a value of &#34;1&#34;; smaller pulses would result in a value of &#34;0&#34;. Gradually, the game began to construct 3 separate numbers. One was 10-bits long, another was 32-bits long, and the final one was just 7-bits long. Altogether, 49 bits were supposed to be read from the scanner, and that was it.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="wcs_07.png" alt="Illustration of pulse representing ZERO" width="698" height="400" /> 
+					<img class="img_box" src="wcs_08.png" alt="Illustration of pulse representing ONE" width="698" height="400" /> 
+				</p>
+
+				<p class="inner_text">With all of the barcode data pulled from the hardware, the software had to analyze it somewhere else. Thanks to a few more breakpoints in GBE+, I managed to track down the function in the game that seemed copy and use the barcode data. In Ghidra, it quickly became evident that the 10-bit and 32-bit number were actually treated as a single unit, as far as most of the math operations were concerned. As advanced as the DS was for its time, its CPUs were constrained to 32-bit registers, and it can&#39;t natively handle 42-bit values (let alone 64-bit values) for bitwise operations or simple addition/subtraction. A number of instructions were needed to workaround these limitations, but essentially the game spliced the 42-bit value into a total of 6 individual 7-bit variables.</p>
+
+				<p class="inner_text">These 7-bit chunks were then ran through a brief equation, and the result was compared against the last 7-bit value received from the scanner, which seemed to be a checksum of some kind. During my previous investigations into other barcode readers and the barcode formats themselves, I learned early on that checksums or rather &#34;check digits&#34; are often used to ensure some form of data integrity after scanning. As barcodes are represented on physical objects, there&#39;s always a chance something will go wrong when converting between analog and digital, so check digits help detect basic errors at least. The question here was what kind of check digit was I looking at?</p>
+
+				<p class="inner_text">Before tackling the WCS, I&#39;d dug up some info on the Wave Scanner to get an idea of what I might expect. A researcher named Clara Nguyen did <a href="https://blog.claranguyen.me/post/2020/12/29/wave-scanner-in-depth/">an incredible write-up of how that device worked.</a> Most importantly, she explained that the barcode format was <strong>Code-128</strong>. Sure enough, when I photographed some of my own cards and fed them into online barcode readers, they came up as Code-128. Crucially, however, Code-128 has several variants known as <strong>128A</strong>, <strong>128B</strong>, and <strong>128C</strong>. Each one encodes characters and numbers differently, and the formula for calculating the check digit varies slightly between all 3. Fortunately, the online barcode reader I used told me the WCS cards were in 128C format.</p>
+
+				<p class="inner_text">Code-128C is somewhat special in that the only printable characters it encodes are numbers in the range of <code class="highlight_hor_gray">00 - 99</code>. It does not support letters or any other symbols. This may seem odd given that the &#34;128&#34; in Code-128 references its ability to support the 128 ASCII code points, but there&#39;s a very good reason for the existence of the 128C version which I&#39;ll touch upon later. At any rate, all the Doko Demo Style cards I scanned with my phone were in 128C format with no surprises or weird exceptions. Everything seemed to be lining up so far.</p>
+
+				<p class="inner_text">Once I&#39;d identified the type of barcode used in the game, I went back to the code and took another look at the equation in Ghidra. As expected, the whole thing looked a bit mangled, having been written in C, then compiled into an ARMv5 binary, disassembled, and finally decompiled into very, very generic C code. In this situation, I simply copied the generic C output from Ghidra, pasted it into a text file, and gradually rewrote everything for better readability. Ghidra can rename functions and variables on its own, but I preferred the freedom and speed of a basic text editor. After a few minutes of rearranging different pieces, tossing in a few comments and notes, and styling everything to my own sensibilities, I had a block of re-created code that I could finally understand.</p>
+
+				<p class="inner_text">As previously mentioned, the 42-bit barcode data was broken up into 6 segments, with each segment measuring in at 7-bits. These segments were then used to determine the barcode&#39;s check digit, which was also 7-bits. Every segment, therefore, was actually a value from the barcode&#39;s numeric representation. The check digit starts off with a specific value depending on what version of Code-128 is used; for 128C, this is <code class="highlight_hor_gray">105</code>. Next, the value from each segment of the barcode is multiplied by a &#34;weight&#34; and added to the check digit&#39;s total. The first segment is multiplied by 1. The second segment is multiplied by 2. The third segment is multiplied by 3, and so on for each segment. Once all segments have been multiplied and added to the check digit, the sum is modulo&#39;d by 103; the check digit is then the remainder. The section below shows how it&#39;s done mathematically:</p>
+
+				<div class="scroll_seg"><pre>Sum = 105
+
+Sum = Sum + (Segment1 * 1)
+Sum = Sum + (Segment2 * 2)
+Sum = Sum + (Segment3 * 3)
+Sum = Sum + (Segment4 * 4)
+Sum = Sum + (Segment5 * 5)
+Sum = Sum + (Segment6 * 6)
+
+Sum = Sum MOD 103</pre>
+				</div>
+
+				<p class="inner_text">For testing purposes, I used a random 42-bit value and inserted it into GBE+ via the debugger. If the game sees that the calculated check digit matches the check digit provided by the scanner, it then begins verifying the barcode&#39;s numbers. Obviously it had to screen out invalid barcodes like <code class="highlight_hor_gray">000000000000</code>. Additionally, the barcodes seemed to use a range of numbers or certain numbers to separate cards based on certain categories. Doko Demo Style lets players customize their dogs with 2 types of fashion, generally speaking, a main piece of clothing (dress, outfit, costume) and accessories (hats, jewelry, fancy stuff like devil wings+tail). There&#39;s also &#34;Miracle&#34; cards that add some pizzazz to the dog, and cards that unlock specific breeds of dogs. All four of these seem to have barcodes that follow certain patterns, so the game can quickly evaluate what kind of card the player just scanned.</p>
+
+				<p class="inner_text">Armed with this knowledge, I set out to get the WCS emulated. However, there was just one problem. The barcode data the game received from the scanner was 42-bits and divided equally into 6 segments. On the other hand, each barcode printed on the Doko Demo Style cards was 12 digit long, e.g. <code class="highlight_hor_gray">011128531729</code>. At first I thought that each individual digit corresponded to exactly 1 segment from the 42-bit value. After some consideration, I had a real &#34;Well DUH!&#34; moment when I realized that actually <strong>2</strong> digits were represented by 1 segment. That is to say the barcode <code class="highlight_hor_gray">011128531729</code> is broken up as such: <code class="highlight_hor_gray">01</code> - <code class="highlight_hor_gray">11</code> - <code class="highlight_hor_gray">28</code> - <code class="highlight_hor_gray">53</code> - <code class="highlight_hor_gray">17</code> - <code class="highlight_hor_gray">29</code>.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="wcs_09.png" alt="Code 128C Barcode Example" />  
+				</p>
+				<p class="img_caption">An example of a Code 128C Barcode. Its 6 individual character codes form a single 12-digit number.</p>
+
+				<p class="inner_text">This works out nicely, as values of 00 - 99 all fit into 7-bits. It also illustrates why Code-128C is so helpful in certain situations: information density. A program can easily halve the amount of data needed to store a full barcode, and it also allows for quicker, easier calculation of check digits. Although the full numerical barcode reads as 12 digits for humans, it&#39;s actually just 6 characters as far as the actual barcode and barcode reading hardware are concerned. Quite clever! Having corrected my understanding of the barcode format, I continued tweaking GBE+ to support the scanner. Using all of this information, I made it so the emulator would wait for the CPU to request data from the microphone, then return bytes that would be interpreted as the correct sound pulses for the acknowledgement signal, the 42-bits of barcode data, and the 7-bit check digit. The results were a success!</p>
+
+				<p class="center_img">
+					<img class="img_box" src="wcs_10.png" alt="Task Failed Successfully" />  
+				</p>
+				<p class="img_caption">Oh... Um... That&#39;s not right.</p>
+
+				<p class="inner_text_large"><strong>Doggone It!!</strong></p>
+
+				<p class="inner_text">Well, it was mostly a success. Like other barcode scanners, I mapped a hotkey in GBE+ to initiate the actual scanning process for the WCS. There was an issue where sometimes the barcode wouldn&#39;t be detected right away, as if it were delayed by a few seconds. Many other times it simply did not work. It was like rolling a dice on whether it would scan correctly or not. On the positive side I was able to complete a few attempts, but the lack of consistency was frustrating. I hadn&#39;t encountered this problem with other barcode scanners in the past, so I opened up the debugger in GBE+ and stepped through key parts of the game&#39;s code during a scan.</p>
+
+				<p class="inner_text">The sound pulse data was fine, however, every so often I noticed there was some kind of desync going on. Typically, when this happened, it corrupted the last two bits of the check digit. As a result, the scan would initially be detected but eventually generate an error message on-screen. I double checked the code in Ghidra, and to my surprise I&#39;d overlooked an important detail. Originally, I thought that only 1 sound pulse was needed for the acknowlegdement signal. Upon closer inspection however, the acknowledgement signal was comprised of 2 pulses back-to-back. Fixing that proved trivial, and once done the scan was successful each and every time with no delay.</p>
+
+				<p class="inner_text">The only thing left now was to figure out how to import the barcode into the emulator rather than hard-coding a specific test case. Generally, GBE+&#39;s approach is to read a text file that contains the barcode in alphanumeric form. From there, GBE+ will decide how to interpret it depending on the game and the hardware. That works well enough, especially from a GUI, but it can be a bit cumbersome to have a bunch of text files sitting around in a folder, manually selecting them via a file picker tool. For the WCS, I decided to do something special and designed a menu where the barcode can manually be typed in. Having a drop-down menu would be ideal (I do this for the Battle Chip Gate), but that&#39;ll have to wait until I can reasonably gather a semi-complete list of barcodes. Players can still load barcodes via a file picker with a single click, however.</p>
+
+				<p class="inner_text">At any rate, emulation of the WCS was now complete. Although I didn&#39;t have access to a functioning unit, I was still able to get everything working. Sadly, there were a few things I wasn&#39;t able to test since my hardware didn&#39;t work. For example, I couldn&#39;t see if the WCS produced any detectable noise when not scanning, nor could I know for certain the exact volume levels of each sound pulse. While these aren&#39;t strictly necessary to preserve the device itself, that kind of information is still useful for the sake of completeness.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="wcs_11.png" alt="Gothic Lolita Border Collie" />  
+					<img class="img_box" src="wcs_12.png" alt="Her name is Princess Tutu Muffin" />  
+					<img class="img_box" src="wcs_13.png" alt="Thousand Yard Stare" />  
+				</p>
+				<p class="img_caption">While the NDS core in GBE+ needs a lot of work, it can at least show you all these cute puppies!</p>
+
+				<p class="inner_text">Unfortunately, I can&#39;t show the game in action. The NDS core of GBE+ only handles the menus and initial card scanning stuff. The actual rhythm section of the game gives a blank screen in the emulator. It&#39;s fully 3D stuff, an area where GBE+ needs a lot of attention. I know, I know, I&#39;ve been working on NDS emulation on/off for like 8, 9 years and I still haven&#39;t gotten a bunch of games playable. To be fair, I&#39;ve been quite busy with other things over the past decade. However, with all of the Game Boy peripherals and hardware emulated, I now have time to devote to NDS stuff. In fact, the WCS has rekindled my desire get GBE+ in shape.</p>
+
+				<p class="inner_text_large"><strong>We&#39;re So Back</strong></p>
+
+				<p class="inner_text">The scanner for Doko Demo Style was an interesting project for me personally. Like the Barcode Boy and HCV-1000, this device pretty much passed the raw alphanumeric barcode to the CPU, but it was the only one I&#39;ve seen so far that explicitly passed along the check digit separately. EAN-13 barcodes include the check digit as the last number. Meanwhile Code 39 barcodes don&#39;t use check digits at all. Overall, it was a fresh experience learning about the finer details of the Code-128 barcode format. Most of the time that&#39;s simply just not needed. I also appreciated working the DS&#39; microphone in GBE+. Adding support for the scanner required setting up a new, albeit small framework within the emulator. Thanks to that, it should be easy to get the Wave Scanner working in the future.</p>
+
+				<p class="inner_text">Speaking of the future, the Nintendo DS has a lot of unemulated accessories: TV tuners, digital cameras, robot dogs, azimuths, an SD card video platform, and even GPS-enabled cars. The 7th Gen portable was every bit as wild and innovative as the Game Boys were. As I&#39;ve said before on other occassions, items like these aren&#39;t getting any younger, so their preservation will be at the forefront of my next efforts. Although some of this stuff sounds crazy, at this point it&#39;s safe to say I kinda like crazy. I&#39;ll emulate anything and everything (yes, even a car).</p>
+
+				<p class="inner_text">However, the DS isn&#39;t the only thing on my radar. I&#39;ve been planning on expanding to other systems as well. So far, all of my work has mostly been on Nintendo&#39;s handhelds, and I&#39;ve dabbled with the GameCube briefly. Soon, hopefully, I&#39;ll have something to share regarding different consoles, ones outside of the Nintendo ecosystem too. I don&#39;t want to spoil anything at this time, but expect the <em>Edge of Emulation</em> to slowly start covering a broader spread of hardware. The fight to preserve video games is far from finished. We&#39;re honestly years away from even getting a majority of this stuff researched and documented. It&#39;s a long, seemingly endless journey. Even so, we&#39;re making progress every day.</p>
+
+			</div>
+		</div>
+
+		<p> </p> 
+
+	</body>
+</html>
+
+
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
