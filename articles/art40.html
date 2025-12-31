@@ -1,0 +1,445 @@
+﻿<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>The State of Emulation - 2025</title>
+		<link rel="stylesheet" type="text/css" href="./../main.css" />
+
+		<meta property="og:title" content="The State of Emulation - 2025" />
+		<meta property="og:image" content="https://shonumi.github.io/articles/GBE_2017.png" />
+		<meta property="og:description" content="The current state of emulating everything" />
+		<meta property="og:type" content="article" />
+ 		<meta charset="utf-8" />
+		<meta content="width=device-width, initial-scale=1" name="viewport" />
+
+		<style type="text/css">
+			.green
+			{
+				background-color: #73E77B;
+				margin-top: 0px;
+				margin-bottom: 10px;
+				margin-left: 3%;
+				margin-right: 3%;
+				overflow-wrap: break-word;
+				border: 2px #000 solid;
+				padding: 5px;
+				font-size: 1.5em;
+			}
+
+			.g
+			{
+				background-color: #73E77B;
+				border: 2px #000 solid;
+				padding: 5px;
+			}
+
+			.yellow
+			{
+				background-color: #FFFB7D;
+				margin-top: 0px;
+				margin-bottom: 10px;
+				margin-left: 3%;
+				margin-right: 3%;
+				overflow-wrap: break-word;
+				border: 2px #000 solid;
+				padding: 5px;
+				font-size: 1.5em;
+			}
+
+			.y
+			{
+				background-color: #FFFB7D;
+				border: 2px #000 solid;
+				padding: 5px;
+			}
+
+			.red
+			{
+				background-color: #FA8275;
+				margin-top: 0px;
+				margin-bottom: 10px;
+				margin-left: 3%;
+				margin-right: 3%;
+				overflow-wrap: break-word;
+				border: 2px #000 solid;
+				padding: 5px;
+				font-size: 1.5em;
+			}
+
+			.r
+			{
+				background-color: #FA8275;
+				border: 2px #000 solid;
+				padding: 5px;
+			}
+
+			.con
+			{
+				font-family: monospace;
+			}
+
+			.ln
+			{
+				margin-top: 0px;
+				margin-bottom: 10px;
+			}
+
+			hr
+			{
+				width: 80%;
+				height: 0.25em;
+				margin-bottom: 2em;
+				background-color: #D0D0D0;
+			}
+
+		</style>
+
+	</head>
+
+	<body>
+
+		<!-- Main Header -->
+		<div class="header">
+
+			<!-- Left Header -->
+			<div class="header_left">
+				<div class="header_text"><strong><a class="header_link_current" href="../index.html">Shonumi</a></strong></div>
+			</div>
+		
+			<!-- Right Header -->
+			<div class="header_right">
+				<a class="header_link_current" href="../articles.html">Articles</a>
+				<a class="header_link" href="../books.html">My<span class="no">_</span>Books</a>
+				<a class="header_link" href="../blog.html">Blog</a>
+				<a class="header_link" href="../downloads.html">Downloads</a>
+				<a class="header_link" href="../dandocs.html">Dan<span class="no">_</span>Docs</a>
+			</div>
+
+		</div>
+
+		<!-- Main Page Outer Box -->
+		<div class="box_outer">
+			
+			<!-- Main Page Inner Box -->
+			<div class="box_inner">
+
+				<div class="center_headline">The State of Emulation - 2025</div>
+				<div class="headline_underline">. . . . . . . . . . .</div>
+
+				<p class="center_img"><img src="soe_25_00.png" alt="" height="300"/></p>
+
+				<p class="inner_text_large"><strong>Scratching the Surface</strong></p>
+
+				<p class="inner_text">Last year, the first iteration of <em>The State of Emulation</em> focused exclusively on the progress of preserving officially licensed Game Boy hardware. That goal has finally been achieved after many years of hard work and research by myself and the larger emulation and retrogaming community. Every single peripheral, add-on, and unique cartridge across the Game Boy platform can now be virtually recreated by emulation. From mundane items like Link Cables to exotic ones like infrared controlled robots, each piece of the Game Boy's history has been carefully reverse-engineered, documented, and made playable in various emulators.</p>
+
+				<p class="inner_text">Doing this for the Game Boy, Game Boy Color, and Game Boy Advance was a massive undertaking, with well over 40+ unique products that needed special attention to properly emulate. Even so, we eventually overcame every obstacle these systems could throw at us. Unfortunately, the Game Boy only represents the very tip of the iceberg of all the kinds of extra hardware available for video game consoles and handhelds. Across something like the NES/Famicom, for example, there are still plenty of gaps for unemulated devices and accessories. While the Game Boy is complete, other systems have a host of games that can't be played simply because no emulator supports the extra hardware needed by the software.</p>
+
+				<p class="inner_text">Here, I'll be highlighting another system that could use a lot more love and attention in this regard. I figure I'd make this something of an annual report at the end of the year, with each year focusing on a new platform and what special hardware is/isn't emulated. For this time around, I'll stick to what I know and talk about the Nintendo DS. For what it's worth, developers were every bit as ambituous with the DS as they were with the Game Boy. While the previous generations of Nintendo's handhelds had some pretty wild stuff going on, that same energy carried over to the DS without skipping a beat. As I'll demonstrate later, DS hardware contained a wide spectrum of innovative and decidedly bold ideas. All of them are worth saving, even if it takes years to do so.</p>
+
+				<p class="inner_text">Once again, I'll be limiting the list to officially licensed devices. That is to say, it only contains products commercially sold to the public and given Nintendo's approval. These represent the ecosystem that Nintendo curated for the DS as a brand. Most of the Third-Party stuff on the DS are flashcarts, cheats like the Action Replay, and the odd motion sensor. Nonetheless, they won't make the cut here. This does not discount their importance (especially historically in relation to homebrew), but the vast majority of hardware in danger of disappearing falls into the officially licensed category. Like last time, 3 colors are used to indicate the current status of emulation for each item:</p>
+
+				<p class="inner_text"><span class="g">Green = Full Emulation.</span></p>
+				<p class="inner_text"><span class="y">Yellow = Partial Emulation.</span></p>
+				<p class="inner_text"><span class="r">Red = No Emulation.</span></p>
+
+				<p class="inner_text">Full Emulation implies that the hardware in question has the vast majority of its capabilities implemented, such that an average user could enjoy most of what it offers. Partial Emulation denotes hardware that has some of its features emulated to a certain extent. This includes features that are technically playable (through WIP builds, Pull Request branches, or scripts) but are not currently implemented by existing emulators. No Emulation signifies that no emulator supports the hardware in any shape or form. For Partial or No Emulation categories, I will note cases where research has at least been done and/or where experimental forms of emulation do exist.</p>
+
+				<p class="inner_text_large"><strong>Nintendo DS Hardware</strong></p>
+
+				<div class="con">
+					<p></p>
+
+					<div class="yellow">
+						<p class="ln"><strong>Activity Meter (NTR-027)</strong></p>
+						<p class="ln">Emulated By: Experimental Desmume Build, GBE+</p>
+						<p class="ln">Notes: Only initial IR communication emulated at this time</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Arkanoid Paddle</strong></p>
+						<p class="ln">Emulated By: Desmume</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Bayer Digit Glucose Meter</strong></p>
+						<p class="ln">Emulated By: Experimental Desmume Build</p>
+						<p class="ln">Notes: Researched with Proof-of-Concept</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Bey Point Reader</strong></p>
+						<p class="ln">Emulated By: Experimental Desmume Build</p>
+						<p class="ln">Notes: Researched with Proof-of-Concept</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Bluetooth Cartridge - NTR-005(-04)</strong></p>
+						<p class="ln">Emulated By: Experimental Desmume Build</p>
+						<p class="ln">Notes: Researched with Proof-of-Concept</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Car-based GPS</strong></p>
+						<p class="ln">Emulated By: Experimental Desmume Build</p>
+						<p class="ln">Notes: Researched with Proof-of-Concept</p>
+					</div>
+
+					<div class="red">
+						<p class="ln"><strong>DSVision</strong></p>
+						<p class="ln">Emulated By: NONE</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Easy Piano</strong></p>
+						<p class="ln">Emulated By: Desmume</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Facening Scan/DS Scanner - NTR-014</strong></p>
+						<p class="ln">Emulated By: Experimental Desmume Build</p>
+						<p class="ln">Notes: Researched with Proof-of-Concept</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Guitar Grip</strong></p>
+						<p class="ln">Emulated By: Desmume, melonDS</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>HCV-1000</strong></p>
+						<p class="ln">Emulated By: Desmume, GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Hoshizora Navi Azimuth Cartridge - NTR-030</strong></p>
+						<p class="ln">Emulated By: Experimental Desmume Build</p>
+						<p class="ln">Notes: Researched with Proof-of-Concept</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Infrared Cartridge - NTR-031</strong></p>
+						<p class="ln">Emulated By: Experimental Desmume Build, GBE+</p>
+						<p class="ln">Notes: Fully researched. Only initial connection established</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Magic Reader</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Memory Expansion Pak</strong></p>
+						<p class="ln">Emulated By: Desmume, GBE+, melonDS</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Motion Pack</strong></p>
+						<p class="ln">Emulated By: Drastic, melonDS</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="red">
+						<p class="ln"><strong>One-Seg TV Tuner - NTR-016</strong></p>
+						<p class="ln">Emulated By: NONE</p>
+						<p class="ln">Notes: Research ongoing. Cheat code allows access to main menu</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>PokeWalker</strong></p>
+						<p class="ln">Emulated By: PocketWalker, PokeStroller, Powar</p>
+						<p class="ln">Notes: IR Communication w/melonDS branch is WIP</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Rumble Pak</strong></p>
+						<p class="ln">Emulated By: Desmume, GBE+, melonDS</p>
+						<p class="ln">Notes: IR Communication w/melonDS branch is WIP</p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Slide Controller - NTR-012</strong></p>
+						<p class="ln">Emulated By: Experimental Desmume Build, iDeaS plugin</p>
+						<p class="ln">Notes: Researched with Proof-of-Concept</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Solar Sensor</strong></p>
+						<p class="ln">Emulated By: melonDS</p>
+						<p class="ln">Notes:</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Teku Teku Angel</strong></p>
+						<p class="ln">Emulated By: Python Script</p>
+						<p class="ln">Notes: Communicates with DS via passwords</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Thrustmaster</strong></p>
+						<p class="ln">Emulated By: GBE+</p>
+						<p class="ln">Notes: </p>
+					</div>
+
+					<div class="yellow">
+						<p class="ln"><strong>Wappy Dog</strong></p>
+						<p class="ln">Emulated By: Python and Lua Scripts</p>
+						<p class="ln">Notes: Researched with Proof-of-Concept</p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Wantame Card Scanner</strong></p>
+						<p class="ln">Emulated By: GBE+, .WAV sound files</p>
+						<p class="ln">Notes: </p>
+					</div>
+
+					<div class="green">
+						<p class="ln"><strong>Wave Scanner</strong></p>
+						<p class="ln">Emulated By: GBE+, .WAV sound files</p>
+						<p class="ln">Notes: </p>
+					</div>
+
+					<div class="red">
+						<p class="ln"><strong>Wii-to-DS Communication</strong></p>
+						<p class="ln">Emulated By: NONE</p>
+						<p class="ln">Notes: </p>
+					</div>	
+
+					<div class="yellow">
+						<p class="ln"><strong>Wireless Keyboard</strong></p>
+						<p class="ln">Emulated By: Experimental Desmume Build and Lua Scripts</p>
+						<p class="ln">Notes: Researched with Proof-of-Concept</p>
+					</div>
+				</div>
+
+				<p class="inner_text">As we can see from this list, the Nintendo DS is actually in a fairly decent state. 14 out of 28 special hardware features are fully emulated and available for anyone to dabble with. That's a solid 50% already, and things have never looked better in recent years. A large number of devices have been researched, with preliminary emulation implemented in experimental builds of Desmume. All of this hard work comes from one source: a dedicated person known as <a href="https://github.com/windwakr">windwakr</a>. Since 2024, they've been busy picking apart all sorts of DS hardware and freely sharing that info online via GitHub and the <a href="https://forums.desmume.org/viewtopic.php?id=12756">Desmume technical forum.</a> Without these massive efforts, a great deal of the above chart would be covered in red!</p>
+
+				<p class="inner_text">Fully emulating all of this hardware is going to take more time, but for now we have a clear path on how to close some of the most serious gaps regarding the DS. Below, I'll discuss the remaining products that need our attention and some of the challenges we face in getting them properly emulated.</p>
+				<hr/>
+
+				<p class="inner_text">The <strong>Activity Meter</strong> is an infrared pedometer used for 2 DS titles that centered on walking and exercise: Personal Trainer: Walking (or Personal Trainer: Walk with Me, depending on your region) and Active Health with Carol Vorderman. I started snooping around this waaaay back in 2020, capturing the IR transmissions between this and the DS' infrared cartridge. While I provided a decent amount of info to start, nocash (author of no$gba) finished the bulk of research. I attempted to start emulating the pedometer and got through most of the initial setup.</p>
+
+				<p class="inner_text">Unfortunately, GBE+ has some issues that start to mess with the communication protocol; it all breaks down before the user can finish registration. We'd probably be further along now if I had fixed GBE+ by now, but at the moment the emulator can successfully start the first parts of the protocol and get the game to recognize the Activity Meter. Fortunately, windwakr had much more success using Desmume as the basis for their experiments!</p>
+
+				<p class="inner_text">The <strong>Infrared Cartridge</strong> itself was used in conjunction with the above-mentioned exercise software and Pokemon Heart Gold/Soul Silver to communicate with the PokeWalker. All the relevant details are explained by nocash in the <a href="https://www.problemkaputt.de/gbatek.htm#dscartinfraredpedometers">GBATEK document</a>, so we know exactly how the infrared commands work. It's just a matter of adding support for that in an emulator at this point.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="soe_25_01.png" alt="GBE+ Activity Meter Emulation" />
+					<img class="img_box" src="soe_25_02.png" alt="Desmume Activity Meter Emulation" />
+				</p>
+				<hr/>
+
+				<p class="inner_text">The <strong>Bayer Digit Glucose Meter</strong> is perhaps unsurprisingly mostly a copy+paste version of the <a href="https://shonumi.github.io/articles/art33.html">Glucoboy</a>. It needs some special attention regarding detection as a Slot-2 device, but for the most part, it follows the behavior of the original GBA peripheral. This is relatively low-hanging fruit, so-to-speak, with the hardest part probably being adding a GUI menu or .ini entry for all the different configuration options for Glucose Points and such.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="soe_25_03.png" alt="Desmume Bayer Digit Emulation" />
+				</p>
+				<hr/>
+
+				<p class="inner_text">The <strong>Bey Point Reader</strong> is a Slot-2 accessory that reads Bey Points from a <a href="https://beyblade.fandom.com/wiki/Beypointer">Beypointer</a> from the Beyblade franchise. As I understand things, it was a way of tracking real-life points from Beyblade matches and transferring them to the game Metal Fight Beyblade. windwakr has provided all of the necessary details for emulating the Bey Point Reader, along with a patch for Desmume's code. This one is another easy target that someone could properly implement into an emulator without much trouble. Again, the only other considerations I can see are how to handle the points via a menu or .ini file, which isn't that big of a deal.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="soe_25_04.png" alt="Desmume Bey Point Reader Emulation" />
+				</p>
+				<hr/>
+
+				<p class="inner_text">The <strong>Bluetooth Cartridge</strong> on the DS is closely linked to software such as <a href="https://niwanetwork.org/wiki/Kuruma_de_DS">Kuruma de DS</a> and Learn with Pokémon: Typing Adventure. The former involves connecting with the built-in GPS of several car models. Think of it as an interactive mapping system, one that would display tourist information and provide quizzes based on the player's location. If it sounds nuts, that's because it is. windwakr managed to get Kuruma de DS booting, but that's just the start of emulating a full GPS and map system.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="soe_25_05.png" alt="Desmume Booting up Kuruma de DS" />
+				</p>
+				<hr/>
+
+
+				<p class="inner_text">The <strong>DSVision</strong> is the direct successor for AM3's <a href="https://shonumi.github.io/articles/art28.html">Advance Movie Adapter.</a> Right after the GBA, the company turned its attention to the DS. Once again, they got Nintendo's official blessings for the project. The product itself is a simple DS cartridge with a slot for a micro SD card. While easily mistaken for a flashcart, the DSVision allowed users to download licensed videos (and other things like textbooks) from a virtual storefront and play them back on the DS. How the cartridge works and what format the videos need to be in is still a mystery. Finding and preserving all of the avilable content will also be a hard task.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="soe_25_06.png" alt="Old Nintendo Graphic Chart for DSVision" />
+				</p>
+				<hr/>
+
+				<p class="inner_text">The <strong>Facening Scan</strong> (also known as the <strong>DS Scanner</strong>) is a Slot-2 peripheral with an embedded camera. It was only used in 2 titles:  Facening de Hyoujou Yutaka ni Inshou Up: Otona no DS Kao Training and Shiseido Beauty Solution Kaihatsu Center Kanshuu: Project Beauty. The first is a facial expression trainer and the second is a makeup guide. The Facening Scan is technically the 4th camera ever officially supported by Nintendo's handheld line of consoles, after the Game Boy Camera, Campho Advance, and the DSi's integrated cameras. windwakr has achieved preliminary emulation of the Facening Scan, and I'm currently doing homebrew hardware tests on it. It's a fairly complicated accessory, but emulation-wise it's only as difficult as any other camera. The chief concern is supporting camera input from the user (webcam, phone, or a still image).</p>
+
+				<p class="center_img">
+					<img class="img_box" src="soe_25_07.png" alt="Shrek Doing Makeup with Desmume Emulation of Facening Scan" />
+				</p>
+				<hr/>
+
+				<p class="inner_text">The <strong>Hoshizora Navi Azimuth Cartridge</strong> is a special DS cartridge with 3-way geomagnetic compass. Along with the software, it acts as an azimuth, basically a tool that helps you find the position of stars. Once again, windwakr has figured out most of the commands needed to boot the game with basic inputs for the compass. It still needs a bit more research regarding the cartridge's accelerometer and any specific calibrations the compass uses, however.</p>
+
+				<p class="inner_text">Hoshizora Navi has a free-look mode with the D-Pad, so emulating the compass itself is technically not necessary if users just want to see what the software offers. In the future though, there is the potential for using a phone's built-in sensors to manipulate the compass for a more realistic experience. This could be either on an Android or iOS-based DS emulator. Personally, for GBE+, I would use a JavaScript-based webapp to send sensor data over a network to the emulator OR just use the gyro input from a controller like the DS4/DS5.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="soe_25_08.png" alt="Desmume Azimuth Emulation" />
+				</p>
+				<hr/>
+
+				<p class="inner_text">The <strong>One-Seg TV Tuner</strong> is only the 2nd (and last) TV Tuner Nintendo officially allowed on their handhelds. It came out shortly after the <a href="https://shonumi.github.io/articles/art37.html">Agatsuma TV Tuner</a>. This tuner, however, was geared towards receiving digital TV signals rather than analog ones. It's also a Slot-1 device, being the largest DS cartridge ever produced. Research is still currently ongoing, but for now an Action Replay code allows users to view the main menu. Once it's been looked into a bit more, an emulator would have to recreate the TV channels somehow, which is the biggest hurdle. Options include grabbing web streams or streaming from user provided files.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="soe_25_09.png" alt="melonDS on the TV Adapter menu thanks to cheat codes" />
+				</p>
+				<hr/>
+
+				<p class="inner_text">The <strong>Slide Controller</strong> is essentially an optical mouse attached to the DS' Slot-2. Used by the game Mag Kid Slider, it allows players to sit the DS on a flat surface and move the entire handheld around to control objects in the game. It's a really off-the-wall kind of idea that's actually quite fun on real hardware. The device itself is well documented, but currently no emulator officially supports it. Well, supposedly iDeaS could play it to some extent via a plugin. That emulator is quite old and abandoned by now, and the alleged plugin has since been lost over time. I looked into that several years back but had no success finding it...</p>
+
+				<p class="inner_text">In any case, windwakr made a Pull Request for Desmume a while ago with working code for the Slide Controller. It hasn't been merged yet, but the Slide Controller should be easy to implement in other emulators as well.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="soe_25_10.png" alt="Desmume Slide Controller Emulation" />
+				</p>
+				<hr/>
+
+				<p class="inner_text"><strong>Wappy Dog</strong> is a robot dog/cyber-companion in the same vein as many 2000s-era toys like <a href="https://en.wikipedia.org/wiki/Tekno_the_Robotic_Puppy">Tekno</a>. The difference here is that users communicate with the dog via toys and the DS itself. This is achieved by using microphones and sound waves. The DS sends commands from its speakers, and using its microphone it also determines the dog's response. Conversely, the dog listens for commands with its own internal microphone and use its speakers to respond.</p>
+
+				<p class="inner_text">windwakr has made <a href="https://gist.github.com/windwakr/9a2c1d5a8f0806f00a2a67a02a1ae665">Python scripts</a> that can generate all possible waveforms for the dog's responses. Additionally, there is a Lua script for Desmume that lets users send commands (via memory editing). I'm not sure what the DS --> Wappy commands look like, so that may be an area for further investigation. Although it's not necessary, a deeper emulation model would probably provide for an animated sprite version of Wappy, similar to how I used subscreens to emulated the <a href="https://shonumi.github.io/articles/art20.html">Cyber Drive Zoids</a> toys.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="soe_25_11.png" alt="Desmume Wappy -> DS Emulation with Lua GUI" />
+				</p>
+				<hr/>
+
+				<p class="inner_text"><strong>Wii-to-DS Communication</strong> has been a sort of &#34;white whale&#34; for DS emulation for well over a decade. There are many technical challenges here, namely that you need a suitable Wii emulator to somehow connect with an appropiate DS emulator. On top of that, you have to emulate the way each system uses wireless data transfers. This may require a great deal of synchronization. At this time, as far as I'm aware, Wii-to-DS and DS-to-Wii communication is still a far off dream. Dolphin could support this eventually, but for now a bunch of wireless functions are stubbed. melonDS would be the most likely candidate to implement this as well, however, no work is currently being done for this feature.</p>
+
+				<p class="inner_text">Given the sheer magnitude of this undertaking, it may be quite a while before any sort of collaboration starts giving results. There is still good reason to remain hopeful though, as melonDS has raised the bar for DS wireless emulation to a whole new level over the years. One of these days, we'll get there, I'm sure.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="soe_25_12.png" alt="Wii to DS Connectivity Example on Real Hardware" />
+				</p>
+				<hr/>
+
+				<p class="inner_text">The <strong>Wireless Keyboard</strong> that came with Learn with Pokémon: Typing Adventure connects to the DS via a Bluetooth enabled cartridge. This one has been emulated for quite some time via Lua scripts for Desmume. windwakr recently demonstrated a build of Desmume that natively passes along the users keyboard to the game. Thankfully, the way the keyboard works isn't too hard to understand and it's been thoroughly documented. To go even further, an emulator could directly connect to the Pokemon keyboard through Bluetooth, similar to Dolphin's Bluetooth Passthrough functionality.</p>
+
+				<p class="center_img">
+					<img class="img_box" src="soe_25_13.png" alt="Desmume Pokemon Wireless Keyboard Emulation" />
+				</p>
+				<hr/>
+
+				<p class="inner_text">So those are all the serious gaps that need to be addressed going forward. Despite how many categories are in the yellow and red, I'm extremely optimistic that those will be tackled in the coming years. In the past 2 years alone, there has been a lot of progress, and I don't expect anything less from the future. With all the Game Boy peripherals already successfully emulated, I'm confident we'll be able to say the same for the DS soon enough.</p>
+
+				<p class="inner_text_large"><strong>2026 and Beyond</strong></p>
+
+				<p class="inner_text">With most of the research already started and taken care of, a lot of the work boils down to making sure emulators actually support these devices. Personally, I have my eye on adding things like the Bayer Digit and Bey Point Reader to start off 2026. windwakr has stated that they have no interest in adding the necessary code to things like Desmume or melonDS, and that's where the rest of us have to step up. This stuff ain't gonna emulate itself after all.</p>
+
+				<p class="inner_text">If you've ever wanted to contribute something to the emulation community, this is an excellent opportunity. Although most of the items listed above seem wild and exotic, they're relatively straightforward when you sit down and look at how they work. In an emulator, they're generally isolated from some of the system's nitty-gritty details like CPU timers, the 3D graphics FIFO, and dozens of I/O registers. Emulating these things often simply involves waiting for the DS to send some kind of input and giving the appropiate output back. It's perfect for beginners to play around with. Whether you end up making a customized branch or get something pushed to the main repo of an existing emulator, this is a great chance to help improve DS emulation.</p>
+
+				<p class="inner_text">I'm certainly motivated to see this happen. Although there are still other consoles that need our attention, the DS has a large amount of peripherals we can take care of here and now. Given the handheld's impact on video game history, this isn't something we can ignore for long either. I can hardly believe it myself, but the system is over 20 years old, and all of its hardware continues to age. In any case, 2026 will definitely feature some huge developments for video game preservation. Until next time, always remember: Never give up. Never surrender. Emulate everything.</p>
+					
+				</div>		
+			</div>
+		</div>
+
+		<p> </p> 
+
+	</body>
+</html>
+
+
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
