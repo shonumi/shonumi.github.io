@@ -159,6 +159,8 @@
 			<p class="list_item"><a href="#hcv">HCV-1000</a></p>
 			<p class="list_item"><a href="#kmr">Magic Reader</a></p>
 			<p class="list_item"><a href="#wcs">Wantame Card Scanner</a></p>
+			<p class="list_item"><a href="#wav">Wave Scanner</a></p>
+			<p class="list_item"><a href="#did">Bayer Didget Glucose Meter</a></p>
 			
 		</div>
 
@@ -200,13 +202,14 @@
 	<p class="list_head"><strong>Credits</strong></p>
 	<p class="list_item">Billy - Mobile Adapter GB documentation</p>
 	<p class="list_item">ClawGrip - Scans of all known Barcode Boy cards</p>
-	<p class="list_item">EchelonPrime - Scans of all Card de Asobu cards + misc info</p>
+	<p class="list_item">EchelonPrime - Scans of all Card de Asobu cards + lots of misc info</p>
 	<p class="list_item">endrift - MBC6 documentation. Collaboration on Battle Chip Gate documentation (especially Progress Chip Gate) + testing + verification of results.</p>
 	<p class="list_item">Háčky - Mobile Adapter GB documentation</p>
 	<p class="list_item">mid-kid - Mobile Adapter GB documentation</p>
 	<p class="list_item">pfero - Mobile Adapter GB documentation</p>
 	<p class="list_item">Robert Abel (Tauwasser) - Net de Get translation help</p>
-	<p class="list_item">Winter1760 - EX Monopoly and Mario Kart Advance documentation</p>
+	<p class="list_item">windwakr - Various NDS peripheral reverse engineering</p>
+	<p class="list_item">OtherLiz - EX Monopoly, Mario Kart Advance, and Net de Get documentation</p>
 	
 
 	<!-- Barcode Boy -->
@@ -219,6 +222,7 @@
 	<p class="list_item"><a href="#bcb_bar">Barcode Format</a></p>
 	<p class="list_item"><a href="#bcb_rip">Card Dumping + Emulation</a></p>
 	<p class="list_item"><a href="#bcb_err">Barcode Errors</a></p>
+	<p class="list_item"><a href="#bcb_lcc">Link Cable Compatibility</a></p>
 	<p class="list_item"><a href="#bcb_cod">Barcodes</a></p>
 
 	<a name="bcb_gen"></a>
@@ -313,6 +317,11 @@ Handshake	---&gt;
 	<p class="gray_title">[Barcode Boy] : Barcode Errors</p>
 
 	<p>Interestingly enough, a vast majority of the barcodes for Family Jockey 2 are completely incorrect. Only 3 out of the 8 barcodes actually generate horses with the stats listed on the cards. Barcodes A1, B1, and A4 work fine; the rest give stats that do not match up with the card&#39;s. Some, such as A2, even generate horses that are totally unfit for competition (A2 produces stats with 2s and 0s, and the max is supposed to be 9 in each category). It&#39;s not clear if this was a programming glitch or a mistake Namcot made when printing the cards, or some combination of the two. All other Barcode Boy games came packaged with cards that have no issues whatsoever.</p>
+
+	<a name="bcb_lcc"></a>
+	<p class="gray_title">[Barcode Boy] : Link Cable Compatibility</p>
+
+	<p>The Barcode Boy requires 5V power via Pin 1 of the Link Cable. As such it is incompatible with all official Link Cables (DMG-04, MGB-008, MGB-010, and CGB-003) since each one lacks Pin 1. However, the Link Cable included with the Barcode Boy is a special case that does have Pin 1 present. When using the Barcode Boy&#39;s Link Cable, it is possible to connect it to a Game Boy Pocket/Light/Color system with the MGB-004, as the adapter exposes Pin 1.</p>
 
 	<a name="bcb_cod"></a>
 	<p class="gray_title">[Barcode Boy] : Barcodes</p>
@@ -4698,7 +4707,8 @@ Bit		| Function
 		<li class="list_item">Accepts SmartMedia cards from a slot on the side.</li>
 		<li class="list_item">The cartridge itself contains no hardware to accelerate audio/video playback. It is strictly for the GBA&#39;s CPU to read data.</li>
 		<li class="list_item">The cartridge has many hardware functions for reading and navigating FAT12 filesystems.</li>
-		<li class="list_item">The cartridge also contains an 11KB firmware responsible for loading, decrypting, decoding, and playing media.</li>
+		<li class="list_item">The cartridge contains 12KB of firmware responsible for loading, decrypting, decoding, and playing media.</li>
+		<li class="list_item">The cartridge also has 5KB of firmware responsible for handling errors.</li>
 		<li class="list_item">Small &#34;lock files&#34; are encrypted with 128-bit DES as an anti-piracy measure. Each AM3 SmartMedia card has an ID that the adapter can retrieve.</li>
 		<li class="list_item">SmartMedia cards came in 32MB for TV shows/episodes, and 64MB for full-length movies.</li>
 	</ul>
@@ -4808,7 +4818,7 @@ Command		| Description
 	<p class="list_item">After issuing this command, the 16 bytes beginning at AM_SMID (0x08010410 - 0x0801041F) will return the 128-bit SmartMedia ID whenever read.</p><p class="spc"></p>
 
 	<p class="list_item"><strong>Command 0x05 - Set File Size Mode</strong></p>
-	<p class="list_item">After issuing this command, the 4 bytes at AM_FILE_SIZE (0x08010410 - 0x08010413) will return the current file size. These values are pulled from the File Allocation Table written to the SmartMedia card. Most importantly, when switching to a new file by writing to AM_SMC_FILE, this command updates the current file size the CPU will read. When a new file is chosen, AM_SMC_FILE <strong>does not</strong> update automatically. That is to say, the old value will be read unless the Set File Size Mode command is called.</p><p class="spc"></p>
+	<p class="list_item">After issuing this command, the 4 bytes at AM_FILE_SIZE (0x08010410 - 0x08010413) will return the current file size. These values are pulled from the File Allocation Table written to the SmartMedia card. Most importantly, when switching to a new file by writing to AM_SMC_FILE, this command updates the current file size the CPU will read. When a new file is chosen, AM_FILE_SIZE *does not* update automatically. The old value will be read unless the Set File Size Mode command is called.</p><p class="spc"></p>
 
 	<p class="list_item"><strong>Command 0x09 - Read Firmware Data Block</strong></p>
 	<p class="list_item">Data Source: Current Read Pointer</p>
@@ -4921,8 +4931,8 @@ SMID_3 = [AM_SMID + 0x0C]		//Read 0x0801041C - 0x0801041F</pre>
 	<p class="list_item"><strong>Read Pointer Value On Boot</strong></p>
 	<p class="list_item">When turning on the Game Boy Advance, the first 1KB of firmware (the bootloader) is loaded into the address space at 0x8000000 - 0x80003FF. As such, it has already advanced by 0x400 bytes by the time the CPU begins executing instructions from that area of memory.</p><p></p>
 
-	<p class="list_item"><strong>Reading More Than 11KB of Firmware</strong></p>
-	<p class="list_item">If the CPU should try to read more 11KB of firmware, the read pointer essentially resets itself as zero. Reading a 12th 1KB data block will simply read the 1st 1KB data block (e.g. the bootloader. Note that when reading the 11th 1KB data block of firmware, Bit 8 of AM_BLK_STAT will be set to &#34;1&#34; to indicate that all the data for the firmware has been read, treating the firmware as if it were another file.</p><p></p>
+	<p class="list_item"><strong>Reading More Than 12KB of Firmware</strong></p>
+	<p class="list_item">If the CPU tries to read more 12KB of firmware, the read pointer essentially resets itself as zero. Reading a 13th 1KB data block will simply read the 1st 1KB data block (e.g. the bootloader. Note that when reading the 12th 1KB data block of firmware, Bit 8 of AM_BLK_STAT will be set to &#34;1&#34; to indicate that all the data for the firmware has been read, treating the firmware as if it were another file.</p><p></p>
 
 	<p class="list_item"><strong>Reading Data Past EOF</strong></p>
 	<p class="list_item">If the read pointer advances past a given file&#39;s EOF position, the read pointer will reset itself as zero. The next 0x01 command sent by the CPU will read data at the beginning of the file. Bit 8 of AM_BLK_STAT will be set to &#34;1&#34; to indicate that all the data for the file has been read.</p><p></p>
@@ -4984,7 +4994,7 @@ INFO.AM3
 	<a name="ama_err"></a>
 	<p class="gray_title">[Advance Movie Adapter] : Error Handling</p>
 
-	<p>The Advance Movie Adapter behaves slightly differently when the SmartMedia card cannot be read. While the first 1KB section of the firmware is loaded normally for the initial bootloader, trying to read subsequent 1KB blocks of the firmware returns a repeating 5KB section of code dedicated to error handling. This 5KB section is distinct from the regular firmware 11KB that deals with decoding and playing audio/video files. It can only be accessed when a SmartMedia card related issue occurs. Examples include a missing/improperly inserted card, an unsupported SmartMedia card type, or a damaged SmartMedia card. The error handling code helpfully displays an on-screen message in Japanese and English (with a typo) in such an event.</p>
+	<p>The Advance Movie Adapter behaves slightly differently when the SmartMedia card cannot be read. While the first 1KB section of the firmware is loaded normally for the initial bootloader, trying to read subsequent 1KB blocks of the firmware returns a repeating 5KB section of code dedicated to error handling. This 5KB section is distinct from the regular firmware 12KB that deals with decoding and playing audio/video files. It can only be accessed when a SmartMedia card related issue occurs. Examples include a missing/improperly inserted card, an unsupported SmartMedia card type, or a damaged SmartMedia card. The error handling code helpfully displays an on-screen message in Japanese and English (with a typo) in such an event.</p>
 
 	<p>Additionally, when the adapter needs to handle SmartMedia card errors, Bit 8 of AM_BLK_STAT no longer serves as an EOF flag. The GBA can read an indefinite amount of repeating 1KB blocks from firmware (the 5KB section) without ever changing the status of Bit 8. Lastly, AM_SMID will return zeroes for each of its 16-bytes. These two conditions can be used for software to manually check whether or not a SmartMedia card is inside the adapter.</p>
 
@@ -5671,7 +5681,7 @@ Command					| Parameter 1							| Parameter 2
 0x800000 - Unknown			| N/A								| N/A
 ----------------------------------------------------------------------------------------------------------------------------------------------</pre>
 
-	<p>*These commands send non-standard amounts of data for their parameters. See the end of this section for further details on each. additional data beyond a second parameter. Overall, it sends a total of 0x218 bytes, the latter portion of which has an unknown purpose.</p>
+	<p>*These commands send non-standard amounts of data for their parameters. See the end of this section for further details on each.</p>
 
 	<p>The Play-Yan Micro exclusively uses serial commands and uses the following proceedure to issue them:</p>
 
@@ -6353,7 +6363,28 @@ Bit	| Description
 
 	<p class="spc"></p>
 	<p class="list_item"><strong>Index 0xE1 - Write Game Stats</strong></p>
-	<p class="list_item"></p>
+	<p class="list_item">This index is used to write various information about the games (Lost Star Saga, Knock&#39;em Downs, Solar Wing, Plexus, and Raccoon Rancher) to the Glucoboy. This appears to be data such as high scores and possibly time played. Although this information is stored in EEPROM as part of a normal game save, an additional copy is made for the Glucoboy internally. This index receives 6 additional bytes as parameters. Game Stats uses 60 bytes in total, so this index must be written to multiple times to complete the data.</p>
+
+	<p>The Glucoboy writes to Game Stats sequentially when using the 0xE1 index. That is to say, each time it writes data to the index, it moves onto the next category automatically until all 10 have been edited. The table below shows the order of each category and what each value represents:</p>
+
+<pre>-----------------------------------------------------------
+Category 	| Description
+-----------------------------------------------------------
+VCSECS		| Number of seconds played for Lost Star Saga
+VCHIGH		| High Score for Lost Star Saga
+KDSECS		| Number of seconds played for Knock&#39;em Downs
+KDHIGH		| High Score for Knock&#39;em Downs
+SWSECS		| Number of seconds played for Solar Wing
+SWHIGH		| High Score for Solar Wing
+PLSECS		| Number of seconds played for Plexus
+PLHIGH		| High Score for Plexus
+RRSECS		| Number of seconds played for Raccoon Rancher
+RRHIGH		| High Score for Raccoon Rancher
+-----------------------------------------------------------</pre>
+
+	<p>The index accepts two inputs spread across 6 bytes. The first is a 16-bit value followed by a 32-bit value. The 16-bit value appears to be constant, as the Glucoboy ROM always sets it to 0x3000. The 32-bit value represents the actual integer to write to a given category. Both of these inputs are written LSB-first, which stands in contrast to every other index.</p>
+
+	<p>When reading this index, it seems to act as a flag, and any non-zero value causes the Glucoboy to register and error when retrieving GRPs.</p>
 
 	<p class="spc"></p>
 	<p class="list_item"><strong>Index 0xE2 - Read Unknown Flag</strong></p>
@@ -8391,6 +8422,7 @@ JS1-59	| 003A	| 炎の闘技場</pre>
 		<li class="list_item">Microphone cable is tucked under the bottom of the unit.</li>
 		<li class="list_item">Has a reset button on the backside.</li>
 		<li class="list_item">Uses 12 character barcodes in Code-128 C format.</li>
+		<li class="list_item">Produces samples at approximately 400.005Hz.</li>
 	</ul>
 
 	<a name="wcs_btp"></a>
@@ -8419,7 +8451,7 @@ IF MIC_SAMPLE LESS THAN 0x48
 ELSE
 	SAMPLE_TYPE = HIGH</pre>
 
-	<p>After sending the ACK Signal, the Wantame Card Scanner sends a continuous stream of 49 bits. Depending on the length of the LOW part of the the LOW-to-HIGH transition, a &#34;0&#34; or a &#34;1&#34; will be recorded. If the LOW portion measures at 6 or more samples, this represents a &#34;1&#34; in the bitstream, otherwise it represents a &#34;0&#34;. Importantly, each LOW and HIGH portion must measure at least 3 samples, and the total LOW-to-HIGH transition must not exceed 16 samples.</p>
+	<p>After sending the ACK Signal, the Wantame Card Scanner sends a continuous stream of 49 bits. Depending on the length of the LOW part of the the LOW-to-HIGH transition, a &#34;0&#34; or a &#34;1&#34; will be recorded. If the LOW portion measures at 6 or more samples, this represents a &#34;1&#34; in the bitstream, otherwise it represents a &#34;0&#34;. Importantly, each LOW and HIGH portion must measure at least 3 samples, and the total duration of the LOW-to-HIGH transition must not exceed 16 samples.</p>
 
 	<p>The first 42-bits of the stream represent the barcode as a hexadecimal number, and the final 7 bits represent the barcode&#39;s checksum. The barcode is split across 2 32-bit integers, with the the upper 10-bits received first, and lower 32-bits received immediately afterwards. However, each integer receives its bits big endian first, and the same is true of the Check Digit.</p>
 
@@ -8457,6 +8489,679 @@ Barcode Pair	| Sum
 	<p>Essentially, the first pair is multiplied by 1 and added to the sum, the second pair is multiplied by 2 and added to the sum, and so on and so forth for the other pairs. After that, a value of 105 is added to the sum, then a modulo of 103 is applied to the sum for the final result. For this example it would be 0x41.</p>
 
 	<p>After all of these signals are transferred from the Wantame Card Scanner via microphone input, the rest of the samples should go LOW until a new scan.</p>
+
+
+
+
+
+
+
+
+	<!-- Wave Scanner -->
+	<a name="wav"></a>
+	<p class="gray_title">Wave Scanner</p>
+	<p class="list_item"><a href="#wav_gen">General Hardware Information</a></p>
+	<p class="list_item"><a href="#wav_dtp">Data Transmission Protocol</a></p>
+	<p class="list_item"><a href="#wav_bar">Barcodes</a></p>
+
+	<a name="wav_gen"></a>
+	<p class="gray_title">[Wave Scanner] : General Hardware Information</p>
+
+	<p>On December 14, 2006, Capcom released an action role-playing game called Ryuusei no Rockman in Japan, later renamed Mega Man Star Force in other territories. It was something of a continuation of the Mega Man Battle Network series. Like the earlier Battle Network games, Capcom partnered with Takara Tomy to create an accessory known as the Wave Scanner. It was combination electronic LCD toy and video game peripheral. As a standalone unit, it let users fight viruses with swipeable cards and level up. When attached to the Nintendo DS, the player&#39;s level could be used in-game to boost their stats and power up Mega Man by granting an immediate Star Force transformation. During battle, users could swipe cards to enhance their attacks as well.</p>
+
+	<p>The peripheral shares some heritage with the Battle Chip Gates on the GBA. Additionally, it served as a template for the Wantame Card Scanner that Capcom and Takara released less than a year later.</p>
+
+	<ul>
+		<li class="list_item">Features a small LCD screen to display limited graphics.</li>
+		<li class="list_item">Features a small rotating dial that can be pressed in 3 directions.</li>
+		<li class="list_item">Features a 2 face buttons.</li>
+		<li class="list_item">Uses DS microphone plug to transmit data.</li>
+		<li class="list_item">Microphone cable is tucked under the bottom of the unit.</li>
+		<li class="list_item">Uses a separate 3.5mm headphone jack for audio output (unrelated to DS connectivity).</li>
+		<li class="list_item">Uses Slot-2 only for stability. There is no ROM chip or PCB connected to the Slot-2 pins.</li>
+		<li class="list_item">Powered by 3 AAA batteries.</li>
+		<li class="list_item">Compatible with DSi models thanks to microphone cable.</li>
+		<li class="list_item">Uses 12 character barcodes in Code-128 C format.</li>
+		<li class="list_item">Came in 4 versions: Pegasus, Leo, Dragon, and DX (Pegasus).</li>
+		<li class="list_item">Produces samples at approximately 400.005Hz.</li>
+	</ul>
+
+	<a name="wav_dtp"></a>
+	<p class="gray_title">[Wave Scanner] : Data Transmission Protocol</p>
+
+	<p>The Wave Scanner translates data into sound pulses via the DS microphone. By reading samples, the game grabs the barcode or level data as individual bits, verifies the integrity of the data, then checks to see if the data is valid for the current game mode. The transmission protocol is very basic and consists of the following 2 parts:</p>
+
+<pre>---------------------------------------------------------
+Protocol Stage	| Description
+---------------------------------------------------------
+ACK Signal	| Initial pulses
+Barcode/Level	| 32-bits
+---------------------------------------------------------</pre>
+
+	<p>The ACK signal alerts the game to incoming data. It consists of a single HIGH-to-LOW transition of microphone samples. At a minimum, each LOW and HIGH period should be sampled at least 9 times, but less than 16. The following psuedo-code can be used to determine whether a sample from the microphone is LOW or HIGH:</p>
+
+<pre>MIC_SAMPLE = READ_DS_MIC()
+MIC_SAMPLE = MIC_SAMPLE * 2
+MIC_SAMPLE = MIC_SAMPLE AND 0xFF
+
+IF MIC_SAMPLE LESS THAN 0x58
+	SAMPLE_TYPE = LOW
+
+ELSE
+	SAMPLE_TYPE = HIGH</pre>
+
+	<p>After sending the ACK Signal, the Wave Scanner sends a continuous stream of 32 bits. Depending on the length of the HIGH part of the the HIGH-to-LOW transition, a &#34;0&#34; or a &#34;1&#34; will be recorded. If the HIGH portion measures at 6 or more samples, this represents a bit whose value is &#34;1&#34;, otherwise it represents a bit whose value is &#34;0&#34;. Importantly, each HIGH and LOW portion must measure at least 3 samples, and the total duration of the HIGH-to-LOW transition must not exceed 16 samples.</p>
+
+	<p>As both barcode data and level data are 32-bits long, the data type being transmitted is generally determined by the top 8 or 6 most significant bits (i.e. Bits 24-31 for level data, and Bits 26-31 for barcode data). Additionally, Ryuusei no Rockman will manually validate the data on its own. The format for each type of data is listed and explained below:</p>
+
+<pre>---------------------------------------------------------
+Wave Scanner Level Data
+---------------------------------------------------------
+Bits 00 - 07	| XOR Check Digit
+Bits 08 - 14	| Wave Scanner Level (1 - 99)
+Bits 15 - 16	| Wave Scanner Type (1, 2, or 3)
+Bits 17 - 23	| Constant (0x40)
+Bits 24 - 31	| Constant (0x42)
+---------------------------------------------------------</pre>
+
+	<p>The Wave Scanner&#39;s level occupies Bits 8 - 14 and has a valid decimal integer in the range of 1 - 99.</p>
+
+	<p>The Wave Scanner Type (Leo, Pegasus, and Dragon) is determined by Bit 15 - 16. A value of &#34;1&#34; indicates a Leo Wave Scanner. A value of &#34;2&#34; represents a Pegasus Wave Scanner. A value of &#34;3&#34; represents a Dragon Wave Scanner.</p>
+
+	<p>The upper 15-bits are constant values, 0x42 and 0x40. That is to say, only Bits 23, 25, and 30 are set.</p>
+
+	<p>The XOR Check Digit ensures a small amount of data integrity during transmission. It is simply the XOR&#39;d values of the upper 24-bits of data split into 8-bit values. In other words, the XOR Check Digit is calculated as follows:</p>
+
+<pre>CHECK DIGIT = (BITS 8 - 15) XOR (BITS 16 - 23) XOR (BITS 24 - 31)</pre>
+
+<p></p>
+<p></p>
+
+<pre>---------------------------------------------------------
+Wave Card Barcode Data
+---------------------------------------------------------
+Bits 00 - 07	| XOR Check Digit
+Bits 08 - 13	| 6th Barcode Character Code
+Bits 14 - 19	| 5th Barcode Character Code
+Bits 20 - 25	| 4th Barcode Character Code
+Bits 26 - 31	| Constant (0x10)
+---------------------------------------------------------</pre>
+
+	<p>Although the Wave Scanner&#39;s Wave Cards are in Code-128 C format, only use the last 3 character codes identify any specific card. The alphanumeric representation of each barcode for all Wave Cards uses the format 040000XXYYZZ, where only XXYYZZ change. As Code-128 C converts a single character code into 2 alphanumeric characters, XXYYZZ are the 4th, 5th, and 6th character codes of the barcode. These are encoded as individual 6-bit values when transmitted via the Wave Scanner. The upper 6-bits of the 32-bit barcode data is a simple constant value where only Bit 30 is set.</p>
+
+
+	<a name="wav_bar"></a>
+	<p class="gray_title">[Wave Scanner] : Barcodes</p>
+
+	<p>Character Cards are special cards that effectively end up being duplicates of other cards in terms of overall effect, and in some cases they even duplicate the actual barcodes. For example, C-02 &#34;Rockman&#34; has the same barcode as S-133 &#34;Recover 200&#34;, and the Character Card makes explicit note that it restores 200 HP. Often, Character Cards will have the same outcome as using the &#34;SP&#34; version of a Mega Card. These ones seem to be denoted with the barcode pattern 04000024xxxx.</p>
+
+	<p>For whatever reason, the Ice Meteor cards are marked as &#34;BC-xxx&#34; instead of &#34;S-xxx&#34;. This may stand for &#34;Battle Card&#34; and is perhaps a typo. It&#39;s possible it also stands for &#34;Best Combo&#34;, however, outside of glitches, attacks powered up by the Wave Scanner disqualify players from achieving a Best Combo.</p>
+
+<pre>Standard Cards
+----------------------------------------------------------------------------------------------------------------------
+Card ID	| Barcode	| English Name			| Japanese Name	
+----------------------------------------------------------------------------------------------------------------------
+S-001	| 040000060019	| Canon				| キャノン
+S-002	| 400000060026	| Plus Canon			| プラスキャノン
+S-003	| 400000060031	| Heavy Canon			| ヘビーキャノン
+S-004	| 040000060044	| Plasma Gun 1			| プラズマガン 1
+S-005	| 040000060055	| Plasma Gun 2			| プラズマガン 2
+S-006	| 040000060100	| Plasma Gun 3			| プラズマガン 3
+S-007	| 040000060107	| Gatling Gun 1			| ガトリング 1
+S-008	| 040000060122	| Gatling Gun 2			| ガトリング 2
+S-009	| 040000060135	| Gatling Gun 3			| ガトリング 3
+S-010	| 040000060136	| Air Spread			| エアスプレッド
+S-011	| 040000060154	| Radar Missile 1		| レーダーミサイル 1
+S-012	| 040000060160	| Radar Missile 2		| レーダーミサイル 2
+S-013	| 040000060210	| Radar Missile 3		| レーダーミサイル 3
+S-014	| 040000000212	| Heat Ball 1			| ヒートボール 1
+S-015	| 040000000222	| Heat Ball 2			| ヒートボール 2
+S-016	| 040000000240	| Heat Ball 3			| ヒートボール 3
+BC-017	| 040000060246	| Ice Meteor 1			| アイスメテオ 1
+BC-018	| 040000060260	| Ice Meteor 2			| アイスメテオ 2
+BC-019	| 040000060262	| Ice Meteor 3			| アイスメテオ 3
+S-020	| 040000060317	| Stun Knuckle			| スタンナックル
+S-021	| 040000060325	| Poison Knuckle		| ポイズンナックル
+S-022	| 040000060330	| Freeze Knuckle		| フリーズナックル
+S-023	| 040000060343	| Sword				| ソード
+S-024	| 040000060354	| Wide Sword			| ワイドソード
+S-025	| 040000060363	| Long Sword			| ロングソード
+S-026	| 040000060406	| Blazing Edge			| リュウエンザン
+S-027	| 040000060421	| Tidal Edge			| スイゲツザン
+S-028	| 040000060424	| Strike Edge			| ライメイザン
+S-029	| 040000060435	| Arbo Edge			| タイボクゼン
+S-030	| 040000060444	| Break Sabre			| ブレイクサーベル
+S-031	| 040000060460	| Ground Wave 1			| グランドウェーブ 1
+S-032	| 040000060500	| Ground Wave 2			| グランドウェーブ 2
+S-033	| 040000060512	| Ground Wave 3			| グランドウェーブ 3
+S-034	| 040000060522	| Jet Attack 1			| ジェットアタック 1
+S-035	| 040000060530	| Jet Attack 2			| ジェットアタック 2
+S-036	| 040000060546	| Jet Attack 3			| ジェットアタック 3
+S-037	| 040000060550	| Power Bomb 1			| パワーボム 1
+S-038	| 040000060562	| Power Bomb 2			| パワーボム 2
+S-039	| 040000060608	| Power Bomb 3			| パワーボム 3
+S-040	| 040000060616	| Ghost Pulse 1			| ゴーストパルス 1
+S-041	| 040000060631	| Ghost Pulse 2			| ゴーストパルス 2
+S-042	| 040000060644	| Ghost Pulse 3			| ゴーストパルス 3
+S-043	| 040000060655	| Fire Ring 1			| モエリング 1
+S-044	| 040000060700	| Fire Ring 2			| モエリング 2
+S-045	| 040000060707	| Fire Ring 3			| モエリング 3
+S-046	| 040000060712	| Time Bomb 1			| カウントボム 1
+S-047	| 040000060725	| Time Bomb 2			| カウントボム 2
+S-048	| 040000060736	| Time Bomb 3			| カウントボム 3
+S-049	| 040000060745	| Fire Bazooka 1		| ファイアバズーカ 1
+S-050	| 040000060752	| Fire Bazooka 2		| ファイアバズーカ 2
+S-051	| 040000060802	| Fire Bazooka 3		| ファイアバズーカ 3
+S-052	| 040000060814	| Tail Burner 1			| テイルバーナー 1
+S-053	| 040000060824	| Tail Burner 2			| テイルバーナー 2
+S-054	| 040000060832	| Tail Burner 3			| テイルバーナー 3
+S-055	| 040000060838	| Wide Wave 1			| ワイドワェーブ 1
+S-056	| 040000060852	| Wide Wave 2			| ワイドワェーブ 2
+S-057	| 040000060900	| Wide Wave 3			| ワイドワェーブ 3
+S-058	| 040000060910	| Chain Bubble 1		| チェインバブル 1
+S-059	| 040000060918	| Chain Bubble 2		| チェインバブル 2
+S-060	| 040000060924	| Chain Bubble 3		| チェインバブル 3
+S-061	| 040000060937	| Green Ink			| グリーンインク
+S-062	| 040000060948	| Blue Ink			| ブルーインク
+S-063	| 040000060957	| Purple Ink			| パープルインク
+S-064	| 040000061000	| Sticky Rain 1			| ネバーレイン 1
+S-065	| 040000061015	| Sticky Rain 2			| ネバーレイン 2
+S-066	| 040000061028	| Sticky Rain 3			| ネバーレイン 3
+S-067	| 040000061039	| Cloud Shot 1			| クラウドシュート 1
+S-068	| 040000061048	| Cloud Shot 2			| クラウドシュート 2
+S-069	| 040000061055	| Cloud Shot 3			| クラウドシュート 2
+S-070	| 040000061060	| Thunder Ball 1		| サンダーボール 1
+S-071	| 040000061108	| Thunder Ball 2		| サンダーボール 2
+S-072	| 040000061118	| Thunder Ball 3		| サンダーボール 3
+S-073	| 040000061126	| Voltic Eye 1			| ボルティックアイ 1
+S-074	| 040000061142	| Voltic Eye 2			| ボルティックアイ 2
+S-075	| 040000061146	| Voltic Eye 3			| ボルティックアイ 3
+S-076	| 040000061158	| Flicker Kick 1		| ホタルゲリ 1
+S-077	| 040000061204	| Flicker Kick 2		| ホタルゲリ 2
+S-078	| 040000061212	| Flicker Kick 3		| ホタルゲリ 3
+S-079	| 040000061228	| Jumbo Hammer 1		| ジャンボハンマー 1
+S-080	| 040000061232	| Jumbo Hammer 2		| ジャンボハンマー 2
+S-081	| 040000061243	| Jumbo Hammer 3		| ジャンボハンマー 3
+S-082	| 040000061252	| Mop Lance 1			| モジャランス 1
+S-083	| 040000061305	| Mop Lance 2			| モジャランス 2
+S-084	| 040000061310	| Mop Lance 3			| モジャランス 3
+S-085	| 040000061323	| Fokx-Fu 1			| ヘンゲノジュツ 1
+S-086	| 040000061334	| Fokx-Fu 2			| ヘンゲノジュツ 2
+S-087	| 040000061343	| Fokx-Fu 3			| ヘンゲノジュツ 3
+S-088	| 040000061350	| Vulcan Seed 1			| バルカンシード 1
+S-089	| 040000061401	| Vulcan Seed 2			| バルカンシード 2
+S-090	| 040000061404	| Vulcan Seed 3			| バルカンシード 3
+S-091	| 004000061414	| Brave Sword 1			| ブレイブソード 1
+S-092	| 004000061432	| Brave Sword 2			| ブレイブソード 2
+S-093	| 004000061438	| Brave Sword 3			| ブレイブソード 3
+S-094	| 040000061452	| Junk Cube 1			| ジャンクキューブ 1
+S-095	| 040000061454	| Junk Cube 2			| ジャンクキューブ 2
+S-096	| 040000061500	| Junk Cube 3			| ジャンクキューブ 3
+S-097	| 040000061518	| Synchro Hook 1		| シンクロフック 1
+S-098	| 040000061524	| Synchro Hook 2		| シンクロフック 2
+S-099	| 040000061538	| Synchro Hook 3		| シンクロフック 3
+S-100	| 040000061540	| Power Song			| パワーソング
+S-101	| 040000061550	| Quake Song			| クエイクソング
+S-102	| 040000061562	| Trip Song			| トリップソング
+S-103	| 040000061612	| Maoi Fall 1			| モアイフォール 1
+S-104	| 040000061618	| Maoi Fall 2			| モアイフォール 2
+S-105	| 040000061626	| Maoi Fall 3			| モアイフォール 3
+S-106	| 040000061636	| Big Axe 1			| ビッグアックス 1
+S-107	| 040000061648	| Big Axe 2			| ビッグアックス 2
+S-108	| 040000061662	| Big Axe 3			| ビッグアックス 3
+S-109	| 040000061704	| Magic Crystal 1		| マジクリスタル 1
+S-110	| 040000061712	| Magic Crystal 2		| マジクリスタル 2
+S-111	| 040000061723	| Magic Crystal 3		| マジクリスタル 3
+S-112	| 040000061736	| Black Hole 1			| ブラックホール 1
+S-113	| 040000061751	| Black Hole 2			| ブラックホール 2
+S-114	| 040000061758	| Black Hole 3			| ブラックホール 3
+S-115	| 040000061803	| Berserk Sword 1		| ベルセルカソード 1
+S-116	| 040000061814	| Berserk Sword 2		| ベルセルカソード 2
+S-117	| 040000061827	| Berserk Sword 3		| ベルセルカソード 3
+S-118	| 040000061832	| Green Burst			| グリーンバースト
+S-119	| 040000061839	| Ice Burst			| アイスバースト
+S-120	| 040000061848	| Poison Burst			| ポイズンバースト
+S-121	| 040000061860	| Typhoon Dance			| タイフーンダンス
+S-122	| 040000061910	| Jamming Punch			| ジャミングパンチ
+S-123	| 040000061916	| Jamming Machine Gun		| ジャミングマシンガン
+S-124	| 040000061924	| Whistle			| ホイッスル
+S-125	| 040000061934	| Bombalizer			| ボムライザー
+S-126	| 040000061946	| Anti Sword			| シラハドリ
+S-127	| 040000061960	| Recover 10			| リカバリー 10
+S-128	| 040000062002	| Recover 30			| リカバリー 30
+S-129	| 040000062010	| Recover 50			| リカバリー 50
+S-130	| 040000062020	| Recover 80			| リカバリー 80
+S-131	| 040000062033	| Recover 120			| リカバリー 120
+S-132	| 040000062048	| Recover 150			| リカバリー 150
+S-133	| 040000062055	| Recover 200			| リカバリー 200
+S-134	| 040000062100	| Recover 300			| リカバリー 300
+S-135	| 040000062111	| Barrier			| バリア
+S-136	| 040000062118	| Barrier 100			| バリア 100
+S-137	| 040000062129	| Barrier 200			| バリア 200
+S-138	| 040000062136	| Aura				| オーラ
+S-139	| 040000062155	| Invisible			| インビジブル
+S-140	| 040000062156	| Spirit Fury			| セイレイノイカリ
+S-141	| 040000062206	| Poison Apple			| ドクリンゴ
+S-142	| 040000062212	| Double Cross			| ウラギリノススメ
+S-143	| 040000062230	| Giga Mine			| ギガマイン
+S-144	| 040000062240	| Grass Stage			| クサムラステージ
+S-145	| 040000062242	| Ice Stage			| アイスステージ
+S-146	| 040000062256	| Gravity Stage			| グラビティステージ	
+S-147	| 040000062262	| Guard Null Stage		| ゼシエンステージ
+S-148	| 040000062316	| Holy Panel			| ホーリーパネル
+S-149	| 040000062326	| Paralyze Plus			| マビプラス
+S-150	| 040000062328	| Attack+10			| アタック+10
+----------------------------------------------------------------------------------------------------------------------
+
+
+Mega Cards
+----------------------------------------------------------------------------------------------------------------------
+Card ID	| Barcode	| English Name			| Japanese Name	
+----------------------------------------------------------------------------------------------------------------------
+M-181	| 040000062826	| Taurus Fire			| オックスファイア
+M-182	| 040000062836	| Taurus Fire EX		| オックスファイア EX
+M-183	| 040000062838	| Taurus Fire SP		| オックスファイア SP
+M-184	| 040000062852	| Cygnus Wing			| キグナスウィング
+M-185	| 040000062858	| Cygnus Wing EX		| キグナスウィング EX
+M-186	| 040000062912	| Cygnus Wing SP		| キグナスウィング SP
+M-187	| 040000062922	| Harp Note			| ハープ・ノート
+M-188	| 040000062924	| Harp Note EX			| ハープ・ノート EX
+M-189	| 040000062938	| Harp Note SP			| ハープ・ノート SP
+M-190	| 040000062944	| Libra Scales			| リブラ・バランス
+M-191	| 040000062963	| Libra Scales EX		| リブラ・バランス EX
+M-192	| 040000063000	| Libra Scales SP		| リブラ・バランス SP
+M-193	| 040000063013	| Queen Ophiuca			| オヒュカスクイーン
+M-194	| 040000063028	| Queen Ophiuca EX		| オヒュカスクイーン EX
+M-195	| 040000063056	| Queen Ophiuca SP		| オヒュカスクイーン SP
+M-196	| 040000063044	| Gemini Spark			| ジェミニスパーク
+M-197	| 040000063055	| Gemini Spark EX		| ジェミニスパーク EX
+M-198	| 040000063104	| Gemini Spark SP		| ジェミニスパーク SP
+M-199	| 040000063109	| Cancer Bubble			| キャンサバブル
+M-200	| 040000063116	| Cancer Bubble EX		| キャンサバブル EX
+M-201	| 040000063127	| Cancer Bubble SP		| キャンサバブル SP
+M-202	| 040000063140	| Wolf Woods			| ウルフフォレスト
+M-203	| 040000063155	| Wolf Woods EX			| ウルフフォレスト EX
+M-204	| 040000063162	| Wolf Woods SP			| ウルフフォレスト SP
+M-205	| 040000063207	| Crown Thunder			| クラウンサンダー
+M-206	| 040000063218	| Crown Thunder EX		| クラウンサンダー EX
+M-207	| 040000063231	| Crown Thunder SP		| クラウンサンダー SP
+M-208	| 040000063236	| Pegasus Magic			| ペガサスマジック
+M-209	| 040000063243	| Pegasus Magic EX		| ペガサスマジック EX
+M-210	| 040000063252	| Pegasus Magic SP		| ペガサスマジック SP
+M-211	| 040000063301	| Leo Kingdom			| レオキングダム
+M-212	| 040000063316	| Leo Kingdom EX		| レオキングダム EX
+M-213	| 040000063323	| Leo Kingdom SP		| レオキングダム SP
+M-214	| 040000063332	| Dragon Sky			| ドラゴンスカイ
+M-215	| 040000063343	| Dragon Sky EX			| ドラゴンスカイ EX
+M-216	| 040000063356	| Dragon Sky SP			| ドラゴンスカイ SP
+----------------------------------------------------------------------------------------------------------------------
+
+
+Giga Cards
+----------------------------------------------------------------------------------------------------------------------
+Card ID	| Barcode	| English Name			| Japanese Name	
+----------------------------------------------------------------------------------------------------------------------
+G-231	| 040000063613	| Pegasus Magic GX		| ペガサスマジック GX
+G-232	| 040000063622	| Aqua+50			| アクア+50
+G-233	| 040000063633	| Ox Tackle			| オックスタックル
+G-234	| 040000063636	| Break Time Bomb		| ブレイクカウントボム
+G-235	| 040000063651	| Dark Sword			| ダークソード
+G-236	| 040000063658	| Leo Kingdom GX		| レオキングダム GX
+G-237	| 040000063703	| Fire+50			| ファイア+50
+G-238	| 040000063714	| Gemini Thunder		| ジェミニサンダー
+G-239	| 040000063727	| Darkness Hole			| ダークネスホール
+G-240	| 040000063732	| Life Aura			| ドリームオーラ
+G-241	| 040000063751	| Dragon Sky GX			| ドラゴンスカイ GX
+G-242	| 040000063752	| Wood+50			| ウッド+50
+G-243	| 040000063801	| Gorgon Eye			| ゴルゴンアイ
+G-244	| 040000063816	| Destroy Missle		| デストロイミサイル
+G-245	| 040000063823	| Poison Pharoah		| ポイズンファラオ
+G-247	| 040000063843	| Andromeda			| アンドロメダ
+----------------------------------------------------------------------------------------------------------------------
+
+
+Character Cards
+----------------------------------------------------------------------------------------------------------------------
+Card ID	| Barcode	| English Name			| Japanese Name	
+----------------------------------------------------------------------------------------------------------------------
+C-01	| 040000060031	| Rockman			| ロックマン
+C-02	| 040000062055	| Rockman			| ロックマン
+C-06	| 040000063236	| Ice Pegasus			| アイスペガサス
+C-09	| 040000240020	| Taurus Fire			| オックスファイア
+C-10	| 040000240027	| Cygnus Wing			| キグナスウィング
+C-11	| 040000240032	| Harp Note			| ハープ・ノート
+C-12	| 040000240045	| Libra Scales			| リブラ・バランス
+C-13	| 040000240056	| Queen Ophiuca			| オヒュカス・クイーン
+C-14	| 040000240101	| Gemini Spark			| ジェミ・スパーク
+C-15	| 040000240108	| Cancer Bubble			| キャンサ・バブル
+C-16	| 040000240123	| Wolf Woods			| ウルフ・フォレスト
+C-17	| 040000240136	| Crown Thunder			| クラウン・サンダー
+----------------------------------------------------------------------------------------------------------------------</pre>
+
+
+
+
+
+
+
+
+
+
+	<!-- Bayer Didget -->
+	<a name="did"></a>
+	<p class="gray_title">Bayer Didget Glucose Meter</p>
+	<p class="list_item"><a href="#did_gen">General Hardware Information</a></p>
+	<p class="list_item"><a href="#did_dev">Device Detection</a></p>
+	<p class="list_item"><a href="#did_dat">Accessing Didget Data</a></p>
+	<p class="list_item"><a href="#did_ind">Index Overview</a></p>
+	<p class="list_item"><a href="#did_pnt">Point Calculation</a></p>
+
+	<a name="did_gen"></a>
+	<p class="gray_title">[Bayer Didget Glucose Meter] : General Hardware Information</p>
+
+	<p>The Bayer Didget Glucose Meter is a Slot-2 device for the Nintendo DS capable of processing diabetic testing strips. Created by Bayer AG, it was designed to interact with the game Knock&#39;em Downs: World&#39;s Fair and released on May 8th, 2009 in the United States and later in September for Europe. After having bought the rights to the earlier Glucoboy, Bayer repurposed the hardware for the Nintendo DS, resulting in the Didget. This newer version is largely the same as its predecessor, and the premise behind the game is unchanged. Players unlock points by regularly testing their blood sugar levels and staying within healthy levels. These points are then used to purchase minigames, items, costumes, and photographs in-game.</p>
+
+
+	<ul>
+		<li class="list_item">Comes in an oversized white cartridge with an ovular top-end.</li>
+		<li class="list_item">Comes with a segmented LCD screen capable of displaying a few digits for glucose levels, time, date, and other statuses.</li>
+		<li class="list_item">Has &#34;M&#34; and UP and DOWN buttons on the sides of the LCD screen, which should work similarly to other glucose meters.</li> 
+		<li class="list_item">Has a slot for accepting blood testing strips at the very top, specifically Bayer&#39;s Contour brand test strips.</li>
+		<li class="list_item">Uses a coin cell battery (CR2032) to power the unit&#39;s glucose checking functions as well as an internal real-time clock.</li>
+		<li class="list_item">Has a USB Mini slot on the lower side of the unit for PC connection via the GLUCOFACTS DELUXE software.</li>
+		<li class="list_item">The PCB is split into two main sections: top for glucose checking hardware, bottom for internal flash memory.</li>
+		<li class="list_item">Top PCB contains a Panasonic MN101CB microcontroller, presumably used to handle glucose checking and managing the RTC.</li>
+		<li class="list_item">Has an LED at the top left corner that flashes during testing.</li>
+		<li class="list_item">Has an operating tempurature of 5C - 45C (41F - 113F).</li>
+		<li class="list_item">Stores 480 test results internally.</li>
+	</ul>
+
+	<a name="did_dev"></a>
+	<p class="gray_title">[Bayer Didget Glucose Meter] : Device Detection</p>
+
+	<p>The software will read some values from the GBA cart space between 0x8000000 and 0x801FFFF. The following psuedo-code will allow software to properly detect the presence of the Didget:</p>
+
+<pre>//Read individual bytes from GBA cart space
+if address AND 1
+	return 0xF3
+else
+	return ANY VALUE</pre>
+
+	<a name="did_dat"></a>
+	<p class="gray_title">[Bayer Didget Glucose Meter] : Accessing Didget Data</p>
+
+	<p>The Nintendo DS does not directly test glucose or blood samples. Rather, the Didget handles that on its own and allows the handheld to read back the data stored on the device. The Didget operates in much the same manner as the original Glucoboy with only minor differences. The Didget uses a single, multipurpose 1-byte register mapped to the address 0xA000000, named here as DIDGET_CNT for the purposes of this document. By reading and writing to DIDGET_CNT, data such as reward points, bonus points, short messages, and other miscellaneous hardware information can be extracted. The DS can also push data to the Didget by updating the player&#39;s high scores and total available points.</p>
+
+	<p>To access data on the Didget, an index must first be written to DIDGET_CNT. Different data — such as reward points earned today or bonus points — are stored at different indices. Once an index is set, the Didget triggers a Game Pak IRQ. Following this, 1-byte, 4-bytes, or 6-bytes, or 64-bytes must be read from/written to DIDGET_CNT, depending on the index. For example, in the case that an index returns 4-bytes of data, DIDGET_CNT must be read a total of 4 times, once per byte. Additional Game Pak IRQs indicate when the next byte is ready to read/write. Evidently, Game Pak IRQs are generated after a brief delay when accessing DIDGET_CNT. For integer values (primarily 4-byte and 6-byte indices) data is read/written MSB-first, therefore, software must also manually adjust LSB-first values on the DS. Other data such as the 64-byte indices for messages is written sequentially.</p>
+
+	<p>The Didget appears to have a sort of &#34;idle&#34; mode when no index is currently specified. These instances seem to happen after initially booting up the DS and the Didget, and it also occurs after the DS has finished reading from/writing to an index. In these instances where the Didget is &#34;idle&#34;, reading from DIDGET_CNT twice returns the values 0xBD and 0xDA in that order. Knock&#39;em Downs: World&#39;s Fair does this at times to verify that the Didget is ready for read or write operations. During idle mode, the Didget *DOES NOT* generate Game Pak IRQs.</p>
+
+	<p>Below is the typical proceedure used to read or write to an index on the Didget of XYZ length:</p>
+
+<pre>-----------------------------------------------------------
+XYZ-byte Index Access
+-----------------------------------------------------------
+WRITE INDEX TO DIDGET_CNT
+	WAIT FOR GAMEPAK IRQ
+
+READ OR WRITE BYTE AT DIDGET_CNT
+	WAIT FOR GAMEPAK IRQ
+
+REPEAT READ OR WRITE AT DIDGET_CNT FOR XYZ LENGTH
+-----------------------------------------------------------</pre>
+
+	<p>Indices on the Didget are typically read-only or write-only. After writing data to a write-only index, however, reading 1-byte from that same index returns the status of the previous write operation. Any non-zero outputs indicate an error. Once this status byte is read, the Didget presumably returns to idle mode.</p>
+
+	<a name="did_ind"></a>
+	<p class="gray_title">[Bayer Didget Glucose Meter] : Index Overview</p>
+
+	<p>Below is a brief list of all known indices and their currently understood functions:</p>
+
+<pre>-----------------------------------------------------------
+Index		| Size 	| Description
+-----------------------------------------------------------
+0x10 - 0x1F 	| 64	| Read Messages (Banks 0 - 15)
+0x20		| 4	| Read System Date
+0x21		| 4	| Read New Reward Points
+0x22		| 4	| Read New Bonus Points
+0x23		| 4	| Read Current Number of Bonus Days
+0x24		| 4	| Read Number of Days Until Next Bonus
+0x25		| 4	| Read Hardware Flags
+0x26		| 4	| Read LD Threshold
+0x27		| 4	| Read Serial Number
+0x28		| 4	| Unknown Index
+0x29		| 4	| Unknown Index
+0x2A		| 4	| Unknown Index
+0x2B		| 4	| Unknown Index
+0x2C		| 4	| Read Current Total Points
+0x2D		| 4	| Unknown Index
+0x31		| 1	| Read Unknown Flag
+0x32		| 1	| Read Unknown Flag
+0x6C		| 4	| Write Current Total Points
+0xE3		| 6	| Write High Scores (Banks 1 - 12)
+-----------------------------------------------------------</pre>
+
+	<p>The Didget largely copies the Glucoboy for its indices. Many of the indices related to rewards and points are simply renamed while retaining the same purpose. One key difference is that while the Glucoboy stored the total amount of earned points inside the EEPROM inside its cartridge, the Didget dedicates a specific index for this. A number of hardware specific details (flags, serial number, LD threshold), are also read but seemingly unused by the Didget. Additionally, the Didget uses 1KB of its internal storage for short messages.</p>
+
+	<p>Any indices present on both the Glucoboy and Didget are assumed to work identically unless further testing reveals otherwise. This document, therefore, will only explore indices exclusively used by the Didget. Refer to documentation on the Glucoboy for further information if necessary.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x10 to 0x1F - Read Messages (Banks 0 - 15)</strong></p>
+	<p class="list_item">The Didget can store a total of 16 different 64-byte messages using extended ASCII encoding.  NULL characters can terminate the message at any given point. If a message begins with a NULL character, Knock&#39;em Downs: World&#39;s Fair ignore it as empty. The software will display any non-empty message it finds, however, the order of the messages is independent of the bank. The message in Bank 0 is always a &#34;Daily Message&#34;, while any subsequent messages are numbered from 1 up to 15. That is to say, if a message bank is empty, it does not take up a number when listed. For example, if Banks 0, 1, 2, and 4 have messages, but Bank 3 is empty, Bank 0 will be the Daily Message, and Banks 1, 2, and 4 will be labeled &#34;Message #1&#34;, &#34;Message #2&#34;, and &#34;Message #3&#34;.</p>
+
+	<p>The extended ASCII encoding is standard ASCII for the first 128-bytes with non-standard encodings for several accented characters. Encodings vary between the regular copies of Knock&#39;em Downs: World&#39;s Fair and the DSi enhanced version. For whatever reason, on regular versions of the game, characters such as &#34;à&#34; (using a value of 0xA0) and &#34;Ñ&#34; have glitched renderings, with the former effectively being invisible.</p>
+
+<pre>Regular Encodings
+----------------------------------------------------------------------------------------------------------------------------------------------
+     |	0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
+----------------------------------------------------------------------------------------------------------------------------------------------
+0x80 |	À 	Á	Â	Ä			È	É	Ê	Ë	Ì	Í	Î	Ï	Ñ	Ò
+0x90 |	Ó	Ô	Ö			Ù	Ú	Û	Ü
+0xA0 |		á	â	ä			è	é	ê	ë	ì	í	î	ï	ñ	ò
+0xB0 |	ó	ô	ö			ù	ú	û	ü	¡	¿
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+DSi Enhanced Encodings
+----------------------------------------------------------------------------------------------------------------------------------------------
+     |	0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
+----------------------------------------------------------------------------------------------------------------------------------------------
+0x80 |	À 	Á	Â	Ã	Ä	Å	Æ	Ç	È	É	Ê	Ë	Ì	Í	Î	Ï	
+0x90 |	Ñ	Ò	Ó	Ô	Õ	Ö	Œ	Ø	Ù	Ú	Û	Ü			
+0xA0 |	à	á	â	ã	ä	å	æ	ç	è	é	ê	ë	ì	í	î	ï	
+0xB0 |	ñ	ò	ó	ô	õ	ö	œ	ø	ù	ú	û	ü	¡	¿	◌̇
+----------------------------------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>These messages were transferred from the Bayer Didget website when connecting the device via USB to a PC.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x20 - Read System Date</strong></p>
+	<p class="list_item">This index returns the current system date according to the Didget&#39;s RTC. The clock is used internally to decide if glucose testing has been performed on a consistent schedule in order to give out reward points. It is entirely independent from the DS&#39; own clock. Knock&#39;em Downs: World Fair does not seem to make use of this data, however. 4 bytes are returned representing a date. The complete 32-bit value uses these fields for time:</p>
+
+<pre>-----------------------------------------------------------
+Bits	| Description
+-----------------------------------------------------------
+0  - 5	| Minutes (0 - 59)	
+6  - 11	| Hours (0 - 23)
+12 - 16	| Days (1 - 31)
+20 - 23	| Months (1 - 12)
+24 - 30	| Years (2001 - 2100)
+-----------------------------------------------------------</pre>
+
+	<p>Days and Months always start counting at 1. That is to say, a binary value of 0 will translate to 1, so the maximum value for each category should be 11 and 30 respectively.</p>
+
+	<p>Years starts counting at 2100. That is to say, a binary value of 0 will translate to the year 2100. A binary value of 1 will translate to the year 2001, and so on. Essentially, this value can be added to 2000 to get the current date, with 0 being a special case.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x21 - Read New Reward Points</strong></p>
+	<p class="list_item">This represents the amount of reward points earned since the player last checked in with the game. Internally, this value is presumably added to the total amount of points in index 0x2C automatically. The exact amount is determined by factors such as whether the levels were healthy and whether the test was done in accordance to a regular schedule. The DS does not seem to have access to the components that calculate these points, so it only reads whatever the hardware reports.</p>
+
+	<p>The 4 bytes returned by this index form a signed 32-bit integer. Only positive numbers are valid, so the maximum allowed value is therefore 2147483647.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x22 - Read New Bonus Points</strong></p>
+	<p class="list_item">This represents the amount of bonus points earned by maintaining healthy glucose levels over a specific number of days since the player last checked in with the game. The Didget likely updates this internally when the &#34;Number of Good Days Until Bonus Rewarded&#34; value reaches zero and reloads to a new value. At that time, these bonus points are also added to the total amount of points.</p>
+
+	<p>The 4 bytes returned by this index form a signed 32-bit integer. Only positive numbers are valid, so the maximum allowed value is therefore 2147483647.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x23 - Read Current Number of Bonus Days</strong></p>
+	<p class="list_item">This index represents the number of continuous days were the player consistently checked their glucose levels and those same levels were within an acceptable range. Failing to meet those requirements would presumably reset the this value.</p>
+
+	<p>The 4 bytes returned by this index form a signed 32-bit integer. Only positive numbers are valid, so the maximum allowed value is therefore 2147483647.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x24 - Read Number of Days Until Next Bonus</strong></p>
+	<p class="list_item">This index represents the number of remaining days needed until the bonus points would be granted. This value likely decreases by one every 24-hours, so long as the player&#39;s glucose levels were kept in check regularly.</p>
+
+	<p>The 4 bytes returned by this index form a signed 32-bit integer. Only positive numbers are valid, so the maximum allowed value is therefore 2147483647.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x25 - Read Hardware Flags</strong></p>
+	<p class="list_item">This index represents a set of hardware status flags for the Didget. It is assumed they carry over from the Glucoboy in function and meaning. Knock&#39;em Downs: World&#39;s Fair reads this data but makes no use of it. Only 7-bits of the 32-bit index value is used as such:</p>
+
+<pre>-----------------------------------------------------------
+Bit	| Description
+-----------------------------------------------------------
+0	| GMEM FAULT
+1	| PMEM FAULT
+2 	| INCENTIVE
+3	| PNEW STATS
+4	| MEASUREMENT
+5	| GMETER FAULT
+6	| PMETER FAULT
+-----------------------------------------------------------</pre>
+
+	<p>The following descriptions are estimates of each bit&#39;s likely meaning. Keep in mind these are guesses for the time being.</p>
+
+	<p>&#34;GMEM FAULT&#34; and &#34;PMEM FAULT&#34; refer to errors in the memory allocated for blood testing result. The Didget may separate memories for general glucose test result and postprandial glucose test results. If those areas of memory have issues, they would probably be reported here.</p>
+
+	<p>&#34;INCENTIVE&#34; refers to the Didget&#39;s method of determining how it gives out points. This was dicated by factors such as timeliness in testing, frequency in testing, and whether or not glucose levels were healthy. This flag probably indicates that the player had met these conditions.</p>
+
+	<p>&#34;PNEW STATS&#34; possibly refers to new data tracking postprandial glucose levels, conceivably an update to some kind of statistic used to measure the player&#39;s performance in relation to INCENTIVE.</p>
+
+	<p>&#34;MEASUREMENT&#34; possibly indicates a new glucose reading has been done.</p>
+
+	<p>&#34;GMETER FAULT&#34; and &#34;PMETER FAULT&#34; refer to failures with the actual glucose and postprandial meters.</p>
+
+	<p>Despite &#34;GMEM/GMETER FAULT&#34; and &#34;PMEM/PMETER FAULT&#34; being potentially serious hardware issues, Knock&#39;em Downs: World&#39;s Fair does not take any specific actions on them. For example, the player is not warned if any of these components stops working, although, it may affect retrieving reward points, which does display an error message.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x26 - Read LD Threshold</strong></p>
+	<p class="list_item">This index holds the value of the &#34;LD Threshold&#34;, which possibly refers to a &#34;Low-Data Threshold&#34;. This would represent the minimum number of samples from glucose testing needed to get an accurate test.</p>
+
+	<p>The 4 bytes returned by this index form an unsigned 27-bit integer. It is used to represent values ranging from 00000000 - 99999999.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x27 - Read Serial Number</strong></p>
+	<p class="list_item">This index holds the value of some kind of serial number for the Didget. This appears to be a per-device serial number. Although is is read by Knock&#39;em Downs: World&#39;s Fair, the game does not use it. It was, however, read via USB when connecting the Didget to a PC for the Bayer Didget website.</p>
+
+	<p>The 4 bytes returned by this index form an unsigned 27-bit integer. It is used to represent values ranging from 00000000 - 99999999.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x28 - Read Unknown Index</strong></p>
+	<p class="list_item">The exact purpose of this index is unknown. It does not seem to be actively used by Knock&#39;em Downs: World&#39;s Fair.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x29 - Read Unknown Index</strong></p>
+	<p class="list_item">The exact purpose of this index is unknown. It does not seem to be actively used by Knock&#39;em Downs: World&#39;s Fair.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x2A - Read Unknown Index</strong></p>
+	<p class="list_item">The exact purpose of this index is unknown. It does not seem to be actively used by Knock&#39;em Downs: World&#39;s Fair.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x2B - Read Unknown Index</strong></p>
+	<p class="list_item">The exact purpose of this index is unknown. It does not seem to be actively used by Knock&#39;em Downs: World&#39;s Fair.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x2C - Read Current Total Points</strong></p>
+	<p class="list_item">This represents the total amount of points earned. Realistically, it should not be lower than the sum of New Reward Points and Bonus Points, however, Knock&#39;em Downs: World&#39;s Fair does not perform any checks or validation on this value. The index is responsible for telling the game how many points the player can spend to get in-game tickets.</p>
+
+	<p>The 4 bytes returned by this index form a signed 32-bit integer. Only positive numbers are valid, so the maximum allowed value is therefore 2147483647.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x2D - Read Unknown Index</strong></p>
+	<p class="list_item">The exact purpose of this index is unknown. It does not seem to be actively used by Knock&#39;em Downs: World&#39;s Fair.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x31 - Read Unknown Flag</strong></p>
+	<p class="list_item">The exact purpose of this index is unknown, however, it seems to act as a flag. Reading any non-zero value causes the Didget to register an error when retrieving points.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x32 - Read Unknown Flag</strong></p>
+	<p class="list_item">The exact purpose of this index is unknown, however, it seems to act as a flag. Reading any non-zero value causes the Didget to register an error when retrieving points.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0x6C - Current Total Points</strong></p>
+	<p class="list_item">This index sets the total amount of points earned. It receives 4 bytes representing a signed 32-bit integer. This index is updated by Knock&#39;em Downs: World&#39;s Fair after converting points from the Didget to in-game tickets.</p>
+
+	<p class="spc"></p>
+	<p class="list_item"><strong>Index 0xE3 - Write High Scores</strong></p>
+	<p class="list_item">This index is used to write the high scores on each minigame from Knock&#39;em Downs: World&#39;s Fair. Although the DS cartridge contains the scores in its own save data, this information was presumably uploaded as part of the official online community surrounding the Didget. Each game has its own &#34;bank&#34; that can be addressed. The format of the 6 bytes written to this index is detailed below:</p>
+
+<pre>-----------------------------------------------------------
+Bytes	| Description	| Value
+-----------------------------------------------------------
+0	| Bank High	| Always 0x02
+1	| Bank Low	| 0x01 - 0x0C
+2 - 5	| Score		| 32-bit signed integer
+-----------------------------------------------------------</pre>
+
+	<p>The specific game is always determined by Byte 1 (Bank Low). The list of games is as follows:</p>
+
+<pre>-----------------------------------------------------------
+Bank	| Game Name
+-----------------------------------------------------------
+0x01	| Carnival Chaos
+0x02	| Operation Maze
+0x03	| Flash Carb
+0x04	| Knock&#39;em Down Launch
+0x05	| Hook Shot
+0x06	| Knock&#39;em Down
+0x07	| Puzzle Monster
+0x08	| Anglin&#39; Ventures
+0x09	| Arena Gladiator
+0x0A	| Russian Dolls
+0x0B	| Ace of Vase
+0x0C	| That&#39;s A Wrap
+-----------------------------------------------------------</pre>
+
+	<a name="did_pnt"></a>
+	<p class="gray_title">[Bayer Didget Glucose Meter] : Point Calculation</p>
+
+	<p>The Bayer Didget&#39;s formula for calculating reward points is cleary documented in its manual. It uses a rolling average based on the amount of times tested within a 24-hour period and whether the player&#39;s glucose levels are below, above, or on target. The chart below shows the amount of points added to the average for any given amount of tests:</p>
+
+<pre>----------------------------------------------------------------------------------------------------------------------------------------------
+Current Test # 	| Below Target Points	| On Target Points	| Above Target Points 
+----------------------------------------------------------------------------------------------------------------------------------------------
+1		| 20			| 25			| 20
+2		| 40			| 50			| 40
+3		| 75			| 100			| 75
+4+		| 150			| 200			| 150
+----------------------------------------------------------------------------------------------------------------------------------------------</pre>
+
+	<p>For example, for the first test, the user would receive 20 points if below their target. For the second test, assuming they are on target, they would add 50 points to their average, resulting in (20 + 50) / 2 points (i.e. 35) as the final total. Assuming a third test was done and they were above target, they would add 150 points to their average, resulting in (20 + 50 + 150) / 3 points (i.e. 73 points) as the final total. The average seems to be rounded.</p>
+
+	<p>There must be a 6-hour gap between the first and second tests to register points. All subsequent tests require a 2-hour gap. A maximum of 9 tests can be performed in a single day. This averaging mechanism was designed to encourage children to more frequently test themselves. If the player tests 3 times or more in a 24-hour period, this counts towards a streak where bonus points are rewarded after a fixed amount of days:</p>
+
+<pre>-----------------------------------------------------------
+# of Days	| Bonus Points Awarded
+-----------------------------------------------------------
+7		| 100
+14		| 300
+21		| 500
+30		| 1000
+90		| 5000
+-----------------------------------------------------------</pre>
+
+	<p>After a 90-day streak, the bonus points restart by waiting for a 7-day streak.</p>
+
+
+
+
+
+
 
 
 
@@ -10018,6 +10723,8 @@ Team Profile
 	<p class="list_item"><a href="#ndg_cgb">cgb&#47;download?name=&#47;A4&#47;CGB-BMVJ&#47;*</a></p>
 	<p class="list_item"><a href="#ndg_wrp">Download Wrapper</a></p>
 	<p class="list_item"><a href="#ndg_gam">Minigame Format</a></p>
+	<p class="list_item"><a href="#ndg_spa">Slide Puzzle Append Format</a></p>
+	<p class="list_item"><a href="#ndg_rpa">Rope Puzzle Append Format</a></p>
 	<p class="list_item"><a href="#ndg_str">String Format</a></p>
 	<p class="list_item"><a href="#ndg_fla">MBC6 Flash Operation</a></p>
 
@@ -10070,16 +10777,17 @@ Header - 5 bytes
 <pre>----------------------------------
 File format
 ----------------------------------
-0x00 - 0x17			::	Background palettes 0-2, used for text.
+0x00 - 0x07			::	Background palette 0, used for regular text and parts of the background.
+0x08 - 0x17			::	Background palettes 1-2, used for colored text.
 0x18 - 0x37			::	Background palettes 3-6, unused.
-0x38 - 0x3F			::	Background palette 7, used for background and other elements.
+0x38 - 0x3F			::	Background palette 7, used for most of the background, the header, and the B button hint.
 0x40 - 0x47			::	Object palette 0, used for blinking arrows.
 0x48 - 0x7F			::	Object palettes 1-7, unused.
-0x80				::	Number of pages. No known maximum, but page numbers above 10 use garbage tiles.
+0x80				::	Number of pages (1-10).
 0x81 - 0x82			::	Pointer to page 1 text.
 ...				::	Repeat pointers as needed.</pre>
 
-	<p>Palettes are in GBC format (that is, four colors each in little-endian RGB555). For background palettes, color 0 is the foreground, color 1 is a shadow, and color 3 is the background. The file&#39;s contents are read from 0xB000, so the text pointers can be considered as file offsets with 0xB000 added to them.</p>
+	<p>Palettes are in GBC format (that is, four colors each in little-endian RGB555). For background palettes, color 0 is the foreground, color 1 is a shadow, and color 3 is the background, meaning color 3 should be the same between background palettes 0 and 7. The file&#39;s contents are read from 0xB000, so the text pointers can be considered as file offsets with 0xB000 added to them.</p>
 
 	<a name="ndg_rom"></a>
 	<p class="gray_title">[Net de Get] : RomList.cgb</p>
@@ -10089,7 +10797,7 @@ File format
 <pre>----------------------------------
 Entry Count - 1 byte
 ----------------------------------
-0x00 - Number of entries	::	(1 - ?) Maximum not currently known.
+0x00 - Number of entries	::	(1 - 78)
 
 ----------------------------------
 Data Offsets - 2 bytes each
@@ -10101,22 +10809,25 @@ Data Offsets - 2 bytes each
 ----------------------------------
 Data Structure
 ----------------------------------
-0x00	 			::	Number of memory blocks necessary for the download (modulus 100). Should be 0x00 - 0x63 ideally.
-0x01				::	Mini-game icon type. See Icon Type below for details.
+0x00	 			::	Number of memory blocks necessary for the download. If greater than 0x10, this minigame cannot be downloaded.
+0x01				::	Mini-game category. See Category Icon below for details.
+0x02 - 0x05			::	Game ID, simply in the format &#34;Gxyz&#34; where &#34;xyz&#34; are three numbers. E.g. the first minigame ID in the Net de Get ROM is &#34;G000&#34;
 0x08 - 0x0A			::	Minimum levels in each category to download this minigame. If all 3 are not met, the menu item is grayed out and cannot be selected.
-0x0C - 0x0D			::	If both are not zero, the menu item does not appear.
-0x0E				::	Minimum hidden level to download this minigame. If not met, the minigame&#39;s name does not appear and it cannot be selected.
-0x0F				::	If not zero, the menu item does not appear.
+0x0C - 0x0D			::	Minimum hidden level A (little-endian) to download this minigame. If not met, this entry does not appear.
+0x0E - 0x0F			::	Minimum hidden level B (little-endian) to download this minigame. If not met, this entry does not appear.
 0x10				::	String Length 1. Each menu item should ideally be 12 characters or less (font is fixed width). Used for minigame name.
 0x11 - ...			::	Menu Item Text (see String Format below).
 0x11 + String Length 1		::	String Length 2. Each menu item draws additional text to a small on-screen textbox. Used brief explanations about minigame. Ideal max is 0xF.
 0x11 + 1 + String Length 1 	::	Additional textbox string.
-0x11 + 6 + String Length 1 & 2	::	Unique ID for download. 8 characters max.</pre>
+0x11 + 1 + String Length 1 &amp; 2	::	String Length 3. Used for minigame filename.
+0x11 + 2 + String Length 1 &amp; 2	::	Minigame filename on server. The first 4 characters or the characters before the first period (whichever is shorter) is displayed as the price in yen.
+0x11 + 2 + String Length 1,2,&amp;3	::	Should be 0x00 to terminate the filename. Not counted in String Length 3.
+0x11 + 3 + String Length 1,2,&amp;3	::	Minigame type. See Minigame Type below for details.</pre>
 
 	<p>Minigames have their own categories and can be assigned their own specific icons. The following bytes dictate what icon is drawn:</p>
 
 <pre>----------------------------------
-Icon Type
+Category Icon
 ----------------------------------
 0x00				::	Question Mark		不定その他	Unspecified other aka misc.
 0x01				::	Boxing Glove		アクション	Action
@@ -10131,14 +10842,22 @@ Icon Type
 0x0A				::	Red Square (A)		アペンド		Additional minigame data.
 0x0B				::	Brown Square (S)	???		???</pre>
 
-	<p>Each mini game has two icons. The first describes the main type, &#34;Program&#34; for the main minigame, or &#34;Append&#34; for additional data or content. The 2nd icon describes the sub-type for the minigame. Apparently for minigame downloads, the main type is forcibly set to &#34;Program&#34;. Byte 0x01 of the data structure controls only the 2nd icon, the sub-type. In that regard, only values of 0x00 through 0x07 are contextually correct. It should also be noted that two other main types seem to exist (the Green and Brown squares), but they are unused, or at least have no mention whatsoever in the game manual.</p>
+	<p>Each minigame also has a type, and each type has its own icon. The following bytes dictate the minigame type:</p>
+
+<pre>----------------------------------
+Minigame Type
+----------------------------------
+0x01				::	Blue Square (P)		プログラム	Program i.e. a full minigame, as opposed to additional data.
+0x02				::	Green Square (D)	???		???
+0x04				::	Red Square (A)		アペンド		Additional minigame data.
+0x08				::	Brown Square (S)	???		???</pre>
 
 	<a name="ndg_cgb"></a>
 	<p class="gray_title">[Net de Get] : cgb&#47;download?name=&#47;A4&#47;CGB-BMVJ&#47;*</p>
 
-	<p>The GB Mobile Adapter attempts to access this URL for downloading minigames. The file containing the minigame is appended to the base URL. The appended part should be 12 characters, 4 for the price in yen, followed by 8 characters for rest of the unique ID. Although it is unknown if this really was the case, it would make sense to use the minigame ID (e.g. "G000") along with ".cgb". Thus a full URL would be something like:</p>
+	<p>The GB Mobile Adapter attempts to access this URL for downloading minigames. The file containing the minigame is appended to the base URL. The appended part should be the price in yen, followed by a period, and finally the unique ID. Although it is unknown if this really was the case, it would make sense to use the minigame ID (e.g. &#34;G000&#34;) along with &#34;.cgb&#34;. Thus a full URL would be something like:
 
-<pre>http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;A4&#47;CGB-BMVJ&#47;1234G000.cgb</pre>
+	<pre>http:&#47;&#47;gameboy.datacenter.ne.jp&#47;cgb&#47;download?name=&#47;A4&#47;CGB-BMVJ&#47;1234.G000.cgb</pre>
 
 	<p>Note that the filename of the minigame should start with numbers (the price) since this indicates a service fee for the download. The server responds with the required binary data. Net de Get will blindly receive data, regardless of what it is. That is to say, no error checking of the minigame itself is done during the download phase.</p>
 
@@ -10147,64 +10866,92 @@ Icon Type
 
 	<p>Rather than simply downloading the minigame data as-is, Net de Get expects minigames to have come in a sort of wrapper file. This consists of a brief header followed by the actual minigame data as described in the next section below. The wrapper header is as follows:</p>
 
-<pre>0x00:				::	Offset to the rest of the wrapper data. This is the 1-byte value + 1, so 1-256.
-Offset + 0x00			::	???
-Offset + 0x01			::	For most minigame downloads, this should be 0x00. When set to 0x05, it seems to do a block-fill operation on the MBC6 Flash ROM.
-Offset + 0x02			::	???
-Offset + 0x03			::	???
-Offset + 0x04			::	Minigame size (low-byte).
-Offset + 0x05			::	Minigame size (high-byte). Should not be zero.
-Offset + 0x06			::	???
-Offset + 0x07			::	???
-Offset + 0x08 ...		::	Minigame data (as described below in Minigame Format).</pre>
+<pre>----------------------------------
+0x00				::	String length for the comment.
+0x01 - Length			::	Comment (unused).
+Length + 0x01			::	Number of blocks? Unused.
+Length + 0x02			::	For most minigame downloads, this should be 0x05. Setting this to 0x00 disables compression.
+Length + 0x03			::	Compressed size (low-byte). Unused when compression is disabled.
+Length + 0x04			::	Compressed size (high-byte). Unused when compression is disabled.
+Length + 0x05			::	Uncompressed size (low-byte).
+Length + 0x06			::	Uncompressed size (high-byte).
+Length + 0x07			::	Even check byte? Unused.
+Length + 0x08			::	Odd check byte? Unused.
+Length + 0x09 ...		::	Compressed minigame data.</pre>
 
-	<p>The minigame is copied to various RAM locations (SRAM and WRAM) until it is finally written to Flash. A maximum of 0x200 bytes is copied at a time. The wrapper, however, expects a 0x100 &#34;footer&#34; to be inserted after each of the 0x200 chunks. This is only necessary if the minigame size is greater than 0x200 bytes. For example, if a minigame is only 0x100 bytes, then the footer can be ignored, although such a small size is rather impractical. Additionally, only the last footer technically needs to be correctly formatted. The default footer is as follows:</p>
+	<p>The minigame data is compressed in a proprietary format involving several Huffman trees. These trees are in canonical format; that is, codes with fewer bits will be less than codes with more bits when interpreted as binary numbers, as will codes with the same number of bits representing lesser character numbers. Additionally, the compressed format uses fields of various bit sizes. These fields are packed together in big-endian order with no padding or spacing between them, even between separate compressed chunks.</p>
 
-<pre>
-0x00, 0x00, 0x01, 0x00,
-0x02, 0x00, 0x03, 0x00,
-0x04, 0x00, 0x05, 0x00,
-0x06, 0x00, 0x07, 0x00,
-0x08, 0x00, 0x09, 0x00,
-0x0A, 0x00, 0x0B, 0x00,
-0x0C, 0x00, 0x0D, 0x00,
-0x0E, 0x00, 0xFF, 0x00,
-... (the remaining 224 bytes should be 0x00).
-</pre>
+<pre>--------------------------------------------------
+Compressed Chunk Format
+--------------------------------------------------
+16 bits						::	Number of data symbols.
+5 bits						::	Highest character number in auxiliary tree A + 1. Must be 1-19.
+For each character, starting at #0:		::
+	3+ bits					::	Bit length of code for this character. A length of zero indicates that this character is not present in the tree. 
+						::	If the first three bits are ones, the game will continue reading bits until it reaches a zero, and the actual bit
+						::	length will be the total number of one bits + 4, which must be 16 or less.
+	After character #2			::
+	(even if it is the highest character):	::
+		2 bits				::	Number of characters to skip here (i.e. the next character number is this value + 3).
+9 bits						::	Highest character number in data tree + 1. Must be 0-262.
+If the above field is 0:			::
+	9 bits					::	Constant character number for data tree. Must be 0-261. Data characters will take zero bits, and will all be the 
+						::	character specified here.
+Otherwise, for each character, starting at #0:	::
+	Aux. tree A character			::	Character #0 indicates that this character is not present in the tree, character #1 indicates that this and 2-17 
+						::	characters after it are not present, and character #2 indicates that this and 19+ characters after it are not present.
+						::	Higher character numbers indicate the bit length of this character's code + 2.
+	After auxiliary character #1:		::
+		4 bits				::	Number of characters to skip - 3.
+	After auxiliary character #2:		::
+		9 bits				::	Number of characters to skip - 20.
+4 bits						::	Highest character in auxiliary tree B + 1. Must be 1-10.
+For each character, starting at #0:		::
+	3+ bits					::	Bit length of code for this character. See auxiliary tree A for details.
+For each data symbol:				::
+	Data tree character			::	Characters #0-#255 copy raw bytes to the output stream. Higher character numbers indicate a number of bytes to copy from
+						::	earlier output + 253. It is possible to copy data from a previous chunk.
+	After character #256+:			::
+		Aux tree B char			::	Character #0 indicates that the previous output character should simply be repeated. Higher character numbers indicate
+						::	the highest set bit of the offset + 1.
+		0+ bits				::	The remaining bits of the offset.</pre>
 
-	<p>So in summary, the wrapper effectively looks like this:</p>
+	<p>The decompressed data of every chunk is concatenated, again with no padding, to form the total decompressed data. This is what gets written to flash, padded with 0x00 to a multiple of 4KB, then (if necessary) padded with 0xFF to a multiple of 8KB.</p>
 
-<pre>Wrapper Header ->
-	Minigame Data Chunk (0x200 max)
-		Footer (0x100)
-	Minigame Data Chunk (0x200 max)
-		Footer (0x100)
-	...</pre>
+	<p>With compression disabled, the data is written in chunks of 512 bytes each (except the last, which may or may not be shorter). The chunks are concatenated and padded in the same way as if compression were enabled. Each chunk has 256 bytes of extra data after it, with a footer starting at offset 0x200. Up to 256 bytes of the last footer (stopping if 0xFF is encountered) is saved to the player&#39;s minigame organization, which is simply a series of byte pairs in the following format:</p>
 
-	<p>Note that the footer is written to SRAM later on, not flash. Improperly formatted footers may crash the game when booting or trying to access the minigame menu. There are other valid footers, but the default above is the only one tested extensively. It is currently unknown exactly how this data should be formatted.</p>
+<pre>----------------------------------
+0x00				::	Minigame number. 0x00-0x0E indicate one of the 15 games that come with Net de Get, in their default order. 0x10-0x8F indicate the first bank of a flash minigame + 0x10. 0xFF terminates the list.
+0x01				::	Box number (0x00-0x06). Entries with invalid box numbers are ignored.</pre>
 
 	<a name="ndg_gam"></a>
 	<p class="gray_title">[Net de Get] : Minigame Format</p>
 
-	<p>The minigame format is essentially the same as that found on the MBC6 ROM. Using the base address of the Flash ROM bank, minigames look like so:</p>
+	<p>The minigame format is essentially the same as that found on the MBC6 ROM. Using the base address of the flash ROM bank, minigames look like so:</p>
 
-<pre>0x00 - 0x02			::	Typically contains a JR or JP instuction.
+<pre>----------------------------------
+0x00 - 0x02			::	Typically contains a JR or JP instuction.
+0x03 - 0x04			::	Size of this header (little-endian). Always 0x6F.
 0x05 				::	Number of memory blocks used by the minigame.
 0x06				::	Primary minigame icon.
 0x07				::	Secondary minigame icon.
 0x09 - 0x0C			::	Game ID, simply in the format &#34;Gxyz&#34; where &#34;xyz&#34; are three numbers. E.g. the first minigame ID in the Net de Get ROM is &#34;G000&#34;
+0x0D - 0x0E			::	Append ID. 0x00 for minigames that don&#39;t accept or act as appendices.
 0x0F - ...			::	Text for game title. Null terminated, but nothing stops it from being too long. Text can technically spill over multiple lines.
 0x24 - ...			::	Text for dialog box. Null terminated.
-0x44				::	If this is 0xFF, it prints the game title, otherwise the title is blank. Oddly enough, the dialog box is unaffected and always printed.
-0x6D - 0x6E			::	Always 0x3B, 0xB3. Acts like a watermark for valid minigames. Net de Get checks this specifically to tell if a game is on Flash ROM.
+0x44				::	Must be 0xFF for the minigame to be considered valid.
+0x4D - 0x6C			::	Append data. Format depends on the append ID and the minigame being appended.
+0x6D - 0x6E			::	Sum of all the other bytes of this minigame (little-endian).
 0x6F - ...			::	Code + Data.</pre>
 
-	<p>Generally, the jump instruction goes right to Byte 0x6F, but not always. When the minigame is selected from the menu and the play (あそぶ) option is selected, the MBC6 switches Bank 0 (0x4000 - 0x5FFF) with Flash ROM, then performs a CALL 0x4000, which in turn executes the jump instruction and starts the minigame. It should also be noted that the downloaded minigame code is actually executed from Flash ROM rather than copying it somewhere else first like WRAM.</p>
+	<p>Generally, the jump instruction goes right to Byte 0x6F, but not always. When the minigame is selected from the menu and the play (あそぶ) option is selected, the MBC6 switches Bank 0 (0x4000 - 0x5FFF) with flash ROM, then performs a CALL 0x4000, which in turn executes the jump instruction and starts the minigame. It should also be noted that the downloaded minigame code is actually executed from flash ROM rather than copying it somewhere else first like WRAM.</p>
 
-	<p>Unlike the previous icons from RomList.cgb, each minigame&#39;s primary icon can be specified. The secondary minigame icon is nearly identical to the format in RomList.cgb, but contains some variations:</p>
+	<p>The checksum stored in bytes 0x6D - 0x6E includes any padding bytes. Using values of 0x3B or 0xB3 bypasses checksum verification altogether. If the minigame is larger than 56KB (7 banks), the sum is only of the first 256 bytes.</p>
+
+	<p>There are some additional minigame type icons here compared to RomList.cgb:</p>
 
 <pre>----------------------------------
-Primary Minigame Icon Type
+Minigame Type
 ----------------------------------
 0x00				::	Gray Square (P)		プログラム	Program i.e. a full minigame, as opposed to additional data. Might be &#34;disabled&#34; since it&#39;s gray.
 0x01				::	Blue Square (P)		プログラム	Program i.e. a full minigame, as opposed to additional data.
@@ -10214,10 +10961,12 @@ Primary Minigame Icon Type
 0x05				::	Gray Square (A)		アペンド		Additional minigame data (disabled?).
 0x06				::	Gray Square (A)		アペンド		Additional minigame data (disabled?).
 0x07				::	Gray Square (A)		アペンド		Additional minigame data (disabled?).
-0x08				::	Brown Square (S)	???		???
+0x08				::	Brown Square (S)	???		???</pre>
 
-----------------------------------
-Secondary Minigame Icon Type
+	<p>Additionally, some category icons appear differently:</p>
+
+<pre>----------------------------------
+Category Icon
 ----------------------------------
 0x00				::	Question Mark		不定その他	Unspecified other aka misc.
 0x01				::	Boxing Glove		アクション	Action
@@ -10225,35 +10974,90 @@ Secondary Minigame Icon Type
 0x03				::	Running Person		オーソドックス	Orthodox aka Platformer?
 0x04				::	Sword			アールピージー	RPG
 0x05				::	Green Sheet		シミュレーション 	Simulation
-0x06				::	Fighter Jet		シューティング	Shooter&#47;Shooting game 
+0x06				::	Fighter Jet		シューティング	Shooter/Shooting game 
 0x07				::	Green Square		アドベンチャー	Adventure</pre>
 
-	<p>For the secondary icon, everything above 0x08 results in garbage tile data being drawn on-screen. 0x07 is the same icon as in RomList.cgb, except the color is now green instead of Red. Strangely enough, the game manual only shows the red version of that icon.</p>
+	<p>For the category icon, everything above 0x08 results in garbage tile data being drawn on-screen. 0x07 is the same icon as in RomList.cgb, except the color is now green instead of Red. Strangely enough, the game manual only shows the red version of that icon.</p>
+
+	<a name="ndg_spa"</a>
+	<p class="gray_title">[Net de Get] : Slide Puzzle Append Format</p>
+
+	<p>The final minigame in the default order, とんではねてそろえて, allows the player to choose any of 3 built-in images to play a 6x4 slide puzzle. It also allows additional images to be downloaded in the form of minigames with the append ID 0x05, 0x00 in the header. The append data in the header is not used; instead, the first bank of such a minigame should contain image data in the following format:</p>
+
+<pre>----------------------------------
+0x00A0 - 0x00D7			::	Background palettes 0-6, used only for the puzzle tiles.
+0x00D8 - 0x00DF			::	Background palette 7, used for the border and timer.
+0x00E0 - 0x00EF			::	Object palettes 0-1, unused.
+0x00F0 - 0x00F7			::	Object palette 2, used for the cursor.
+0x00F8 - 0x00FF			::	Object palette 3, used for the arrows around the cursor.
+0x0100 - 0x0107			::	Object palette 4, used for the &#34;CLEAR!&#34; graphic.
+0x0108 - 0x010F			::	Object palette 5, used for the &#34;PRESS A BUTTON&#34; graphic.
+0x0110 - 0x011F			::	Object palettes 6-7, unused.
+0x0120 - 0x0133			::	Tilemap for the top row of the preview.
+0x0134 - 0x0147			::	Attribute map for the top row of the preview.
+0x0148 - 0x015B			::	Tilemap for the bottom row of the preview.
+0x015C - 0x016F			::	Attribute map for the bottom row of the preview.
+0x0170 - 0x017F			::	Tilemap for the left column of the preview.
+0x0180 - 0x018F			::	Attribute map for the left column of the preview.
+0x0190 - 0x019F			::	Tilemap for the right column of the preview.
+0x01A0 - 0x01AF			::	Attribute map for the right column of the preview.
+0x01B0 - 0x01BB			::	Tilemap for the top-left puzzle tile (3x4 tiles).
+0x01BC - 0x01C7			::	Attribute map for the top-left puzzle tile (3x4 tiles).
+0x01C8 - 0x03D7			::	Tilemaps and attribute maps for the next 22 puzzle tiles.
+0x03D8 - 0x03E3			::	Tilemap for the bottom-right puzzle tile.
+0x03E4 - 0x03EF			::	Attribute map for the bottom-right puzzle tile.
+0x03F0 - 0x13EF			::	VRAM bank 0, tiles 0x080-0x17F.
+0x13F0 - 0x1BEF			::	VRAM bank 1, tiles 0x080-0x0FF.
+0x1BF0 - 0x1C07			::	Image title. Does not need to match the minigame title.</pre>
+
+	<p>The 3 built-in images have the same colors for background palette 7 and for all object palettes: 0x7FFF, 0x1637, 0x1972, 0x0CA8 for the border; 0x7FFF, 0x2116, 0x000B for the cursor; 0x001F, 0x17FF, 0x7FFF for the arrows; 0x35BF, 0x001F, 0x7FFF for the &#34;CLEAR!&#34; graphic; and 0x0000, 0x001B, 0x7FFF for the &#34;PRESS A BUTTON&#34; graphic.</p>
+
+	<a name="ndg_rpa"</a>
+	<p class="gray_title">[Net de Get] : Rope Puzzle Append Format</p>
+
+	<p>The third game in the default order, ごろうのロ—プパズル, is a puzzle game with 16 stages. It checks for downloaded games with the append ID 0x01, 0x00 in the header, and contains code to load 16 extra stages from the first one it finds, but this code goes unused. It expects the append data in the header to begin with a pointer to 1472 bytes of data in the first bank of the minigame, in the following format:</p>
+
+<pre>----------------------------------
+0x00 - 0x01			::	Offset to stage 01 data (little-endian).
+0x02 - 0x03			::	Offset to stage 02 data (little-endian).
+0x04 - 0x1F			::	Offsets to stage 03-16 data.</pre>
+
+	<p>Each stage&#39;s data consists of 90 bytes, one for each tile, read row-by-row, top to bottom, left to right. Each byte can have one of the following values:</p>
+
+<pre>----------------------------------
+Tile Type
+----------------------------------
+0x00				::	Empty tile.
+0x01				::	Unmovable block.
+0x02				::	Movable block.
+0x03				::	Ladder.
+0x04				::	Finish door (one per stage).
+0x10				::	Starting point (one per stage).</pre>
 
 	<a name="ndg_str"></a>
 	<p class="gray_title">[Net de Get] : String Format</p>
 
-	<p>Blank entries represent values that are not used and can effectively be treated as spaces.</p>
+	<p>Blank entries represent values that are not used and can effectively be treated as spaces, although the base game consistently uses 0x10 for a space.</p>
 
-<pre>        0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
+<pre>	0	1	2	3	4	5	6	7	8	9	A	B	C	D	E	F
 0x00
-0x10         !    &#34;    #    $    %    &    &#39;    (    )    *    +    ‘    -    .    &#47;
-0x20    0    1    2    3    4    5    6    7    8    9    :    ;    &lt;    =    &gt;    ?
-0x30    [    ¥    ]    x    ÷    {    |    }    ˜    @    ⌜    ⌟    —    ~    、    。
-0x40         A    B    C    D    E    F    G    H    I    J    K    L    M    N    O
-0x50    P    Q    R    S    T    U    V    W    X    Y    Z    ✜    ‥    ^    _    ’
-0x60         a    b    c    d    e    f    g    h    i    j    k    l    m    n    o
-0x70    p    q    r    s    t    u    v    w    x    y    z    Ⓐ    Ⓑ
+0x10		!	&#34;	#	$	%	&	&#39;	(	)	*	+	‘	-	.	&#47;
+0x20	0	1	2	3	4	5	6	7	8	9	:	;	&lt;	=	&gt;	?
+0x30	[	¥	]	x	÷	{	|	}	˜	@	⌜	⌟	—	~	、	。
+0x40		A	B	C	D	E	F	G	H	I	J	K	L	M	N	O
+0x50	P	Q	R	S	T	U	V	W	X	Y	Z	✜	‥	^	_	’
+0x60		a	b	c	d	e	f	g	h	i	j	k	l	m	n	o
+0x70	p	q	r	s	t	u	v	w	x	y	z	Ⓐ	Ⓑ
 
 
-0x80    ぁ    あ    ぃ    い    ぅ    う    ぇ    え    ぉ    お    か    き    く    け    こ    さ        
-0x90    し    す    せ    そ    た    ち    っ    つ    て    と    な    に    ぬ    ね    の    は
-0xA0    ひ    ふ    へ    ほ    ま    み    む    め    も    ゃ    や    ゅ    ゆ    ょ    よ    ら
-0xB0    り    る    れ    ろ    ゎ    わ    を    ん    →    ←    ↑    ↓    •
-0xC0    ァ    ア    ィ    イ    ゥ    ウ    ェ    エ    ォ    オ    カ    キ    ク    ケ    コ    サ
-0xD0    シ    ス    セ    ン    タ    チ    ッ    ツ    テ    ト    ナ    ニ    ヌ    ネ    ノ    ハ      
-0xE0    ヒ    フ    ヘ    ホ    マ    ミ    ム    メ    モ    ャ    ヤ    ュ    ユ    ョ    ヨ    ラ 
-0xF0    リ    ル    レ    ロ    ヮ    ワ    ヲ    ン    ☎    ♪    ☺    ☺    ★    ❤     ﾟ     ﾞ</pre>
+0x80	ぁ	あ	ぃ	い	ぅ	う	ぇ	え	ぉ	お	か	き	く	け	こ	さ
+0x90	し	す	せ	そ	た	ち	っ	つ	て	と	な	に	ぬ	ね	の	は
+0xA0	ひ	ふ	へ	ほ	ま	み	む	め	も	ゃ	や	ゅ	ゆ	ょ	よ	ら
+0xB0	り	る	れ	ろ	ゎ	わ	を	ん	→	←	↑	↓	•
+0xC0	ァ	ア	ィ	イ	ゥ	ウ	ェ	エ	ォ	オ	カ	キ	ク	ケ	コ	サ
+0xD0	シ	ス	セ	ン	タ	チ	ッ	ツ	テ	ト	ナ	ニ	ヌ	ネ	ノ	ハ	  
+0xE0	ヒ	フ	ヘ	ホ	マ	ミ	ム	メ	モ	ャ	ヤ	ュ	ユ	ョ	ヨ	ラ 
+0xF0	リ	ル	レ	ロ	ヮ	ワ	ヲ	ン	☎	♪	☺	☺	★	❤	 ﾞ	 ﾟ</pre>
 
 	<p>A couple of things to note, since some characters listed are not quite the same in Unicode as they are on Net de Get:</p>
 
@@ -10263,6 +11067,7 @@ Secondary Minigame Icon Type
 		<li class="list_item">0x7B and 0x7C are actually inverted color-wise (black circle with white &#34;A&#34; or &#34;B&#34; in the center). These are presumably the GBC&#39;s A and B buttons.</li>
 		<li class="list_item">0xF8 is actually inverted color-wise (black outlines, white on the inside).</li>
 		<li class="list_item">0xFB is a &#34;smiley face&#34; like 0xFA, but it&#39;s kind of lumpy and missing an eye.</li>
+		<li class="list_item">0xFE and 0xFF appear before the character they modify, not after.</li>
 	</ul>
 
 	<p>Additionally, there are a few control codes:</p>
